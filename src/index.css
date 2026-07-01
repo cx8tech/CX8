@@ -23,7 +23,7 @@
   --radius: 8px;
   --radius-sm: 6px;
   --shadow: 0 1px 4px rgba(15,31,61,.07), 0 4px 16px rgba(15,31,61,.05);
-  --mono: "DM Mono", monospace;
+  --mono: "Times New Roman", Times, serif;
   --sans: "DM Sans", sans-serif;
   --display: "Sora", sans-serif;
 }
