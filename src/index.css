@@ -65,7 +65,7 @@ img { max-width: 100%; display: block; }
 .btn-register:hover { background: #0a7569; }
 
 /* ── Hero ── */
-.hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 60%, #1a3860 100%); padding: 48px 32px 0; }
+.hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 60%, #1a3860 100%); padding: 48px 32px 48px; }
 .hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: start; max-width: 1400px; margin: 0 auto; }
 .hero-eyebrow { font-family: var(--mono); color: var(--teal2); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.8px; margin-bottom: 14px; }
 .hero-title { color: #fff; font-family: var(--display); font-size: 36px; font-weight: 700; line-height: 1.18; letter-spacing: -.8px; margin-bottom: 16px; }
