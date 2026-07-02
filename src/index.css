@@ -40,7 +40,7 @@ img { max-width: 100%; display: block; }
 .main-content { flex: 1; }
 
 /* ── Header ── */
-.hdr { background: var(--navy); padding: 0 32px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 24px rgba(0,0,0,.3); gap: 24px; }
+.hdr { background: var(--navy); padding: 0 32px; height: 62px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 24px rgba(0,0,0,.3); gap: 24px; }
 .hdr-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .cx8-mark { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; overflow: hidden; background: var(--teal2); display: flex; align-items: center; justify-content: center; }
 .cx8-mark img { width: 100%; height: 100%; object-fit: cover; }
@@ -255,3 +255,74 @@ img { max-width: 100%; display: block; }
 .coming-soon-badge { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: var(--teal2); background: var(--teal-bg); padding: 4px 12px; border-radius: 20px; margin-bottom: 16px; }
 .coming-soon-title { font-family: var(--display); font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
 .coming-soon-sub { font-size: 14px; color: var(--text2); max-width: 420px; line-height: 1.65; }
+
+/* ── Mobile nav ── */
+.hdr-wrap { position: sticky; top: 0; z-index: 100; }
+.hdr { position: static; }
+.hdr-menu-btn { display: none; width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: #fff; align-items: center; justify-content: center; flex-shrink: 0; }
+.hdr-menu-btn svg { width: 18px; height: 18px; }
+.mobile-nav { background: var(--navy2); border-bottom: 1px solid rgba(255,255,255,.1); padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 2px; }
+.mobile-nav-link { padding: 10px 12px !important; border-radius: 6px; border-bottom: none !important; }
+.mobile-nav-link:hover { background: rgba(255,255,255,.06); }
+.mobile-nav-auth { display: flex; gap: 10px; padding: 12px 12px 4px; border-top: 1px solid rgba(255,255,255,.1); margin-top: 6px; }
+.mobile-nav-auth .btn-login { flex: 1; text-align: center; padding: 10px 16px; }
+.mobile-register { flex: 1; text-align: center; padding: 10px 16px !important; }
+
+/* ── Responsive: Tablet (≤1024px) ── */
+@media (max-width: 1024px) {
+  .hero-title { font-size: 30px; }
+  .tools-grid { grid-template-columns: repeat(3, 1fr); }
+  .bottom-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr 1fr; gap: 28px; }
+  .hdr-nav { gap: 16px; }
+}
+
+/* ── Responsive: Mobile (≤768px) ── */
+@media (max-width: 768px) {
+  /* Header */
+  .hdr { padding: 0 16px; box-shadow: 0 2px 16px rgba(0,0,0,.4); }
+  .hdr-nav { display: none; }
+  .hdr-right { display: none; }
+  .hdr-menu-btn { display: flex; }
+  .hdr-sub { display: none; }
+
+  /* Hero */
+  .hero { padding: 28px 16px 36px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 0; }
+  .hero-title { font-size: 28px; letter-spacing: -.3px; }
+  .hero-sub { font-size: 13px; max-width: 100%; }
+  .hero-carousel { display: none; }
+
+  /* Sections */
+  .section { padding: 28px 16px; }
+  .section-inner { padding: 0; }
+
+  /* Tools */
+  .tools-layout { grid-template-columns: 1fr; }
+  .tools-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .quotation-card { margin-top: 8px; }
+
+  /* Bottom */
+  .bottom-grid { grid-template-columns: 1fr; }
+
+  /* Footer */
+  .footer { padding: 28px 16px 16px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .footer-bottom { justify-content: center; }
+
+  /* Tools page */
+  .tools-page { padding: 24px 16px; }
+  .tools-grid-page { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Responsive: Small mobile (≤480px) ── */
+@media (max-width: 480px) {
+  .hero-title { font-size: 23px; }
+  .hero-stats { grid-template-columns: 1fr; gap: 10px; }
+  .hero-cta-row { flex-direction: column; }
+  .cta-primary, .cta-secondary { justify-content: center; }
+  .tools-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .tools-grid-page { grid-template-columns: 1fr; }
+  .supplier-grid { grid-template-columns: 1fr; }
+}

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 const IconHome = () => (
@@ -49,6 +50,19 @@ const IconChevron = () => (
     <polyline points="6 9 12 15 18 9"/>
   </svg>
 )
+const IconMenu = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+)
+const IconX = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"/>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+)
 
 const navItems = [
   { path: '/',           label: 'Home',      Icon: IconHome },
@@ -56,16 +70,20 @@ const navItems = [
   { path: '/suppliers',  label: 'Suppliers', Icon: IconSuppliers },
   { path: '/community',  label: 'Community', Icon: IconCommunity },
   { path: '/courses',    label: 'Courses',   Icon: IconCourses },
+  { path: '/resources',  label: 'Resources', Icon: IconResources, chevron: true },
 ]
 
 export default function Header() {
   const { pathname } = useLocation()
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const close = () => setMenuOpen(false)
 
   return (
-    <header>
+    <header className="hdr-wrap">
       <nav className="hdr">
         <div className="hdr-left">
-          <Link to="/" className="cx8-mark">
+          <Link to="/" className="cx8-mark" onClick={close}>
             <img src="/logo.png" alt="CX8" onError={e => { e.target.style.display = 'none' }} />
           </Link>
           <div className="hdr-brand">
@@ -75,7 +93,7 @@ export default function Header() {
         </div>
 
         <div className="hdr-nav">
-          {navItems.map(({ path, label, Icon }) => (
+          {navItems.map(({ path, label, Icon, chevron }) => (
             <Link
               key={path}
               to={path}
@@ -83,13 +101,9 @@ export default function Header() {
             >
               <Icon />
               {label}
+              {chevron && <IconChevron />}
             </Link>
           ))}
-          <Link to="/resources" className={`hdr-link ${pathname === '/resources' ? 'active' : ''}`}>
-            <IconResources />
-            Resources
-            <IconChevron />
-          </Link>
         </div>
 
         <div className="hdr-right">
@@ -99,7 +113,31 @@ export default function Header() {
           <Link to="/login" className="btn-login">Login</Link>
           <Link to="/register" className="btn-register">Register</Link>
         </div>
+
+        <button className="hdr-menu-btn" aria-label="Toggle menu" onClick={() => setMenuOpen(o => !o)}>
+          {menuOpen ? <IconX /> : <IconMenu />}
+        </button>
       </nav>
+
+      {menuOpen && (
+        <div className="mobile-nav">
+          {navItems.map(({ path, label, Icon }) => (
+            <Link
+              key={path}
+              to={path}
+              className={`hdr-link mobile-nav-link ${pathname === path ? 'active' : ''}`}
+              onClick={close}
+            >
+              <Icon />
+              {label}
+            </Link>
+          ))}
+          <div className="mobile-nav-auth">
+            <Link to="/login" className="btn-login" onClick={close}>Login</Link>
+            <Link to="/register" className="btn-register mobile-register" onClick={close}>Register</Link>
+          </div>
+        </div>
+      )}
     </header>
   )
 }
