@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Engineering Unit Converter — CX8 Technologies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f4f8;--bg2:#e8ebf2;--surface:#fff;--surface2:#f5f6fa;--border:#dde2ee;--border2:#c8d0e4;
+  --text:#0d1829;--text2:#4a5568;--text3:#8a96a8;
+  --navy:#0f1f3d;--navy2:#1a3060;--navy3:#243d70;
+  --navy-bg:#edf1f9;--navy-bg2:#d8e2f4;
+  --teal:#0a6b5f;--teal2:#0d8a7b;--teal-bg:#e6f4f2;--teal-bg2:#c0e8e3;
+  --amber:#9e4e00;--amber-bg:#fdf0e3;--amber-bg2:#f9d9b0;
+  --radius:8px;--radius-sm:6px;
+  --shadow:0 1px 4px rgba(15,31,61,.07),0 4px 16px rgba(15,31,61,.05);
+  --mono:"DM Mono",monospace;--sans:"DM Sans",sans-serif;--display:"Sora",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;-webkit-font-smoothing:antialiased;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;min-height:100vh;}
+
+/* ── Header ── */
+.hdr{background:var(--navy);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.3);}
+.hdr-left{display:flex;align-items:center;gap:14px;}
+.cx8-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--teal2),var(--navy3));display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.hdr-brand{display:flex;flex-direction:column;gap:1px;}
+.hdr-name{font-family:var(--display);font-size:15px;font-weight:600;color:#fff;letter-spacing:-.01em;line-height:1.1;}
+.hdr-sub{font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.38);letter-spacing:.1em;text-transform:uppercase;margin-top:1px;}
+.hdr-pills{display:flex;gap:10px;}
+.hdr-pill{color:rgba(255,255,255,.55);font-size:11px;padding:3px 10px;border:1px solid rgba(255,255,255,.15);border-radius:20px;}
+.hdr-accent{height:2px;background:linear-gradient(90deg,var(--teal2),var(--navy3),transparent);}
+
+/* ── Hero / title strip ── */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,#1a3860 100%);padding:28px 32px 26px;}
+.hero-eyebrow{color:var(--teal2);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
+.hero-title{color:#fff;font-family:var(--display);font-size:22px;font-weight:700;line-height:1.2;letter-spacing:-.4px;margin-bottom:8px;}
+.hero-title em{color:var(--teal2);font-style:normal;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:12.5px;line-height:1.65;max-width:600px;}
+.hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.search-wrap{align-self:center;min-width:280px;position:relative;flex-shrink:0;}
+.search-wrap input{padding-left:32px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:var(--radius-sm);font-family:var(--sans);font-size:13px;padding:9px 10px 9px 32px;outline:none;width:100%;transition:border-color .15s;}
+.search-wrap input::placeholder{color:rgba(255,255,255,.4);}
+.search-wrap input:focus{border-color:var(--teal2);background:rgba(255,255,255,.12);}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:rgba(255,255,255,.45);}
+
+/* ── Layout ── */
+.main{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 130px);}
+.panel-left{background:var(--surface);border-right:1px solid var(--border);padding:20px;overflow-y:auto;}
+.panel-right{padding:20px;overflow-y:auto;}
+
+/* ── Section labels ── */
+.sec,.r-sec{font-family:var(--mono);font-size:8.5px;font-weight:600;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:8px;}
+.sec:first-child{margin-top:0;}
+.sec::after,.r-sec::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── Category buttons ── */
+.cat-grid{display:grid;grid-template-columns:1fr;gap:6px;}
+.cat-btn{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;text-align:left;font-family:var(--sans);}
+.cat-btn:hover{border-color:var(--navy2);color:var(--navy);}
+.cat-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 2px 10px rgba(15,31,61,.25);}
+.cat-count{font-family:var(--mono);font-size:10px;opacity:.55;}
+
+/* ── Form fields ── */
+.field{margin-bottom:12px;}
+.field label{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--text2);margin-bottom:5px;}
+input[type=number],input[type=text],select{width:100%;background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:var(--sans);font-size:13px;font-weight:400;padding:8px 10px;outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none;}
+input:focus,select:focus{border-color:var(--teal2);box-shadow:0 0 0 3px var(--teal-bg);background:var(--surface);}
+
+/* ── Converter box ── */
+.converter-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);}
+.card-title{font-family:var(--display);font-size:13px;font-weight:600;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.card-title::before{content:'';width:3px;height:14px;background:var(--teal2);border-radius:2px;flex-shrink:0;}
+.convert-grid{display:grid;grid-template-columns:1fr 44px 1fr;gap:12px;align-items:end;}
+.mid-btn{height:38px;width:38px;border-radius:50%;border:1.5px solid var(--border2);background:var(--navy-bg);color:var(--navy);font-size:18px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.mid-btn:hover{background:var(--navy);color:#fff;transform:rotate(180deg);}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.copy-btn,.reset-btn{border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;font-family:var(--sans);}
+.copy-btn:hover,.reset-btn:hover{border-color:var(--navy2);color:var(--navy);background:var(--navy-bg);}
+
+/* ── Result output ── */
+.result-output{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:var(--radius);padding:20px;margin-top:14px;}
+.result-label{font-family:var(--mono);font-size:8.5px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.45);margin-bottom:10px;}
+.result-main{font-family:var(--display);font-size:32px;font-weight:700;line-height:1.1;letter-spacing:-.5px;}
+.result-sub{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.55);margin-top:8px;word-break:break-all;}
+
+/* ── Quick chips ── */
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{font-size:11px;font-weight:500;background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;padding:6px 10px;color:var(--text2);cursor:pointer;transition:all .12s;font-family:var(--sans);}
+.chip:hover{background:var(--navy-bg);border-color:var(--navy-bg2);color:var(--navy);}
+
+/* ── Alerts ── */
+.alert{border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;line-height:1.6;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;}
+.alert.info{background:var(--navy-bg);color:var(--navy2);border:1px solid var(--navy-bg2);}
+.alert.warn{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bg2);}
+
+/* ── Formula box ── */
+.formula-box{background:var(--navy-bg);border:1px solid var(--navy-bg2);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
+.formula-title{font-family:var(--mono);font-size:8.5px;font-weight:600;letter-spacing:.12em;color:var(--navy2);text-transform:uppercase;margin-bottom:8px;}
+.formula-eq{font-family:var(--mono);font-size:12px;color:var(--navy);line-height:1.8;font-weight:500;}
+.formula-calc{font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.7;margin-top:8px;border-top:1px solid var(--navy-bg2);padding-top:8px;}
+
+/* ── Table ── */
+.table-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{font-family:var(--mono);font-size:8.5px;font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface2);}
+tbody td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:var(--surface2);}
+.td-main{font-weight:500;color:var(--text);}
+.td-mono{font-family:var(--mono);font-size:11px;}
+.teal-pill{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:500;padding:2px 7px;background:var(--teal-bg);color:var(--teal2);border-radius:20px;}
+
+/* ── Footer ── */
+.footer{background:var(--navy);padding:14px 32px;text-align:center;}
+.footer-text{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase;}
+.footer-text span{color:var(--teal2);}
+
+@media(max-width:900px){
+  .main{grid-template-columns:1fr;}
+  .panel-left{border-right:none;border-bottom:1px solid var(--border);}
+  .hero-row{flex-direction:column;}
+  .search-wrap{width:100%;}
+  .convert-grid{grid-template-columns:1fr;}
+  .mid-btn{margin:auto;}
+  .hdr-pills{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="cx8-mark">CX8</div>
+    <div class="hdr-brand">
+      <div class="hdr-name">Engineering Unit Converter</div>
+      <div class="hdr-sub">CX8 Technologies · Tools Made for Engineers</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="hdr-pills">
+      <div class="hdr-pill">Metric · Imperial</div>
+      <div class="hdr-pill">Valve &amp; Actuator</div>
+      <div class="hdr-pill">Process Engineering</div>
+    </div>
+  </div>
+</div>
+<div class="hdr-accent"></div>
+
+<div class="hero">
+  <div class="hero-row">
+    <div>
+      <div class="hero-eyebrow">Engineering Reference</div>
+      <div class="hero-title">Precision unit conversion <em>for engineers</em></div>
+      <div class="hero-sub">Convert pipe sizes, DN/NPS, Kv/Cv, pressure, flow, torque, temperature, length, area, volume, mass and velocity — across metric and imperial systems.</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search units: DN, Kv, psi, Nm, m³/min..." oninput="filterUnits()">
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="panel-left">
+    <div class="sec">Conversion group</div>
+    <div class="cat-grid" id="catGrid"></div>
+
+    <div class="sec">Quick engineering picks</div>
+    <div class="chips">
+      <button class="chip" onclick="quick('kvCv')">Kv ↔ Cv</button>
+      <button class="chip" onclick="quick('dnNps')">DN ↔ inch</button>
+      <button class="chip" onclick="quick('barPsi')">bar ↔ psi</button>
+      <button class="chip" onclick="quick('nmLbf')">Nm ↔ lbf·in</button>
+      <button class="chip" onclick="quick('m3hGpm')">m³/h ↔ gpm</button>
+      <button class="chip" onclick="quick('m3minM3h')">m³/min ↔ m³/h</button>
+      <button class="chip" onclick="quick('mmIn')">mm ↔ inch</button>
+      <button class="chip" onclick="quick('nLbf')">N ↔ lbf</button>
+    </div>
+
+    <div class="sec">Notes</div>
+    <div class="alert info"><div>ℹ</div><div><strong>DN/NPS note:</strong> DN to inch is nominal pipe size, not an exact ID/OD conversion. Use the reference table for standard matching.</div></div>
+    <div class="alert warn"><div>⚠</div><div><strong>Kv/Cv:</strong> Cv = Kv × 1.156. Kv = Cv ÷ 1.156. Always verify with manufacturer data for final valve sizing.</div></div>
+  </div>
+
+  <div class="panel-right">
+    <div class="converter-box">
+      <div class="card-title">Convert units</div>
+      <div class="convert-grid">
+        <div>
+          <div class="field"><label>From value</label><input type="number" id="fromValue" value="1" step="any" oninput="convert()"></div>
+          <div class="field"><label>From unit</label><select id="fromUnit" onchange="convert()"></select></div>
+        </div>
+        <button class="mid-btn" title="Swap units" onclick="swapUnits()">⇄</button>
+        <div>
+          <div class="field"><label>To value</label><input type="number" id="toValue" step="any" oninput="reverseConvert()"></div>
+          <div class="field"><label>To unit</label><select id="toUnit" onchange="convert()"></select></div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="copy-btn" onclick="copyResult()">Copy result</button>
+        <button class="reset-btn" onclick="resetTool()">Reset</button>
+      </div>
+      <div class="result-output">
+        <div class="result-label">Converted result</div>
+        <div class="result-main" id="resultMain">—</div>
+        <div class="result-sub" id="resultSub">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-text">© 2025 <span>CX8 Technologies</span> · Engineering Unit Converter · All conversions for reference use</div>
+</div>
+
+<script>
+'use strict';
+const CATEGORIES={
+  valve:{label:'Valve coefficient',icon:'◎',units:{Kv:{name:'Kv',factor:1},Cv:{name:'Cv',factor:1/1.156}},note:'Cv = Kv × 1.156'},
+  dn:{label:'Pipe nominal size',icon:'◌',special:'dn'},
+  length:{label:'Length',icon:'↔',units:{mm:{name:'millimetre [mm]',factor:0.001},cm:{name:'centimetre [cm]',factor:0.01},m:{name:'metre [m]',factor:1},km:{name:'kilometre [km]',factor:1000},in:{name:'inch [in]',factor:0.0254},ft:{name:'foot [ft]',factor:0.3048},yd:{name:'yard [yd]',factor:0.9144},mile:{name:'mile [mi]',factor:1609.344},micron:{name:'micron [µm]',factor:0.000001}},note:'Base unit: metre'},
+  pressure:{label:'Pressure',icon:'▣',units:{bar:{name:'bar',factor:100000},mbar:{name:'mbar',factor:100},Pa:{name:'pascal [Pa]',factor:1},kPa:{name:'kPa',factor:1000},MPa:{name:'MPa',factor:1000000},psi:{name:'psi',factor:6894.757293},atm:{name:'atm',factor:101325},kgcm2:{name:'kg/cm²',factor:98066.5},mmHg:{name:'mmHg',factor:133.322387},inHg:{name:'inHg',factor:3386.389}},note:'Base unit: pascal'},
+  flow:{label:'Flow rate',icon:'≈',units:{
+    m3min:{name:'m³/min',factor:60},
+    m3h:{name:'m³/h',factor:1},
+    m3s:{name:'m³/s',factor:3600},
+    Lmin:{name:'L/min',factor:0.06},
+    Ls:{name:'L/s',factor:3.6},
+    gpmUS:{name:'US gpm',factor:0.227124707},
+    gpmImp:{name:'Imp gpm',factor:0.272765},
+    cfm:{name:'ft³/min [cfm]',factor:1.69901082}
+  },note:'Base unit: m³/h'},
+  torque:{label:'Torque',icon:'⟳',units:{Nm:{name:'newton metre [Nm]',factor:1},Ncm:{name:'newton centimetre [Ncm]',factor:0.01},lbfin:{name:'pound-force inch [lbf·in]',factor:0.112984829},lbfft:{name:'pound-force foot [lbf·ft]',factor:1.35581795},kgfm:{name:'kgf·m',factor:9.80665}},note:'Base unit: Nm'},
+  force:{label:'Force',icon:'⇢',units:{N:{name:'newton [N]',factor:1},kN:{name:'kilonewton [kN]',factor:1000},lbf:{name:'pound-force [lbf]',factor:4.4482216152605},kgf:{name:'kilogram-force [kgf]',factor:9.80665},dyn:{name:'dyne [dyn]',factor:0.00001}},note:'Base unit: N'},
+  area:{label:'Area',icon:'□',units:{mm2:{name:'mm²',factor:0.000001},cm2:{name:'cm²',factor:0.0001},m2:{name:'m²',factor:1},in2:{name:'in²',factor:0.00064516},ft2:{name:'ft²',factor:0.09290304}},note:'Base unit: m²'},
+  volume:{label:'Volume',icon:'◇',units:{mL:{name:'mL',factor:0.000001},L:{name:'L',factor:0.001},m3:{name:'m³',factor:1},in3:{name:'in³',factor:0.000016387064},ft3:{name:'ft³',factor:0.0283168466},galUS:{name:'US gallon',factor:0.003785411784},galImp:{name:'Imp gallon',factor:0.00454609}},note:'Base unit: m³'},
+  mass:{label:'Mass',icon:'●',units:{mg:{name:'mg',factor:0.000001},g:{name:'g',factor:0.001},kg:{name:'kg',factor:1},tonne:{name:'metric tonne',factor:1000},oz:{name:'ounce [oz]',factor:0.0283495231},lb:{name:'pound [lb]',factor:0.45359237}},note:'Base unit: kg'},
+  velocity:{label:'Velocity',icon:'→',units:{ms:{name:'m/s',factor:1},mh:{name:'m/h',factor:1/3600},kmh:{name:'km/h',factor:0.277777778},fts:{name:'ft/s',factor:0.3048},ftmin:{name:'ft/min',factor:0.00508},mph:{name:'mph',factor:0.44704}},note:'Base unit: m/s'},
+  temperature:{label:'Temperature',icon:'℃',special:'temperature'}
+};
+
+const DN_TABLE=[
+  {dn:6,nps:'1/8"',inch:0.125,note:'Nominal'},{dn:8,nps:'1/4"',inch:0.25,note:'Nominal'},{dn:10,nps:'3/8"',inch:0.375,note:'Nominal'},
+  {dn:15,nps:'1/2"',inch:0.5,note:'Common instrumentation'},{dn:20,nps:'3/4"',inch:0.75,note:'Common'},{dn:25,nps:'1"',inch:1,note:'Common'},
+  {dn:32,nps:'1¼"',inch:1.25,note:'Nominal'},{dn:40,nps:'1½"',inch:1.5,note:'Common'},{dn:50,nps:'2"',inch:2,note:'Common valve size'},
+  {dn:65,nps:'2½"',inch:2.5,note:'Nominal'},{dn:80,nps:'3"',inch:3,note:'Common'},{dn:100,nps:'4"',inch:4,note:'Common'},
+  {dn:125,nps:'5"',inch:5,note:'Nominal'},{dn:150,nps:'6"',inch:6,note:'Common'},{dn:200,nps:'8"',inch:8,note:'Common'},
+  {dn:250,nps:'10"',inch:10,note:'Common'},{dn:300,nps:'12"',inch:12,note:'Common'},{dn:350,nps:'14"',inch:14,note:'Large bore'},
+  {dn:400,nps:'16"',inch:16,note:'Large bore'},{dn:450,nps:'18"',inch:18,note:'Large bore'},{dn:500,nps:'20"',inch:20,note:'Large bore'},
+  {dn:600,nps:'24"',inch:24,note:'Large bore'}
+];
+
+let currentCat='valve';
+let reverseLock=false;
+const $=id=>document.getElementById(id);
+function setText(id,v){const el=$(id);if(el)el.textContent=v;}
+function setValue(id,v){const el=$(id);if(el)el.value=v;}
+function requireDom(){['catGrid','fromValue','fromUnit','toValue','toUnit','resultMain','resultSub'].forEach(id=>{if(!$(id))console.warn('CX8: missing DOM element #'+id);});}
+
+function init(){requireDom();renderCategories();setCategory('valve');runTests();}
+
+function renderCategories(){
+  const grid=$('catGrid');
+  grid.innerHTML=Object.entries(CATEGORIES).map(([key,c])=>{
+    const count=c.units?Object.keys(c.units).length:(c.special==='dn'?DN_TABLE.length:3);
+    return `<button class="cat-btn" data-cat="${key}" onclick="setCategory('${key}')"><span>${c.icon} ${c.label}</span><span class="cat-count">${count}</span></button>`;
+  }).join('');
+}
+
+function setCategory(cat){
+  currentCat=cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
+  const from=$('fromUnit');const to=$('toUnit');const c=CATEGORIES[cat];
+  if(c.special==='dn'){
+    from.innerHTML='<option value="DN">DN</option><option value="NPS">NPS / inch</option>';
+    to.innerHTML='<option value="NPS">NPS / inch</option><option value="DN">DN</option>';
+    setValue('fromValue',50);
+  }else if(c.special==='temperature'){
+    from.innerHTML='<option value="C">Celsius [°C]</option><option value="F">Fahrenheit [°F]</option><option value="K">Kelvin [K]</option>';
+    to.innerHTML='<option value="F">Fahrenheit [°F]</option><option value="C">Celsius [°C]</option><option value="K">Kelvin [K]</option>';
+    setValue('fromValue',20);
+  }else{
+    from.innerHTML=Object.entries(c.units).map(([u,v])=>`<option value="${u}">${v.name}</option>`).join('');
+    to.innerHTML=Object.entries(c.units).map(([u,v])=>`<option value="${u}">${v.name}</option>`).join('');
+    const keys=Object.keys(c.units);to.value=keys[1]||keys[0];setValue('fromValue',1);
+  }
+  convert();
+}
+
+function fmt(n){
+  if(!Number.isFinite(n))return '—';
+  const abs=Math.abs(n);
+  if(abs===0)return '0.00';
+  if(abs>=1000000||abs<0.0001)return n.toExponential(2);
+  return n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function unitLabel(cat,u){
+  const c=CATEGORIES[cat];
+  if(c.special==='dn')return u==='DN'?'DN':'NPS / inch';
+  if(c.special==='temperature')return u;
+  return c.units[u]?.name||u;
+}
+
+function convertValue(value,from,to,cat){
+  const c=CATEGORIES[cat];
+  if(c.special==='dn'){const row=nearestDN(value,from);return from==='DN'&&to==='NPS'?row.inch:from==='NPS'&&to==='DN'?row.dn:value;}
+  if(c.special==='temperature')return tempConvert(value,from,to);
+  return value*c.units[from].factor/c.units[to].factor;
+}
+
+function convert(){
+  if(reverseLock)return;
+  const value=parseFloat($('fromValue').value)||0;
+  const from=$('fromUnit').value;const to=$('toUnit').value;const c=CATEGORIES[currentCat];
+  let result=convertValue(value,from,to,currentCat),formula='—',calc='—';
+  if(c.special==='dn'){const row=nearestDN(value,from);formula='DN / NPS nominal lookup table';calc=`Nearest standard: DN ${row.dn} = NPS ${row.nps}`;}
+  else if(c.special==='temperature'){formula='Temperature uses offset conversion, not direct multiplication';calc=`${value} ${from} = ${fmt(result)} ${to}`;}
+  else{const factor=c.units[from].factor/c.units[to].factor;formula=`${unitLabel(currentCat,to)} = ${unitLabel(currentCat,from)} × ${fmt(factor)}`;calc=`${fmt(value)} × ${fmt(factor)} = ${fmt(result)}`;}
+  reverseLock=true;
+  setValue('toValue',Number.isFinite(result)?parseFloat(result.toFixed(2)):'');
+  reverseLock=false;
+  setText('resultMain',`${fmt(result)} ${shortUnit(to)}`);
+  setText('resultSub',`${fmt(value)} ${unitLabel(currentCat,from)} = ${fmt(result)} ${unitLabel(currentCat,to)}`);
+}
+
+function reverseConvert(){
+  if(reverseLock)return;
+  const toValue=parseFloat($('toValue').value)||0;
+  const from=$('fromUnit').value;const to=$('toUnit').value;
+  const source=convertValue(toValue,to,from,currentCat);
+  reverseLock=true;setValue('fromValue',Number.isFinite(source)?parseFloat(source.toFixed(2)):'');reverseLock=false;
+  convert();
+}
+
+function tempConvert(v,from,to){
+  const C=from==='C'?v:from==='F'?(v-32)*5/9:v-273.15;
+  return to==='C'?C:to==='F'?C*9/5+32:C+273.15;
+}
+
+function nearestDN(v,mode){
+  if(mode==='DN')return DN_TABLE.reduce((a,b)=>Math.abs(b.dn-v)<Math.abs(a.dn-v)?b:a,DN_TABLE[0]);
+  return DN_TABLE.reduce((a,b)=>Math.abs(b.inch-v)<Math.abs(a.inch-v)?b:a,DN_TABLE[0]);
+}
+
+function shortUnit(u){
+  return {lbfin:'lbf·in',lbfft:'lbf·ft',gpmUS:'gpm',gpmImp:'gpm(Imp)',m3h:'m³/h',m3min:'m³/min',m3s:'m³/s',Lmin:'L/min',Ls:'L/s',kgcm2:'kg/cm²',Kv:'Kv',Cv:'Cv',DN:'DN',NPS:'in',cfm:'cfm'}[u]||u;
+}
+
+function swapUnits(){
+  const f=$('fromUnit'),t=$('toUnit');const tmp=f.value;f.value=t.value;t.value=tmp;convert();
+}
+
+function quick(type){
+  const map={
+    kvCv:['valve','Kv','Cv',1],
+    dnNps:['dn','DN','NPS',50],
+    barPsi:['pressure','bar','psi',1],
+    nmLbf:['torque','Nm','lbfin',1],
+    m3hGpm:['flow','m3h','gpmUS',1],
+    m3minM3h:['flow','m3min','m3h',1],
+    mmIn:['length','mm','in',25.4],
+    nLbf:['force','N','lbf',1]
+  };
+  const q=map[type];setCategory(q[0]);$('fromUnit').value=q[1];$('toUnit').value=q[2];setValue('fromValue',q[3]);convert();
+}
+
+function resetTool(){setCategory('valve');}
+
+function copyResult(){
+  const txt=$('resultSub')?.textContent||'';
+  if(navigator.clipboard)navigator.clipboard.writeText(txt);
+}
+
+function filterUnits(){
+  const q=$('search').value.toLowerCase();
+  document.querySelectorAll('.cat-btn').forEach(btn=>{
+    const key=btn.dataset.cat;const c=CATEGORIES[key];
+    const unitText=c.units?Object.values(c.units).map(u=>u.name).join(' ').toLowerCase():c.label.toLowerCase();
+    btn.style.display=(c.label.toLowerCase().includes(q)||unitText.includes(q)||key.includes(q))?'flex':'none';
+  });
+}
+
+function approx(actual,expected,tol=1e-6){return Math.abs(actual-expected)<=tol;}
+function runTests(){
+  const tests=[
+    ['Kv to Cv',approx(convertValue(1,'Kv','Cv','valve'),1.156,1e-12)],
+    ['DN50 to NPS',convertValue(50,'DN','NPS','dn')===2],
+    ['1 bar to psi',approx(convertValue(1,'bar','psi','pressure'),14.5037738,1e-6)],
+    ['25.4 mm to inch',approx(convertValue(25.4,'mm','in','length'),1,1e-12)],
+    ['0 C to F',approx(convertValue(0,'C','F','temperature'),32,1e-12)],
+    ['1 Nm to lbf·in',approx(convertValue(1,'Nm','lbfin','torque'),8.85074579,1e-6)],
+    ['1 N to lbf',approx(convertValue(1,'N','lbf','force'),0.224808943,1e-6)],
+    ['1 m³/min to m³/h',approx(convertValue(1,'m3min','m3h','flow'),60,1e-10)],
+    ['1 m³/h to m³/min',approx(convertValue(1,'m3h','m3min','flow'),1/60,1e-12)]
+  ];
+  const failed=tests.filter(t=>!t[1]);
+  if(failed.length){console.error('Unit converter tests failed:',failed.map(t=>t[0]));}
+  else{console.info('Unit converter: all',tests.length,'tests passed ✓');}
+}
+
+window.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

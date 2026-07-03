@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Air Compressor Sizing Wizard — CX8 Technologies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f0ec;--surface:#fff;--surface2:#f7f6f3;
+  --border:#e0dcd4;--border2:#ccc7bc;
+  --text:#17130e;--text2:#52493e;--text3:#9c9287;
+  --navy:#0f1f3d;--navy2:#1a3060;--navy3:#243d70;
+  --navy-bg:#edf1f9;--navy-bg2:#d8e2f4;
+  --teal:#0a6b5f;--teal2:#0d8a7b;--teal-bg:#e6f4f2;--teal-bg2:#c0e8e3;
+  --amber:#9e4e00;--amber-bg:#fdf0e3;--amber-bg2:#f9d9b0;
+  --red:#b83030;--red-bg:#fdf2f1;--red-bg2:#f9dada;
+  --green:#0f5c30;--green-bg:#e8f5ee;--green-bg2:#c4e8d4;
+  --radius:14px;--radius-sm:8px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
+  --shadow:0 4px 16px rgba(0,0,0,.10),0 12px 32px rgba(0,0,0,.06);
+  --mono:"DM Mono",monospace;--sans:"DM Sans",sans-serif;--display:"Sora",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;-webkit-font-smoothing:antialiased;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;min-height:100vh;}
+
+/* ── HEADER ── */
+.hdr{background:var(--navy);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.3);}
+.hdr-left{display:flex;align-items:center;gap:12px;}
+.cx8-mark{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--teal2),var(--navy3));display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.hdr-brand{color:#fff;font-family:var(--display);font-size:14px;font-weight:600;}
+.hdr-sub{color:rgba(255,255,255,.4);font-size:11px;}
+.hdr-pill{color:rgba(255,255,255,.5);font-size:10px;padding:3px 9px;border:1px solid rgba(255,255,255,.15);border-radius:20px;font-family:var(--mono);}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);padding:32px 28px 28px;}
+.hero-eyebrow{color:var(--teal2);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;font-family:var(--mono);}
+.hero-title{color:#fff;font-family:var(--display);font-size:24px;font-weight:700;line-height:1.2;letter-spacing:-.4px;margin-bottom:8px;}
+.hero-title em{color:var(--teal2);font-style:normal;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:12.5px;line-height:1.65;max-width:560px;}
+
+/* ── WIZARD PROGRESS BAR ── */
+.wiz-progress-bar{background:var(--navy2);padding:0 28px;border-bottom:1px solid rgba(255,255,255,.08);}
+.wiz-steps{display:flex;gap:0;max-width:900px;margin:0 auto;}
+.wiz-step{flex:1;padding:12px 8px;display:flex;align-items:center;gap:8px;cursor:pointer;opacity:.45;transition:opacity .2s;border-bottom:2.5px solid transparent;position:relative;}
+.wiz-step.active{opacity:1;border-bottom-color:var(--teal2);}
+.wiz-step.done{opacity:.7;border-bottom-color:var(--green);}
+.wiz-step:hover{opacity:.8;}
+.wiz-step-num{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-size:10px;font-weight:700;font-family:var(--mono);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.wiz-step.active .wiz-step-num{background:var(--teal2);color:#fff;}
+.wiz-step.done .wiz-step-num{background:var(--green);color:#fff;}
+.wiz-step-num.done-icon::after{content:"✓";}
+.wiz-step-label{font-family:var(--display);font-size:10px;font-weight:600;color:#fff;line-height:1.2;}
+.wiz-step-sub{font-family:var(--mono);font-size:8.5px;color:rgba(255,255,255,.4);margin-top:1px;}
+
+/* ── WIZARD CONTENT ── */
+.wiz-wrap{max-width:780px;margin:0 auto;padding:32px 20px 80px;}
+
+/* ── STEP CARD ── */
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:none;}
+.step-card.active{display:block;}
+.step-card-hdr{background:linear-gradient(135deg,var(--navy-bg),var(--surface2));border-bottom:1px solid var(--border);padding:20px 24px;}
+.step-num-badge{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--teal2);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;}
+.step-title{font-family:var(--display);font-size:20px;font-weight:700;color:var(--navy);letter-spacing:-.3px;margin-bottom:4px;}
+.step-desc{font-size:12.5px;color:var(--text2);line-height:1.65;}
+.step-body{padding:24px;}
+
+/* ── GUIDANCE BOX ── */
+.guidance{background:var(--teal-bg);border:1px solid var(--teal-bg2);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;}
+.guidance-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.guidance-title{font-family:var(--display);font-size:12px;font-weight:600;color:var(--teal);margin-bottom:3px;}
+.guidance-body{font-size:12px;color:var(--text2);line-height:1.7;}
+.guidance-body strong{color:var(--teal);font-weight:600;}
+
+/* ── WARNING BOX ── */
+.warn-box{background:var(--amber-bg);border:1px solid var(--amber-bg2);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;font-size:12px;color:var(--amber);line-height:1.65;}
+
+/* ── FORM ── */
+.f{margin-bottom:14px;}
+.f label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px;}
+.f .hint{font-size:10.5px;color:var(--text3);margin-top:4px;font-style:italic;line-height:1.5;}
+input[type=number],input[type=text],select{width:100%;background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 12px;outline:none;transition:border-color .12s;-webkit-appearance:none;appearance:none;}
+input:focus,select:focus{border-color:var(--teal2);background:var(--surface);box-shadow:0 0 0 3px var(--teal-bg);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+
+/* ── ICON OPTION CARDS ── */
+.opt-grid{display:grid;gap:10px;}
+.opt-grid.cols-2{grid-template-columns:1fr 1fr;}
+.opt-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+.opt-grid.cols-4{grid-template-columns:repeat(4,1fr);}
+.opt-card{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 12px;text-align:center;cursor:pointer;transition:all .15s;background:var(--surface2);user-select:none;}
+.opt-card:hover{border-color:var(--navy-bg2);background:var(--navy-bg);}
+.opt-card.sel{border-color:var(--teal2);background:var(--teal-bg);box-shadow:0 0 0 2px var(--teal-bg2);}
+.opt-icon{font-size:26px;margin-bottom:6px;line-height:1;}
+.opt-label{font-size:11.5px;font-weight:600;color:var(--navy);font-family:var(--display);line-height:1.3;}
+.opt-sub{font-size:9.5px;color:var(--text3);margin-top:3px;font-family:var(--mono);}
+.opt-card.sel .opt-label{color:var(--teal2);}
+
+/* ── CONSUMER TABLE ── */
+.con-hdr{display:grid;grid-template-columns:1fr 58px 80px 76px 70px 26px;gap:6px;margin-bottom:6px;align-items:center;padding:0 4px;}
+.con-hdr-lbl{font-family:var(--mono);font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;}
+.con-row{display:grid;grid-template-columns:1fr 58px 80px 76px 70px 26px;gap:6px;align-items:center;margin-bottom:6px;}
+.con-row input,.con-row select{font-size:12px;padding:7px 8px;}
+.rm-btn{width:24px;height:24px;border-radius:50%;background:var(--red-bg2);color:var(--red);border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;}
+.add-btn{width:100%;padding:10px;background:var(--navy-bg);border:1.5px dashed var(--navy-bg2);border-radius:var(--radius-sm);color:var(--navy2);font-size:12.5px;font-weight:500;cursor:pointer;transition:all .12s;margin-top:8px;}
+.add-btn:hover{background:var(--navy-bg2);}
+.total-row{display:flex;justify-content:space-between;align-items:center;background:var(--navy-bg);border:1px solid var(--navy-bg2);border-radius:var(--radius-sm);padding:8px 14px;margin-top:8px;}
+.total-lbl{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;}
+.total-val{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--navy);}
+
+/* ── STEP NAV ── */
+.step-nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
+.btn-back{padding:10px 22px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text2);font-family:var(--display);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;}
+.btn-back:hover{background:var(--border);}
+.btn-next{padding:10px 28px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--display);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;box-shadow:0 2px 10px rgba(15,31,61,.25);display:flex;align-items:center;gap:8px;}
+.btn-next:hover{background:var(--navy2);transform:translateY(-1px);}
+.btn-calculate{padding:12px 32px;background:var(--teal);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--display);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;box-shadow:0 2px 10px rgba(10,107,95,.3);}
+.btn-calculate:hover{background:var(--teal2);transform:translateY(-1px);}
+.step-of{font-family:var(--mono);font-size:10px;color:var(--text3);}
+
+/* ── TOOLTIP ── */
+.tip{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--navy-bg2);color:var(--navy2);font-size:8px;font-weight:700;cursor:default;flex-shrink:0;margin-left:3px;vertical-align:middle;}
+.tip:hover{background:var(--navy);color:#fff;}
+#tip-float{position:fixed;z-index:9999;background:var(--navy);color:#fff;font-family:var(--sans);font-size:11px;font-weight:300;line-height:1.6;padding:9px 12px;border-radius:8px;width:260px;box-shadow:0 4px 20px rgba(0,0,0,.25);pointer-events:none;display:none;white-space:normal;}
+
+/* ── RESULTS ── */
+.result-hero{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--radius);padding:22px 24px;margin-bottom:16px;box-shadow:var(--shadow);}
+.rh-title{font-family:var(--mono);font-size:9px;letter-spacing:.13em;color:rgba(255,255,255,.45);text-transform:uppercase;margin-bottom:14px;}
+.rh-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.rh-lbl{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;font-family:var(--mono);letter-spacing:.06em;margin-bottom:4px;}
+.rh-val{font-family:var(--display);font-size:28px;font-weight:700;color:#fff;line-height:1;}
+.rh-unit{font-size:12px;font-weight:300;color:rgba(255,255,255,.5);margin-left:4px;}
+.rh-sub{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;font-family:var(--mono);}
+.result-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-sm);}
+.result-section-title{font-family:var(--display);font-size:13px;font-weight:600;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.result-section-title::before{content:'';width:3px;height:14px;background:var(--teal2);border-radius:2px;flex-shrink:0;}
+.flow-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-bottom:1px solid var(--border);font-size:12px;}
+.flow-row:last-child{border-bottom:none;font-weight:600;color:var(--navy);background:var(--navy-bg);border-radius:var(--radius-sm);margin-top:4px;padding:10px;}
+.flow-label{color:var(--text2);}
+.flow-val{font-family:var(--mono);font-weight:600;color:var(--navy);}
+.callout{border-radius:var(--radius-sm);padding:12px 14px;font-size:12px;line-height:1.65;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;}
+.c-navy{background:var(--navy-bg);border:1px solid var(--navy-bg2);color:var(--navy2);}
+.c-amber{background:var(--amber-bg);border:1px solid var(--amber-bg2);color:var(--amber);}
+.c-green{background:var(--green-bg);border:1px solid var(--green-bg2);color:var(--green);}
+.c-teal{background:var(--teal-bg);border:1px solid var(--teal-bg2);color:var(--teal);}
+.callout-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+
+/* ── RECOMMENDED COMPRESSORS ── */
+.mfr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mfr-card{border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;background:var(--surface);transition:all .15s;display:flex;flex-direction:column;gap:8px;}
+.mfr-card:hover{border-color:var(--navy-bg2);box-shadow:var(--shadow-sm);background:var(--navy-bg);}
+.mfr-top{display:flex;align-items:center;gap:10px;}
+.mfr-flag{font-size:22px;flex-shrink:0;}
+.mfr-name{font-family:var(--display);font-size:13px;font-weight:600;color:var(--navy);}
+.mfr-country{font-family:var(--mono);font-size:8px;font-weight:700;background:var(--navy-bg2);color:var(--navy2);padding:1px 5px;border-radius:3px;}
+.mfr-type{font-family:var(--mono);font-size:9px;color:var(--text3);}
+.mfr-note{font-size:11px;color:var(--text2);line-height:1.6;}
+.mfr-link{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--teal);font-weight:500;text-decoration:none;}
+.mfr-link:hover{color:var(--navy);}
+
+/* ── RESTART BUTTON ── */
+.btn-restart{padding:10px 22px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text2);font-family:var(--display);font-size:13px;font-weight:500;cursor:pointer;}
+.btn-restart:hover{background:var(--border);}
+.btn-pdf{padding:10px 22px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--display);font-size:13px;font-weight:600;cursor:pointer;}
+.btn-pdf:hover{background:var(--navy2);}
+
+/* ── UNIT TOGGLE ── */
+.unit-bar{background:var(--navy2);padding:8px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.08);}
+.unit-lbl{font-family:var(--mono);font-size:9px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;}
+.unit-btn{font-family:var(--mono);font-size:10px;font-weight:600;padding:4px 12px;border-radius:6px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s;}
+.unit-btn.active{background:#fff;color:var(--navy);border-color:#fff;font-weight:700;}
+.unit-btn:hover:not(.active){background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);}
+
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="cx8-mark">CX8</div>
+    <div>
+      <div class="hdr-brand">Air Compressor Sizing</div>
+      <div class="hdr-sub">CX8 Technologies · Pneumatic System Intelligence</div>
+    </div>
+  </div>
+  <div class="hdr-pill">Guided Wizard</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Step-by-step sizing guide</div>
+  <div class="hero-title">Size your compressor <em>correctly</em> — first time</div>
+  <div class="hero-sub">Answer a few questions about your site and equipment. The wizard guides you through each step with plain-language explanations and calculates your exact requirements at the end.</div>
+</div>
+
+<!-- UNIT BAR -->
+<div class="unit-bar">
+  <span class="unit-lbl">Units</span>
+  <button class="unit-btn active" id="btn-metric" onclick="setUnits('metric')">&#127988; Metric</button>
+  <button class="unit-btn" id="btn-imperial" onclick="setUnits('imperial')">&#127482;&#127480; Imperial</button>
+  <div id="metric-sub" style="display:flex;align-items:center;gap:6px;margin-left:6px">
+    <span class="unit-lbl">Flow in</span>
+    <button class="unit-btn active" id="btn-m3hr" onclick="setMetricFlow('m3hr')">m³/hr</button>
+    <button class="unit-btn" id="btn-m3min" onclick="setMetricFlow('m3min')">m³/min</button>
+  </div>
+</div>
+
+<!-- WIZARD PROGRESS -->
+<div class="wiz-progress-bar">
+  <div class="wiz-steps">
+    <div class="wiz-step active" id="sp-1" onclick="goStep(1)">
+      <div class="wiz-step-num" id="sn-1">1</div>
+      <div><div class="wiz-step-label">Equipment</div><div class="wiz-step-sub">What uses air?</div></div>
+    </div>
+    <div class="wiz-step" id="sp-2" onclick="goStep(2)">
+      <div class="wiz-step-num" id="sn-2">2</div>
+      <div><div class="wiz-step-label">Site conditions</div><div class="wiz-step-sub">Where is it installed?</div></div>
+    </div>
+    <div class="wiz-step" id="sp-3" onclick="goStep(3)">
+      <div class="wiz-step-num" id="sn-3">3</div>
+      <div><div class="wiz-step-label">Pressure</div><div class="wiz-step-sub">How much pressure?</div></div>
+    </div>
+    <div class="wiz-step" id="sp-4" onclick="goStep(4)">
+      <div class="wiz-step-num" id="sn-4">4</div>
+      <div><div class="wiz-step-label">Air quality</div><div class="wiz-step-sub">How clean?</div></div>
+    </div>
+    <div class="wiz-step" id="sp-5" onclick="goStep(5)">
+      <div class="wiz-step-num" id="sn-5">5</div>
+      <div><div class="wiz-step-label">System</div><div class="wiz-step-sub">Tank &amp; allowances</div></div>
+    </div>
+    <div class="wiz-step" id="sp-6" onclick="goStep(6)">
+      <div class="wiz-step-num" id="sn-6">6</div>
+      <div><div class="wiz-step-label">Results</div><div class="wiz-step-sub">Your specification</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING TOOLTIP -->
+<div id="tip-float"></div>
+
+<!-- WIZARD BODY -->
+<div class="wiz-wrap">
+
+  <!-- ═══ STEP 1: EQUIPMENT ═══ -->
+  <div class="step-card active" id="step-1">
+    <div class="step-card-hdr">
+      <div class="step-num-badge">Step 1 of 5</div>
+      <div class="step-title">What equipment uses compressed air on your site?</div>
+      <div class="step-desc">List every item that runs on compressed air simultaneously during peak operation. Include all pneumatic tools, actuators, cylinders, and blow-off nozzles.</div>
+    </div>
+    <div class="step-body">
+      <div class="guidance">
+        <div class="guidance-icon">&#128161;</div>
+        <div>
+          <div class="guidance-title">How to fill this in correctly</div>
+          <div class="guidance-body">
+            Enter every item that could be running <strong>at the same time</strong> during your busiest period — this is your peak demand scenario.<br><br>
+            The <strong>flow rate</strong> for each item comes from its datasheet or nameplate — look for "air consumption" in l/min or CFM.<br><br>
+            The <strong>duty cycle</strong> is how much of the time that item is actually consuming air. A cylinder that strokes once every 10 seconds has roughly 20% duty. A continuous blow-off nozzle is 100%.
+          </div>
+        </div>
+      </div>
+      <div class="con-hdr">
+        <div class="con-hdr-lbl">Equipment type</div>
+        <div class="con-hdr-lbl">Qty</div>
+        <div class="con-hdr-lbl" id="lbl-flow">l/min</div>
+        <div class="con-hdr-lbl">Duty %</div>
+        <div class="con-hdr-lbl">Eff.</div>
+        <div></div>
+      </div>
+      <div id="consumer-list"></div>
+      <button class="add-btn" onclick="addConsumer()">+ Add equipment</button>
+      <div id="consumer-total" class="total-row" style="display:none">
+        <span class="total-lbl">Total demand (before allowances)</span>
+        <span class="total-val" id="consumer-total-val">0</span>
+      </div>
+      <div class="step-nav">
+        <span class="step-of">Step 1 of 5</span>
+        <button class="btn-next" onclick="goStep(2)">Site conditions &#8594;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 2: SITE CONDITIONS ═══ -->
+  <div class="step-card" id="step-2">
+    <div class="step-card-hdr">
+      <div class="step-num-badge">Step 2 of 5</div>
+      <div class="step-title">Where will the compressor be installed?</div>
+      <div class="step-desc">Site conditions directly affect how much air your compressor can deliver. A compressor at altitude or high temperature delivers significantly less air than its nameplate suggests.</div>
+    </div>
+    <div class="step-body">
+      <div class="guidance">
+        <div class="guidance-icon">&#9888;</div>
+        <div>
+          <div class="guidance-title">Why this matters more than most people realise</div>
+          <div class="guidance-body">
+            Compressor datasheets are rated at sea level, 20°C and 0% humidity. If your site is at 500m altitude and 38°C ambient, the same compressor delivers <strong>approximately 12–18% less air</strong> than the nameplate states. This is why compressors sized without site correction fail to maintain pressure on hot summer days.
+          </div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="f">
+          <label>Altitude above sea level (metres)
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Higher%20altitude%20%3D%20lower%20air%20pressure%20%3D%20less%20air%20mass%20per%20cubic%20metre.%20Stuttgart%20is%20~245m%2C%20Bangalore%20is%20~920m%2C%20Johannesburg%20is%20~1750m.">i</span>
+          </label>
+          <input type="number" id="alt-m" value="100" min="0" max="4000" step="50">
+          <div class="hint">Stuttgart: ~245m · Bangalore: ~920m · Johannesburg: ~1750m</div>
+        </div>
+        <div class="f">
+          <label>Maximum ambient temperature (°C)
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Use%20the%20hottest%20day%20of%20the%20year%20in%20the%20compressor%20room%20%E2%80%94%20not%20the%20average.%20This%20is%20your%20worst-case%20sizing%20condition.">i</span>
+          </label>
+          <input type="number" id="amb-temp" value="35" min="5" max="55" step="1">
+          <div class="hint">Use the hottest day of the year in the compressor room</div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="f">
+          <label>Relative humidity (%)
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Humid%20air%20contains%20less%20dry%20air%20mass%20than%20dry%20air%20at%20the%20same%20pressure.%20In%20coastal%20or%20tropical%20climates%20this%20can%20reduce%20effective%20FAD%20by%202%E2%80%935%25.">i</span>
+          </label>
+          <input type="number" id="rh" value="60" min="0" max="100" step="5">
+          <div class="hint">0–40% arid · 40–70% temperate · 70–100% tropical / coastal</div>
+        </div>
+        <div class="f">
+          <label>System duty cycle (%)
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="The%20percentage%20of%20time%20the%20compressor%20runs%20under%20load.%2060%25%20is%20typical%20for%20general%20industrial.%20100%25%20for%20continuous%20processes.">i</span>
+          </label>
+          <input type="number" id="duty-cycle" value="60" min="10" max="100" step="5">
+          <div class="hint">60% typical general industrial · 100% continuous process</div>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn-back" onclick="goStep(1)">&#8592; Back</button>
+        <span class="step-of">Step 2 of 5</span>
+        <button class="btn-next" onclick="goStep(3)">Pressure &#8594;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 3: PRESSURE ═══ -->
+  <div class="step-card" id="step-3">
+    <div class="step-card-hdr">
+      <div class="step-num-badge">Step 3 of 5</div>
+      <div class="step-title">What pressure does your equipment need?</div>
+      <div class="step-desc">The compressor must deliver more pressure than your equipment needs — the difference is lost to pipeline friction, filters, dryers, and fittings.</div>
+    </div>
+    <div class="step-body">
+      <div class="guidance">
+        <div class="guidance-icon">&#128161;</div>
+        <div>
+          <div class="guidance-title">Pressure at the tool vs pressure at the compressor</div>
+          <div class="guidance-body">
+            Your equipment has a minimum operating pressure — that is what it needs <strong>at the point of use</strong>, at the end of your pipework. The compressor must be set higher to compensate for losses through filters, dryers, hoses and fittings. <strong>A typical well-maintained system loses 0.5–1.0 bar</strong> between compressor and point of use.
+          </div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="f">
+          <label>Required pressure at point of use
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="The%20minimum%20pressure%20your%20equipment%20needs%20to%20function%20correctly.%20Check%20each%20device%20datasheet%20and%20use%20the%20highest%20value.">i</span>
+          </label>
+          <div style="display:flex;gap:6px">
+            <input type="number" id="req-pressure" value="7" min="1" max="200" step="0.5" style="flex:1">
+            <select id="unit-req-pressure" style="width:80px;flex-shrink:0" onchange="onPressUnitChange()">
+              <option value="bar">bar g</option>
+              <option value="psi">psi g</option>
+            </select>
+          </div>
+          <div class="hint">Typical: 6–7 bar g for most pneumatic equipment</div>
+        </div>
+        <div class="f">
+          <label>Pipeline pressure loss
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Pressure%20drop%20across%20filters%2C%20dryers%2C%20hoses%20and%20fittings.%20Typical%3A%200.5%E2%80%931.0%20bar%20for%20a%20well-maintained%20system.">i</span>
+          </label>
+          <div style="display:flex;gap:6px">
+            <input type="number" id="pipe-loss" value="0.5" min="0" max="50" step="0.1" style="flex:1">
+            <select id="unit-pipe-loss" style="width:80px;flex-shrink:0" onchange="onPressUnitChange()">
+              <option value="bar">bar</option>
+              <option value="psi">psi</option>
+            </select>
+          </div>
+          <div class="hint" id="hint-pipe-loss">Typical: 0.3–1.0 bar</div>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn-back" onclick="goStep(2)">&#8592; Back</button>
+        <span class="step-of">Step 3 of 5</span>
+        <button class="btn-next" onclick="goStep(4)">Air quality &#8594;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 4: AIR QUALITY ═══ -->
+  <div class="step-card" id="step-4">
+    <div class="step-card-hdr">
+      <div class="step-num-badge">Step 4 of 5</div>
+      <div class="step-title">How clean does the compressed air need to be?</div>
+      <div class="step-desc">ISO 8573 defines compressed air quality classes for particles, water (dew point), and oil content. Choose the class that matches the most demanding application on your site.</div>
+    </div>
+    <div class="step-body">
+      <div class="guidance">
+        <div class="guidance-icon">&#128161;</div>
+        <div>
+          <div class="guidance-title">If you are not sure, start here</div>
+          <div class="guidance-body">
+            <strong>Industrial Tools &amp; Plant Air</strong> covers most general manufacturing, automotive, and assembly applications. <strong>Instrument Air</strong> is required for control valves and sensitive instruments. <strong>Food &amp; Pharma</strong> requires oil-free compressors and the strictest filtration.
+          </div>
+        </div>
+      </div>
+      <div class="opt-grid cols-2" id="iso-grid"></div>
+      <div class="step-nav">
+        <button class="btn-back" onclick="goStep(3)">&#8592; Back</button>
+        <span class="step-of">Step 4 of 5</span>
+        <button class="btn-next" onclick="goStep(5)">System settings &#8594;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 5: SYSTEM ═══ -->
+  <div class="step-card" id="step-5">
+    <div class="step-card-hdr">
+      <div class="step-num-badge">Step 5 of 5</div>
+      <div class="step-title">Final system settings</div>
+      <div class="step-desc">These allowances ensure your compressor is correctly sized for real-world conditions — not just the theoretical peak demand.</div>
+    </div>
+    <div class="step-body">
+      <div class="guidance">
+        <div class="guidance-icon">&#128161;</div>
+        <div>
+          <div class="guidance-title">Why allowances matter</div>
+          <div class="guidance-body">
+            Every compressed air system leaks — typically <strong>10–25% of total flow</strong> in an average industrial system. You also want headroom for future equipment. These allowances are not padding — they are engineering realism.
+          </div>
+        </div>
+      </div>
+      <div class="row3">
+        <div class="f">
+          <label>Leak allowance (%)
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Industry%20surveys%20show%2010%E2%80%9330%25%20of%20system%20flow%20is%20lost%20to%20leaks.%20New%20systems%3A%2010%25.%20Older%20systems%3A%2020%E2%80%9325%25.">i</span>
+          </label>
+          <input type="number" id="leak-pct" value="15" min="5" max="40" step="5">
+          <div class="hint">New: 10% · Older: 20–25%</div>
+        </div>
+        <div class="f">
+          <label>Future reserve (%)
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Capacity%20headroom%20for%20future%20equipment%20additions.%20Typically%2015%E2%80%9325%25.">i</span>
+          </label>
+          <input type="number" id="reserve-pct" value="20" min="0" max="40" step="5">
+          <div class="hint">Typically 15–25%</div>
+        </div>
+        <div class="f">
+          <label>Dryer purge (%)
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Heatless%20desiccant%20dryers%20use%20~15%25%20of%20rated%20flow%20for%20regeneration.%20Refrigerated%20dryers%3A%200%25.">i</span>
+          </label>
+          <input type="number" id="dryer-purge" value="0" min="0" max="20" step="5">
+          <div class="hint">Refrigerated: 0% · Desiccant: 15%</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;margin-bottom:8px;font-family:var(--display);font-size:13px;font-weight:600;color:var(--navy)">Receiver tank volume</div>
+      <div class="row2">
+        <div class="f">
+          <label>Tank volume (litres)
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Receiver%20tank%20stores%20compressed%20air%20to%20handle%20demand%20peaks.%20Minimum%203%3A1%20ratio%20(litres%20per%20l%2Fmin%20FAD).%20Recommended%3A%205%3A1.">i</span>
+          </label>
+          <input type="number" id="tank-vol" value="500" min="50" max="10000" step="50">
+          <div class="hint">Rule of thumb: 5× FAD in l/min = recommended tank size</div>
+        </div>
+        <div class="f">
+          <label>Compressor type
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Affects%20manufacturer%20recommendations%20at%20the%20end.%20Rotary%20screw%20is%20the%20most%20common%20for%20industrial%20applications.">i</span>
+          </label>
+          <select id="comp-type">
+            <option value="screw">Rotary screw (most common)</option>
+            <option value="piston">Piston / reciprocating</option>
+            <option value="centrifugal">Centrifugal (high flow)</option>
+            <option value="scroll">Scroll (quiet / oil-free)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-back" onclick="goStep(4)">&#8592; Back</button>
+        <span class="step-of">Step 5 of 5</span>
+        <button class="btn-calculate" onclick="runCalculation()">&#9654; Calculate my specification</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 6: RESULTS ═══ -->
+  <div class="step-card" id="step-6">
+    <div class="step-card-hdr">
+      <div class="step-num-badge">Your result</div>
+      <div class="step-title">Your compressed air specification</div>
+      <div class="step-desc">Based on your inputs, here is what your compressor system must deliver. Share this with your supplier for an accurate quotation.</div>
+    </div>
+    <div class="step-body">
+      <div id="results-content"></div>
+      <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+        <button class="btn-restart" onclick="restart()">&#8635; Start again</button>
+        <button class="btn-pdf" onclick="printResults()">&#128424; Save as PDF</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end wiz-wrap -->
+
+<script>
+// ══ TOOLTIP ══════════════════════════════════════════════════════════════════
+function showTip(el,evt){var t=document.getElementById('tip-float');t.innerHTML=decodeURIComponent(el.getAttribute('data-tip'));t.style.display='block';moveTip(evt);}
+function moveTip(evt){var t=document.getElementById('tip-float');if(t.style.display==='none')return;var x=evt.clientX+14,y=evt.clientY-10;if(x+260>window.innerWidth-8)x=evt.clientX-270;if(y+80>window.innerHeight-8)y=window.innerHeight-90;t.style.left=x+'px';t.style.top=y+'px';}
+function hideTip(){document.getElementById('tip-float').style.display='none';}
+
+// ══ UNIT SYSTEM ══════════════════════════════════════════════════════════════
+var unitMode='metric', metricFlowUnit='m3hr', pressUnit='bar';
+
+function setUnits(m){
+  unitMode=m; pressUnit=m==='imperial'?'psi':'bar';
+  ['btn-metric'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.toggle('active',m==='metric');});
+  ['btn-imperial'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.toggle('active',m==='imperial');});
+  var ms=document.getElementById('metric-sub');if(ms)ms.style.display=m==='metric'?'flex':'none';
+  var pu1=document.getElementById('unit-req-pressure'),pu2=document.getElementById('unit-pipe-loss');
+  if(pu1)pu1.value=pressUnit; if(pu2)pu2.value=pressUnit;
+  var rp=document.getElementById('req-pressure'),pl=document.getElementById('pipe-loss');
+  if(rp)rp.value=m==='imperial'?'102':'7'; if(pl)pl.value=m==='imperial'?'7':'0.5';
+  var hint=document.getElementById('hint-pipe-loss');
+  if(hint)hint.textContent=m==='imperial'?'Typical: 4–15 psi':'Typical: 0.3–1.0 bar';
+  renderConsumers();
+}
+function setMetricFlow(u){
+  metricFlowUnit=u;
+  ['btn-m3hr'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.toggle('active',u==='m3hr');});
+  ['btn-m3min'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.toggle('active',u==='m3min');});
+  renderConsumers();
+}
+function flowLabel(){if(unitMode==='imperial')return 'CFM';return metricFlowUnit==='m3min'?'m³/min':'m³/hr';}
+function pressLabel(){return unitMode==='imperial'?'psi g':'bar g';}
+function pressLabelPlain(){return unitMode==='imperial'?'psi':'bar';}
+function dispFlow(lpm){if(unitMode==='imperial')return parseFloat((lpm*0.0353147).toFixed(2));if(metricFlowUnit==='m3min')return parseFloat((lpm/1000).toFixed(3));return parseFloat((lpm*0.06).toFixed(2));}
+function dispPress(bar){if(unitMode==='imperial')return(bar*14.5038).toFixed(1);return bar.toFixed(1);}
+function inputToFlow(v){if(unitMode==='imperial')return v/0.0353147;if(metricFlowUnit==='m3min')return v*1000;return v/0.06;}
+function inputToPress(v){return unitMode==='imperial'?v/14.5038:v;}
+function onPressUnitChange(){}
+
+// ══ EQUIPMENT TYPES ══════════════════════════════════════════════════════════
+var EQUIPMENT_TYPES=[
+  {id:'rotary_actuator',  label:'Rotary actuator',    icon:'&#9881;',  flow:50},
+  {id:'linear_actuator',  label:'Linear / cylinder',  icon:'&#10134;', flow:80},
+  {id:'blow_off',         label:'Blow-off nozzle',    icon:'&#128168;',flow:80},
+  {id:'air_tool',         label:'Pneumatic tool',     icon:'&#128295;',flow:170},
+  {id:'spray_gun',        label:'Spray gun',          icon:'&#127798;',flow:200},
+  {id:'vacuum_gen',       label:'Vacuum generator',   icon:'&#8711;',  flow:60},
+  {id:'air_knife',        label:'Air knife',          icon:'&#9135;',  flow:300},
+  {id:'custom',           label:'Custom device',      icon:'&#11835;', flow:0}
+];
+
+// ══ CONSUMERS ═════════════════════════════════════════════════════════════════
+var consumers=[], cid=0;
+function addConsumer(type){
+  var et=EQUIPMENT_TYPES.find(function(e){return e.id===(type||'rotary_actuator');});
+  consumers.push({id:'c'+(++cid), type:et.id, flow:et.flow, qty:1, duty:60});
+  renderConsumers();
+}
+function removeConsumer(id){consumers=consumers.filter(function(c){return c.id!==id;});renderConsumers();}
+function updateConsumer(id,field,val){for(var i=0;i<consumers.length;i++){if(consumers[i].id===id){consumers[i][field]=parseFloat(val)||0;break;}}updateEffective(id);}
+function updateConsumerFlow(id,val){
+  var v=parseFloat(val)||0,lpm;
+  if(unitMode==='imperial')lpm=v/0.0353147;
+  else if(metricFlowUnit==='m3min')lpm=v*1000;
+  else lpm=v/0.06;
+  for(var i=0;i<consumers.length;i++){if(consumers[i].id===id){consumers[i].flow=lpm;break;}}
+  updateEffective(id);
+}
+function updateConsumerType(id,val){
+  var et=EQUIPMENT_TYPES.find(function(e){return e.id===val;});
+  for(var i=0;i<consumers.length;i++){if(consumers[i].id===id){consumers[i].type=val;if(et&&et.flow>0)consumers[i].flow=et.flow;break;}}
+  renderConsumers();
+}
+function buildTypeOptions(sel){
+  return EQUIPMENT_TYPES.map(function(e){return '<option value="'+e.id+'"'+(e.id===sel?' selected':'')+'>'+e.label+'</option>';}).join('');
+}
+function renderConsumers(){
+  var lbl=document.getElementById('lbl-flow');if(lbl)lbl.textContent=flowLabel();
+  var list=document.getElementById('consumer-list'),html='';
+  for(var i=0;i<consumers.length;i++){
+    var c=consumers[i];
+    var eff=dispFlow(c.qty*c.flow*(c.duty/100));
+    var fd=parseFloat(dispFlow(c.flow).toFixed(3));
+    html+='<div class="con-row">';
+    html+='<select onchange="updateConsumerType(\''+c.id+'\',this.value)">'+buildTypeOptions(c.type)+'</select>';
+    html+='<input type="number" value="'+c.qty+'" min="1" max="999" oninput="updateConsumer(\''+c.id+'\',\'qty\',this.value)">';
+    html+='<input type="number" value="'+fd+'" min="0.001" max="50000" step="0.01" oninput="updateConsumerFlow(\''+c.id+'\',this.value)">';
+    html+='<input type="number" value="'+c.duty+'" min="1" max="100" oninput="updateConsumer(\''+c.id+'\',\'duty\',this.value)">';
+    html+='<div id="eff-'+c.id+'" style="font-family:var(--mono);font-size:11px;font-weight:600;color:var(--navy);text-align:center;padding:6px 4px;background:var(--navy-bg);border-radius:5px;border:1px solid var(--navy-bg2)">'+eff+'</div>';
+    html+='<button class="rm-btn" onclick="removeConsumer(\''+c.id+'\')">&#215;</button>';
+    html+='</div>';
+  }
+  list.innerHTML=html;
+  var total=0;for(var j=0;j<consumers.length;j++)total+=consumers[j].qty*consumers[j].flow*(consumers[j].duty/100);
+  var te=document.getElementById('consumer-total'),tv=document.getElementById('consumer-total-val');
+  if(te)te.style.display=consumers.length>0?'flex':'none';
+  if(tv)tv.textContent=dispFlow(total).toFixed(2)+' '+flowLabel();
+}
+function updateEffective(id){
+  var el=document.getElementById('eff-'+id);if(!el)return;
+  for(var i=0;i<consumers.length;i++){if(consumers[i].id===id){el.textContent=parseFloat(dispFlow(consumers[i].qty*consumers[i].flow*(consumers[i].duty/100)).toFixed(2));break;}}
+  var total=0;for(var j=0;j<consumers.length;j++)total+=consumers[j].qty*consumers[j].flow*(consumers[j].duty/100);
+  var tv=document.getElementById('consumer-total-val');if(tv)tv.textContent=dispFlow(total).toFixed(2)+' '+flowLabel();
+}
+
+// ══ ISO CLASSES ═══════════════════════════════════════════════════════════════
+var ISO_CLASSES=[
+  {cls:'industrial',    label:'Industrial Tools & Plant Air',  notation:'3:4:4 or 4:4:3', pdp:'+3°C to +10°C', oilFree:false, icon:'&#9881;',  color:'#2a6496', bg:'#dbeeff'},
+  {cls:'manufacturing', label:'General Manufacturing Air',     notation:'2:4:2',           pdp:'−20°C',         oilFree:false, icon:'&#127981;',color:'#5a4e00', bg:'#fff8d6'},
+  {cls:'instrument',    label:'Instrument & Control Air',      notation:'1:4:1',           pdp:'−40°C',         oilFree:false, icon:'&#128202;',color:'#1a5c38', bg:'#dff2e8'},
+  {cls:'electronics',   label:'Electronics & Clean Room',      notation:'1:2:1',           pdp:'−40°C',         oilFree:true,  icon:'&#128300;',color:'#5c1a5c', bg:'#f2dff2'},
+  {cls:'pharma',        label:'Food, Pharma & Beverage',       notation:'1:2:1',           pdp:'−40°C',         oilFree:true,  icon:'&#127810;',color:'#7a0000', bg:'#ffe8e8'},
+  {cls:'automotive',    label:'Automotive & Paint Spray',      notation:'1:4:1',           pdp:'−40°C',         oilFree:false, icon:'&#128663;',color:'#3d3d00', bg:'#ffffcc'}
+];
+var selectedIso='industrial';
+
+function renderIsoGrid(){
+  var g=document.getElementById('iso-grid'),html='';
+  for(var i=0;i<ISO_CLASSES.length;i++){
+    var iso=ISO_CLASSES[i];
+    html+='<div class="opt-card'+(iso.cls===selectedIso?' sel':'')+'" onclick="selectIso(\''+iso.cls+'\',this)">';
+    html+='<div class="opt-icon">'+iso.icon+'</div>';
+    html+='<div class="opt-label">'+iso.label+'</div>';
+    html+='<div class="opt-sub" style="font-size:10px;margin-top:4px;font-weight:600;font-family:var(--mono)">ISO '+iso.notation+'</div>';
+    html+='<div class="opt-sub">PDP: '+iso.pdp+'</div>';
+    if(iso.oilFree)html+='<div style="margin-top:5px;font-size:9px;color:var(--teal);font-weight:600;font-family:var(--mono)">&#10003; Oil-free required</div>';
+    html+='</div>';
+  }
+  g.innerHTML=html;
+}
+function selectIso(val,el){
+  selectedIso=val;
+  document.querySelectorAll('#iso-grid .opt-card').forEach(function(c){c.classList.remove('sel');});
+  el.classList.add('sel');
+}
+
+// ══ WIZARD NAVIGATION ════════════════════════════════════════════════════════
+var currentStep=1;
+var completedSteps={};
+
+function goStep(n){
+  if(n<1||n>6)return;
+  document.querySelectorAll('.step-card').forEach(function(c){c.classList.remove('active');});
+  document.getElementById('step-'+n).classList.add('active');
+  // Update progress bar
+  for(var i=1;i<=6;i++){
+    var sp=document.getElementById('sp-'+i),sn=document.getElementById('sn-'+i);
+    if(!sp)continue;
+    sp.classList.remove('active','done');
+    if(i<n){sp.classList.add('done');sn.innerHTML='&#10003;';}
+    else if(i===n){sp.classList.add('active');sn.textContent=i;}
+    else{sn.textContent=i;}
+  }
+  currentStep=n;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restart(){
+  consumers=[];
+  selectedIso='industrial';
+  renderConsumers();
+  renderIsoGrid();
+  goStep(1);
+}
+
+// ══ ATM CONSTANTS ════════════════════════════════════════════════════════════
+var ATM=1.01325;
+
+// ══ CALCULATION ══════════════════════════════════════════════════════════════
+function runCalculation(){
+  if(consumers.length===0){
+    alert('Please add at least one piece of equipment in Step 1 before calculating.');
+    goStep(1);return;
+  }
+
+  // Read inputs
+  var altM      = parseFloat(document.getElementById('alt-m').value)||0;
+  var ambT      = parseFloat(document.getElementById('amb-temp').value)||25;
+  var rh        = parseFloat(document.getElementById('rh').value)||50;
+  var dutyCycle = parseFloat(document.getElementById('duty-cycle').value)||60;
+  var leakPct   = parseFloat(document.getElementById('leak-pct').value)||15;
+  var resPct    = parseFloat(document.getElementById('reserve-pct').value)||20;
+  var dryerPurge= parseFloat(document.getElementById('dryer-purge').value)||0;
+  var tankVol   = parseFloat(document.getElementById('tank-vol').value)||500;
+  var compType  = document.getElementById('comp-type').value;
+  var reqPressDisplay = parseFloat(document.getElementById('req-pressure').value)||7;
+  var pipeLossDisplay = parseFloat(document.getElementById('pipe-loss').value)||0.5;
+
+  var reqPressBar = inputToPress(reqPressDisplay);
+  var pipeLossBar = inputToPress(pipeLossDisplay);
+  var compPressBar = reqPressBar + pipeLossBar;
+
+  // Base flow from consumers (l/min internal)
+  var baseFlow=0;
+  for(var i=0;i<consumers.length;i++)baseFlow+=consumers[i].qty*consumers[i].flow*(consumers[i].duty/100);
+
+  // Allowances
+  var withLeaks  = baseFlow*(1+leakPct/100);
+  var withDryer  = withLeaks*(1+dryerPurge/100);
+  var withReserve= withDryer*(1+resPct/100);
+  var scfm       = withReserve; // adjusted demand l/min
+
+  // Site correction (ISO method)
+  var P_atm     = ATM * Math.pow(1 - 2.2558e-5 * altM, 5.2559);
+  var T_site    = ambT + 273.15, T_std = 293.15, P_std = ATM;
+  // Saturation vapour pressure in bar (converted from kPa formula)
+  var Pv_sat_kPa = 0.6105 * Math.exp(17.27 * ambT / (ambT + 237.3));
+  var Pv_bar     = (rh / 100) * Pv_sat_kPa / 100; // kPa → bar
+  var P_atm_dry  = Math.max(P_atm - Pv_bar, 0.5); // guard against near-zero
+  var altF       = P_std / P_atm_dry;
+  var tempF      = T_site / T_std;
+  var correction = altF * tempF;
+  // Clamp correction to sensible range (1.0 to 2.5)
+  correction = Math.min(Math.max(correction, 1.0), 2.5);
+  var icfm      = scfm * correction;
+  var icfmPct   = Math.round((correction - 1) * 100);
+
+  // Power (rule of thumb: 1HP per 4.5 CFM)
+  var icfmCFM   = icfm*0.0353147;
+  var powerHP   = icfmCFM/4.5;
+  var powerKW   = powerHP*0.7457;
+
+  // Receiver tank
+  var tankRatio = tankVol/icfm; // litres per l/min FAD
+
+  // ISO class
+  var iso=ISO_CLASSES.find(function(x){return x.cls===selectedIso;})||ISO_CLASSES[0];
+
+  // Render results
+  goStep(6);
+  renderResults({
+    baseFlow,withLeaks,withDryer,withReserve,scfm,icfm,icfmPct,
+    leakPct,resPct,dryerPurge,dutyCycle,
+    compPressBar,reqPressBar,pipeLossBar,
+    altM,ambT,rh,tankVol,tankRatio,
+    powerKW,powerHP,compType,iso,
+    correction
+  });
+}
+
+// ══ RENDER RESULTS ════════════════════════════════════════════════════════════
+var lastResults=null;
+
+function renderResults(R){
+  lastResults=R;
+  var html='';
+
+  // Hero
+  html+='<div class="result-hero">';
+  html+='<div class="rh-title">Your compressed air specification — site-corrected</div>';
+  html+='<div class="rh-grid">';
+  html+=rhcell('FAD required',dispFlow(R.icfm).toFixed(2),flowLabel(),'+'+R.icfmPct+'% site correction · '+(R.icfm/1000).toFixed(3)+' m³/min');
+  html+=rhcell('Discharge pressure',dispPress(R.compPressBar),pressLabelPlain(),dispPress(R.reqPressBar)+' '+pressLabelPlain()+' at use + '+dispPress(R.pipeLossBar)+' '+pressLabelPlain()+' loss');
+  html+=rhcell('Est. motor power',Math.round(R.powerHP),'HP',Math.round(R.powerKW)+' kW · rule of thumb');
+  html+=rhcell('System duty cycle',R.dutyCycle,'%','compressor load factor');
+  html+='</div></div>';
+
+  // Flow breakdown
+  html+='<div class="result-section">';
+  html+='<div class="result-section-title">How we arrived at your FAD</div>';
+  html+=frow('Base demand (all equipment at peak duty)',dispFlow(R.baseFlow).toFixed(2)+' '+flowLabel(),'');
+  html+=frow('+ Leak allowance ('+R.leakPct+'%)','+'+dispFlow(R.withLeaks-R.baseFlow).toFixed(2),'amber');
+  if(R.dryerPurge>0)html+=frow('+ Desiccant dryer purge ('+R.dryerPurge+'%)','+'+dispFlow(R.withDryer-R.withLeaks).toFixed(2),'amber');
+  html+=frow('+ Future reserve ('+R.resPct+'%)','+'+dispFlow(R.withReserve-R.withDryer).toFixed(2),'amber');
+  html+=frow('Adjusted demand (Σ all allowances)',dispFlow(R.scfm).toFixed(2)+' '+flowLabel(),'total');
+  html+=frow('Site correction factor (alt/temp/humidity)','×'+R.correction.toFixed(3),'teal');
+  html+=frow('FAD required — specify this to your supplier',dispFlow(R.icfm).toFixed(2)+' '+flowLabel(),'fad');
+  html+='</div>';
+
+  // Site conditions
+  html+='<div class="result-section">';
+  html+='<div class="result-section-title">Site conditions applied</div>';
+  html+=frow('Altitude',R.altM+' m above sea level','');
+  html+=frow('Max ambient temperature',R.ambT+'°C','');
+  html+=frow('Relative humidity',R.rh+'%','');
+  html+=frow('Site correction multiplier','×'+R.correction.toFixed(3)+(R.icfmPct>0?' (+'+R.icfmPct+'% more air needed)':''),'');
+  html+='</div>';
+
+  // Receiver tank
+  var tankOK=R.tankRatio>=3,tankIdeal=R.tankRatio>=5;
+  html+='<div class="result-section">';
+  html+='<div class="result-section-title">Receiver tank adequacy</div>';
+  if(tankIdeal)html+='<div class="callout c-green"><div class="callout-icon">&#10003;</div><div><strong>Excellent</strong> — '+R.tankVol.toFixed(0)+' litres at '+R.tankRatio.toFixed(1)+':1 ratio. Good pressure stability and compressor unload time.</div></div>';
+  else if(tankOK)html+='<div class="callout c-amber"><div class="callout-icon">&#9888;</div><div><strong>Adequate</strong> — '+R.tankVol.toFixed(0)+' litres at '+R.tankRatio.toFixed(1)+':1. Consider upsizing to 5:1 ('+(R.icfm*5).toFixed(0)+' litres) for better efficiency.</div></div>';
+  else html+='<div class="callout" style="background:var(--red-bg);border:1px solid var(--red-bg2);color:var(--red)"><div class="callout-icon">&#10005;</div><div><strong>Undersized</strong> — minimum recommended: '+(R.icfm*3).toFixed(0)+' litres (3:1). Current: '+R.tankVol.toFixed(0)+' litres causes excessive cycling.</div></div>';
+  html+='</div>';
+
+  // ISO class
+  html+='<div class="result-section">';
+  html+='<div class="result-section-title">Air quality requirement</div>';
+  html+='<div class="callout c-navy"><div class="callout-icon">'+R.iso.icon+'</div><div><strong>'+R.iso.label+'</strong> — ISO 8573-1: '+R.iso.notation+'<br>Required PDP: '+R.iso.pdp+'<br>'+(R.iso.oilFree?'<strong>Oil-free compressor required</strong> — no oil permitted in compression stage':'Oil-lubricated acceptable — downstream filtration to achieve required oil content limit')+'</div></div>';
+  html+='</div>';
+
+  // Recommended compressors
+  html+='<div class="result-section">';
+  html+='<div class="result-section-title">Recommended compressor manufacturers</div>';
+  html+='<div class="callout c-teal"><div class="callout-icon">&#128161;</div><div>The following manufacturers supply '+R.compType+' compressors. Contact them with your specification above for a quotation. Always request independently certified performance data sheets.</div></div>';
+  html+=renderMfrCards(R.compType);
+  html+='</div>';
+
+  document.getElementById('results-content').innerHTML=html;
+}
+
+function rhcell(lbl,val,unit,sub){
+  return '<div><div class="rh-lbl">'+lbl+'</div><div class="rh-val">'+val+'<span class="rh-unit">'+unit+'</span></div><div class="rh-sub">'+sub+'</div></div>';
+}
+
+function frow(lbl,val,type){
+  var styles={
+    amber:'color:var(--amber)',
+    teal:'color:var(--teal);font-weight:600',
+    total:'background:var(--navy-bg);border-radius:6px;font-weight:600;color:var(--navy)',
+    fad:'background:var(--teal-bg);border-radius:6px;font-weight:700;color:var(--teal)',
+    '':''
+  };
+  return '<div class="flow-row" style="'+(styles[type]||'')+'">'
+    +'<span class="flow-label">'+lbl+'</span>'
+    +'<span class="flow-val">'+val+'</span>'
+    +'</div>';
+}
+
+// ══ MANUFACTURER CARDS ════════════════════════════════════════════════════════
+var COMPRESSOR_MFRS={
+  screw:[
+    {name:"ELGi Compressors",    country:"IN",flag:"&#127470;&#127475;",note:"Global rotary screw range. Renowned for low total cost of ownership and strong after-sales network across 120+ countries.",url:"https://www.elgi.com/en/compressors/air-compressors/"},
+    {name:"Atlas Copco",         country:"SE",flag:"&#127480;&#127466;",note:"Market leader. GA oil-injected and ZR/ZT oil-free series are industry benchmarks. Pioneer of VSD technology.",url:"https://www.atlascopco.com/en-uk/compressors"},
+    {name:"BOGE Compressors",    country:"DE",flag:"&#127465;&#127466;",note:"German engineering since 1907. S and SLF series known for reliability. Strong in food, pharma and electronics.",url:"https://www.boge.com/en/products/compressors/"},
+    {name:"Kaeser Kompressoren", country:"DE",flag:"&#127465;&#127466;",note:"Sigma Profile airend delivers industry-leading specific power. Full range from SK compact to large ESD series.",url:"https://us.kaeser.com/products-and-services/compressors/"},
+    {name:"Ingersoll Rand",      country:"US",flag:"&#127482;&#127480;",note:"Over 150 years of compressed air heritage. R-Series rotary screw recognised for reliability in demanding environments.",url:"https://www.irco.com/en-us/products/air-and-gas-compression"},
+    {name:"Gardner Denver",      country:"US",flag:"&#127482;&#127480;",note:"VS series VSD rotary screw and Iqube oil-free models. Strong global service network.",url:"https://www.gardnerdenver.com/en-gb/compressors"}
+  ],
+  piston:[
+    {name:"ELGi Compressors",    country:"IN",flag:"&#127470;&#127475;",note:"Proven reciprocating piston range for workshop and light industrial use. Competitive on capital cost.",url:"https://www.elgi.com/en/compressors/air-compressors/"},
+    {name:"BOGE Compressors",    country:"DE",flag:"&#127465;&#127466;",note:"German-engineered piston compressors for intermittent duty workshops and light industrial applications.",url:"https://www.boge.com/en/products/compressors/"},
+    {name:"Kaeser Kompressoren", country:"DE",flag:"&#127465;&#127466;",note:"CLASSIC piston series for workshop use. Reliable and low-maintenance with Kaeser build quality.",url:"https://us.kaeser.com/products-and-services/compressors/"},
+    {name:"Ingersoll Rand",      country:"US",flag:"&#127482;&#127480;",note:"Long-established piston range for workshop and small industrial use. Extensive global spare parts network.",url:"https://www.irco.com/en-us/products/air-and-gas-compression"}
+  ],
+  centrifugal:[
+    {name:"Atlas Copco",         country:"SE",flag:"&#127480;&#127466;",note:"ZH and AxH centrifugal compressors for large-scale oil-free applications. Class-leading specific power.",url:"https://www.atlascopco.com/en-uk/compressors/centrifugal-compressors"},
+    {name:"Ingersoll Rand",      country:"US",flag:"&#127482;&#127480;",note:"Centac and Sierra centrifugal compressors for high-volume, continuous-duty applications.",url:"https://www.irco.com/en-us/products/air-and-gas-compression"},
+    {name:"Kaeser Kompressoren", country:"DE",flag:"&#127465;&#127466;",note:"DST turbo series centrifugal compressors with integrated energy management.",url:"https://us.kaeser.com/products-and-services/compressors/"},
+    {name:"Gardner Denver",      country:"US",flag:"&#127482;&#127480;",note:"MSG series multi-stage centrifugal compressors for industrial-scale oil-free air generation.",url:"https://www.gardnerdenver.com/en-gb/compressors"}
+  ],
+  scroll:[
+    {name:"Atlas Copco",         country:"SE",flag:"&#127480;&#127466;",note:"SF scroll range for laboratory, dental, food and electronics. Very low noise and maintenance-free.",url:"https://www.atlascopco.com/en-uk/compressors/scroll-compressors"},
+    {name:"ELGi Compressors",    country:"IN",flag:"&#127470;&#127475;",note:"RL series oil-free scroll compressors for clean-air applications. Competitive pricing.",url:"https://www.elgi.com/en/compressors/air-compressors/"},
+    {name:"BOGE Compressors",    country:"DE",flag:"&#127465;&#127466;",note:"SCROLL S series oil-free compressors for sensitive applications. German build quality.",url:"https://www.boge.com/en/products/compressors/"},
+    {name:"Kaeser Kompressoren", country:"DE",flag:"&#127465;&#127466;",note:"Scroll units for clean, quiet, oil-free compressed air in laboratories and light industrial use.",url:"https://us.kaeser.com/products-and-services/compressors/"}
+  ]
+};
+
+function renderMfrCards(type){
+  var mfrs=COMPRESSOR_MFRS[type]||COMPRESSOR_MFRS.screw;
+  var html='<div class="mfr-grid">';
+  for(var i=0;i<mfrs.length;i++){
+    var m=mfrs[i];
+    html+='<div class="mfr-card">';
+    html+='<div class="mfr-top"><span class="mfr-flag">'+m.flag+'</span><div><div style="display:flex;align-items:center;gap:6px"><div class="mfr-name">'+m.name+'</div><span class="mfr-country">'+m.country+'</span></div></div></div>';
+    html+='<div class="mfr-note">'+m.note+'</div>';
+    html+='<a class="mfr-link" href="'+m.url+'" target="_blank">Visit website &#8599;</a>';
+    html+='</div>';
+  }
+  html+='</div>';
+  return html;
+}
+
+// ══ PRINT ════════════════════════════════════════════════════════════════════
+function printResults(){
+  if(!lastResults){alert('Please run the calculation first.');return;}
+  var R=lastResults;
+  var dateStr=new Date().toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'});
+  var css='@page{size:A4;margin:16mm 14mm 20mm}body{font-family:"DM Sans",Arial,sans-serif;font-size:9pt;color:#17130e}'+
+    '.hdr{display:flex;align-items:center;gap:10pt;padding-bottom:10pt;border-bottom:2pt solid #0f1f3d;margin-bottom:14pt}'+
+    '.mark{width:36pt;height:36pt;border-radius:6pt;background:linear-gradient(135deg,#0d8a7b,#243d70);display:flex;align-items:center;justify-content:center;font-family:Sora,sans-serif;font-size:13pt;font-weight:700;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+    '.brand{font-family:Sora,sans-serif;font-size:15pt;font-weight:700;color:#0f1f3d}.sub{font-size:8pt;color:#9c9287}'+
+    'table{width:100%;border-collapse:collapse;margin-bottom:12pt}th{font-size:7.5pt;text-align:left;padding:4pt 6pt;border-bottom:1pt solid #e0dcd4;color:#9c9287;font-family:"DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em}'+
+    'td{padding:4pt 6pt;border-bottom:.5pt solid #f0ece6;font-size:8.5pt}'+
+    '.sec{font-family:"DM Mono",monospace;font-size:7pt;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#9c9287;margin:12pt 0 4pt;border-bottom:.75pt solid #e0dcd4;padding-bottom:3pt}'+
+    '.highlight{background:#edf1f9;font-weight:600;color:#0f1f3d}.fad-row{background:#e6f4f2;font-weight:700;color:#0a6b5f}'+
+    '.footer{margin-top:18pt;padding-top:8pt;border-top:.75pt solid #e0dcd4;font-size:7pt;color:#9c9287;line-height:1.6}';
+  var body='<div class="hdr"><div class="mark">CX8</div><div><div class="brand">CX8 Technologies</div><div class="sub">Air Compressor Sizing — Specification Summary · '+dateStr+'</div></div></div>'+
+    '<div class="sec">Key specification</div>'+
+    '<table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody>'+
+    '<tr class="fad-row"><td>FAD required (site-corrected)</td><td>'+dispFlow(R.icfm).toFixed(2)+' '+flowLabel()+' ('+((R.icfm/1000).toFixed(3))+' m³/min)</td></tr>'+
+    '<tr><td>Adjusted demand</td><td>'+dispFlow(R.scfm).toFixed(2)+' '+flowLabel()+'</td></tr>'+
+    '<tr class="highlight"><td>Discharge pressure</td><td>'+dispPress(R.compPressBar)+' '+pressLabelPlain()+'</td></tr>'+
+    '<tr><td>Min pressure at point of use</td><td>'+dispPress(R.reqPressBar)+' '+pressLabelPlain()+'</td></tr>'+
+    '<tr><td>Est. motor power</td><td>'+Math.round(R.powerHP)+' HP / '+Math.round(R.powerKW)+' kW</td></tr>'+
+    '<tr><td>System duty cycle</td><td>'+R.dutyCycle+'%</td></tr>'+
+    '<tr><td>Compressor type</td><td>'+R.compType+'</td></tr>'+
+    '<tr><td>Air quality class</td><td>'+R.iso.label+' — ISO 8573-1: '+R.iso.notation+'</td></tr>'+
+    '<tr><td>Lubrication</td><td>'+(R.iso.oilFree?'Oil-free mandatory':'Oil-lubricated acceptable')+'</td></tr>'+
+    '<tr><td>Required PDP</td><td>'+R.iso.pdp+'</td></tr>'+
+    '</tbody></table>'+
+    '<div class="sec">Site conditions</div>'+
+    '<table><tbody>'+
+    '<tr><td>Altitude</td><td>'+R.altM+' m</td></tr>'+
+    '<tr><td>Max ambient temperature</td><td>'+R.ambT+'°C</td></tr>'+
+    '<tr><td>Relative humidity</td><td>'+R.rh+'%</td></tr>'+
+    '<tr><td>Site correction factor</td><td>×'+R.correction.toFixed(3)+' (+'+R.icfmPct+'% additional air required)</td></tr>'+
+    '</tbody></table>'+
+    '<div class="sec">System allowances</div>'+
+    '<table><tbody>'+
+    '<tr><td>Leak allowance</td><td>'+R.leakPct+'%</td></tr>'+
+    '<tr><td>Future reserve</td><td>'+R.resPct+'%</td></tr>'+
+    '<tr><td>Dryer purge</td><td>'+R.dryerPurge+'%</td></tr>'+
+    '<tr><td>Receiver tank</td><td>'+R.tankVol.toFixed(0)+' litres ('+R.tankRatio.toFixed(1)+':1 ratio)</td></tr>'+
+    '</tbody></table>'+
+    '<div class="footer">Generated by CX8 Technologies Air Compressor Sizing Wizard · cx8technologies.com<br>'+
+    'These values are engineering estimates based on industry-standard site correction methodology. Always verify with manufacturer catalogue data before procurement decisions.</div>';
+  var w=window.open('','_blank','width=860,height=1100,scrollbars=yes');
+  if(!w){alert('Pop-up blocked — please allow pop-ups and try again.');return;}
+  w.document.open();
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CX8 Air Compressor Specification</title>'+
+    '<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700&family=DM+Sans:wght@400;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">'+
+    '<style>'+css+'</style></head><body>'+body+'</body></html>');
+  w.document.close();
+  w.addEventListener('load',function(){setTimeout(function(){w.focus();w.print();},800);});
+  setTimeout(function(){if(w&&!w.closed){w.focus();w.print();}},1400);
+}
+
+// ══ INIT ════════════════════════════════════════════════════════════════════
+addConsumer('rotary_actuator');
+addConsumer('linear_actuator');
+addConsumer('blow_off');
+renderIsoGrid();
+goStep(1);
+</script>
+</body>
+</html>

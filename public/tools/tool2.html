@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kv / Cv Flow Coefficient Calculator — CX8 Technologies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f0ede8; --bg2:#e6e2db; --surface:#faf9f7; --surface2:#f3f1ed;
+  --border:#ddd8cf; --border2:#c8c1b4;
+  --text:#1c1814; --text2:#5a524a; --text3:#9a9087;
+  --navy:#1e2d4a; --navy2:#2c4070; --navy-bg:#eef1f7; --navy-bg2:#dde4f0;
+  --teal:#0d7a6e; --teal2:#0fa396; --teal-bg:#e8f5f4; --teal-bg2:#c8eeeb;
+  --amber:#b85c00; --amber-bg:#fef3e2; --amber-bg2:#fde8c0;
+  --red:#c0392b; --red-bg:#fdf2f1; --red-bg2:#fce4e2;
+  --green:#1a6b3a; --green-bg:#edfaf3; --green-bg2:#d4f5e3;
+  --radius:10px; --radius-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 14px rgba(0,0,0,.05);
+  --shadow2:0 2px 8px rgba(0,0,0,.10),0 8px 28px rgba(0,0,0,.07);
+  --mono:"DM Mono",monospace; --sans:"DM Sans",sans-serif; --display:"Sora",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;min-height:100vh;}
+
+/* ── HEADER ── */
+.hdr{background:var(--navy);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 16px rgba(0,0,0,.22);}
+.hdr-left{display:flex;align-items:center;gap:14px;}
+.cx8-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#0d8a7b,#243d70);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.hdr-brand{display:flex;flex-direction:column;}
+.hdr-name{font-family:var(--display);font-size:15px;font-weight:600;color:#fff;letter-spacing:-.01em;line-height:1.1;}
+.hdr-sub{font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.38);letter-spacing:.1em;text-transform:uppercase;margin-top:1px;}
+.hdr-tags{display:flex;gap:6px;}
+.hdr-tag{font-family:var(--mono);font-size:9px;font-weight:500;padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.45);letter-spacing:.06em;}
+
+/* ── TOOL HERO BAR ── */
+.tool-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);padding:26px 28px 22px;border-bottom:1px solid rgba(255,255,255,.06);}
+.tool-hero-inner{max-width:1200px;margin:0 auto;}
+.tool-hero h1{font-family:var(--display);font-size:22px;font-weight:600;color:#fff;margin-bottom:6px;letter-spacing:-.02em;}
+.tool-hero p{font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.7;max-width:680px;}
+.hero-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.hero-chip{font-family:var(--mono);font-size:9px;font-weight:500;padding:3px 9px;border-radius:12px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.45);letter-spacing:.06em;}
+
+/* ── MODE BAR ── */
+.mode-bar{background:var(--navy2);border-bottom:1px solid rgba(255,255,255,.08);padding:0 28px;display:flex;align-items:center;gap:0;}
+.mode-btn{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:12px 20px;border:none;background:transparent;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;flex-direction:column;gap:2px;align-items:flex-start;}
+.mode-btn .mb-label{font-size:11px;font-weight:600;}
+.mode-btn .mb-sub{font-size:9px;font-weight:400;opacity:.7;letter-spacing:.04em;}
+.mode-btn.on{color:#fff;border-bottom-color:var(--teal2);}
+.mode-btn:hover:not(.on){color:rgba(255,255,255,.7);}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1200px;margin:0 auto;padding:22px 20px 60px;}
+.grid{display:grid;grid-template-columns:400px 1fr;gap:20px;align-items:start;}
+
+/* ── PANEL ── */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+.phdr{background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:8px;}
+.pnum{width:18px;height:18px;border-radius:50%;background:var(--navy);color:#fff;font-size:9px;font-weight:700;font-family:var(--mono);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ptitle{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.14em;color:var(--text2);text-transform:uppercase;}
+.pbody{padding:16px;}
+
+/* ── SECTION LABEL ── */
+.sec{font-family:var(--mono);font-size:8.5px;font-weight:600;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;margin:16px 0 8px;display:flex;align-items:center;gap:8px;}
+.sec:first-child{margin-top:0;}
+.sec::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── FORM ── */
+.field{margin-bottom:10px;}
+.field label{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:var(--text2);margin-bottom:4px;}
+input[type=number],select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--sans);font-size:13px;font-weight:400;padding:7px 9px;outline:none;transition:border-color .12s;-webkit-appearance:none;}
+input:focus,select:focus{border-color:var(--navy);box-shadow:0 0 0 2px var(--navy-bg2);background:var(--surface);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+
+/* ── OUTPUT TOGGLE ── */
+.tog-group{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:10px;}
+.tog{flex:1;padding:8px 6px;font-size:11.5px;font-weight:500;text-align:center;cursor:pointer;color:var(--text3);background:var(--bg);border:none;transition:all .12s;font-family:var(--sans);}
+.tog:hover{background:var(--bg2);color:var(--text2);}
+.tog.on{background:var(--navy);color:#fff;}
+
+/* ── CALC BUTTON ── */
+.calc-btn{width:100%;padding:12px;background:var(--navy);color:#fff;font-family:var(--sans);font-size:13px;font-weight:500;border:none;border-radius:7px;cursor:pointer;transition:all .15s;margin-top:10px;box-shadow:0 2px 8px rgba(30,45,74,.25);}
+.calc-btn:hover{background:var(--navy2);transform:translateY(-1px);}
+.calc-btn.teal-btn{background:var(--teal);}
+.calc-btn.teal-btn:hover{background:var(--teal2);}
+
+/* ── TOOLTIP ── */
+.tip{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--navy-bg2);color:var(--navy2);font-size:8px;font-weight:700;cursor:default;flex-shrink:0;margin-left:3px;vertical-align:middle;}
+.tip:hover{background:var(--navy);color:#fff;}
+#tip-float{position:fixed;z-index:9999;background:var(--navy);color:#fff;font-family:var(--sans);font-size:11px;font-weight:300;line-height:1.6;padding:9px 12px;border-radius:8px;width:260px;box-shadow:0 4px 20px rgba(0,0,0,.25);pointer-events:none;display:none;white-space:normal;}
+
+/* ── PLACEHOLDER ── */
+.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:360px;gap:10px;color:var(--text3);text-align:center;padding:40px;}
+.ph-icon{font-size:38px;opacity:.2;}
+.ph-title{font-family:var(--display);font-size:17px;color:var(--text3);}
+.ph-sub{font-size:12px;color:var(--text3);max-width:240px;line-height:1.65;}
+
+/* ── RESULT HERO ── */
+.result-hero{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--radius);padding:22px 22px 18px;margin-bottom:14px;box-shadow:var(--shadow2);}
+.result-hero.teal{background:linear-gradient(135deg,var(--teal),#0a5a50);}
+.rh-label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:rgba(255,255,255,.38);text-transform:uppercase;margin-bottom:14px;}
+.rh-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.rh-name{font-size:10px;color:rgba(255,255,255,.45);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;}
+.rh-val{font-family:var(--display);font-size:38px;font-weight:600;color:#fff;line-height:1;}
+.rh-unit{font-size:13px;font-weight:300;color:rgba(255,255,255,.5);margin-left:4px;}
+.rh-sub{font-size:11px;color:rgba(255,255,255,.38);margin-top:5px;font-family:var(--mono);}
+
+/* ── RESULT CARDS ── */
+.cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);}
+.card-val{font-family:var(--display);font-size:22px;font-weight:500;color:var(--navy);line-height:1;margin-bottom:3px;}
+.card-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;}
+.card-sub{font-size:10px;color:var(--text3);margin-top:3px;font-family:var(--mono);}
+
+/* ── FORMULA BOX ── */
+.formula{background:var(--navy-bg);border:1px solid var(--navy-bg2);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;}
+.formula-title{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.13em;color:var(--navy2);text-transform:uppercase;margin-bottom:8px;}
+.formula-eq{font-family:var(--mono);font-size:12px;color:var(--navy);line-height:1.9;font-weight:500;}
+.formula-vals{font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.8;margin-top:8px;border-top:1px solid var(--navy-bg2);padding-top:8px;white-space:pre-wrap;}
+
+/* ── CONVERSION TABLE ── */
+.conv-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow);}
+.conv-hdr{background:var(--surface2);border-bottom:1px solid var(--border);padding:9px 16px;}
+.conv-hdr-title{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.13em;color:var(--text3);text-transform:uppercase;}
+.conv-row{display:grid;grid-template-columns:160px 1fr 90px;gap:12px;align-items:center;padding:8px 16px;border-bottom:1px solid var(--border);font-size:12px;}
+.conv-row:last-child{border-bottom:none;}
+.conv-row.primary{background:var(--navy-bg);}
+.conv-name{color:var(--text2);}
+.conv-val{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--navy);}
+.conv-row.primary .conv-val{font-size:15px;}
+.conv-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:10px;text-align:center;}
+.badge-primary{background:var(--navy);color:#fff;}
+.badge-derived{background:var(--bg2);color:var(--text3);}
+
+/* ── CALLOUT ── */
+.callout{border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;font-size:12px;line-height:1.65;display:flex;gap:10px;align-items:flex-start;}
+.callout.c-teal{background:var(--teal-bg);border:1px solid var(--teal-bg2);color:var(--teal);}
+.callout.c-amber{background:var(--amber-bg);border:1px solid var(--amber-bg2);color:var(--amber);}
+.callout.c-red{background:var(--red-bg);border:1px solid var(--red-bg2);color:var(--red);}
+.callout-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.callout strong{font-weight:600;}
+
+/* ── INSTRUCTION ── */
+.instruction{background:var(--teal-bg);border:1px solid var(--teal-bg2);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;}
+.instr-title{font-size:12px;font-weight:600;color:var(--teal);margin-bottom:6px;display:flex;align-items:center;gap:7px;}
+.instr-body{font-size:12px;color:var(--text2);line-height:1.75;}
+.instr-body strong{color:var(--teal);font-weight:600;}
+
+/* ── HIDDEN ── */
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="cx8-mark">CX8</div>
+    <div class="hdr-brand">
+      <div class="hdr-name">Kv / Cv Flow Coefficient Calculator</div>
+      <div class="hdr-sub">CX8 Technologies · Tools Made for Engineers</div>
+    </div>
+  </div>
+  <div class="hdr-tags">
+    <div class="hdr-tag">IEC 60534</div>
+    <div class="hdr-tag">ISA 75.01</div>
+  </div>
+</div>
+
+<!-- TOOL HERO -->
+<div class="tool-hero">
+  <div class="tool-hero-inner">
+    <h1>Kv / Cv Flow Coefficient Calculator</h1>
+    <p>Two calculation modes. <strong style="color:rgba(255,255,255,.75)">Find Kv/Cv</strong> — enter process conditions, get the minimum flow coefficient your valve must have. <strong style="color:rgba(255,255,255,.75)">Find ΔP</strong> — enter your valve's Kvs from its catalogue and your flow rate, get the actual pressure drop across it.</p>
+    <div class="hero-chips">
+      <span class="hero-chip">Liquid · Gas · Steam</span>
+      <span class="hero-chip">Subcritical &amp; Choked Flow</span>
+      <span class="hero-chip">Cavitation Warning</span>
+      <span class="hero-chip">Kv ↔ Cv Conversion</span>
+      <span class="hero-chip">Safety Factor Applied</span>
+    </div>
+  </div>
+</div>
+
+<!-- MODE BAR -->
+<div class="mode-bar">
+  <button class="mode-btn on" id="btn-mode-a" onclick="setMode('a')">
+    <span class="mb-label">&#9654; Find Kv / Cv</span>
+    <span class="mb-sub">Given Q and ΔP → required flow coefficient</span>
+  </button>
+  <button class="mode-btn" id="btn-mode-b" onclick="setMode('b')">
+    <span class="mb-label">&#9654; Find ΔP</span>
+    <span class="mb-sub">Given Q and Kvs → pressure drop across valve</span>
+  </button>
+</div>
+
+<!-- MAIN -->
+<div class="wrap">
+  <div class="grid">
+
+    <!-- LEFT: Inputs -->
+    <div class="panel">
+      <div class="phdr"><div class="pnum">1</div><div class="ptitle">Process inputs</div></div>
+      <div class="pbody">
+
+        <!-- ══ MODE A ══ -->
+        <div id="mode-a-inputs">
+          <div class="sec">Fluid</div>
+          <div class="field">
+            <label>Fluid type</label>
+            <select id="fluid" onchange="onFluidChange()">
+              <option value="liquid">Liquid — Water (SG = 1.0)</option>
+              <option value="liquid_other">Liquid — Other (set SG)</option>
+              <option value="gas">Gas — Air / N₂ (compressed)</option>
+              <option value="steam">Steam — saturated</option>
+            </select>
+          </div>
+          <div class="field" id="sg-field" style="display:none">
+            <label>Specific gravity SG
+              <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="SG%20%3D%20fluid%20density%20%C3%B7%20water%20density%20(1000%20kg%2Fm%C2%B3).%20Water%20%3D%201.0.%20Glycol%2050%25%20%E2%89%88%201.07.%20Light%20oil%20%E2%89%88%200.85.">i</span>
+            </label>
+            <input type="number" id="sg" value="1.0" min="0.1" max="20" step="0.01">
+          </div>
+          <div class="field" id="gas-type-field" style="display:none">
+            <label>Gas specific gravity (rel. to air)
+              <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Air%2FN%E2%82%82%20%3D%201.0.%20CO%E2%82%82%20%3D%201.52.%20Methane%20%3D%200.55.%20Propane%20%3D%201.52.">i</span>
+            </label>
+            <select id="gas-sg" onchange="onGasSGChange()">
+              <option value="1.0">Air / N₂ — 1.000</option>
+              <option value="1.519">CO₂ — 1.519</option>
+              <option value="0.554">Methane (CH₄) — 0.554</option>
+              <option value="1.562">Propane (C₃H₈) — 1.562</option>
+              <option value="1.105">Oxygen (O₂) — 1.105</option>
+              <option value="custom">Custom…</option>
+            </select>
+          </div>
+          <div class="field hidden" id="gas-sg-custom-field">
+            <label>Custom gas SG (rel. to air)</label>
+            <input type="number" id="gas-sg-custom" value="1.0" min="0.01" max="20" step="0.01">
+          </div>
+
+          <div class="sec">Flow rate</div>
+          <div class="row2">
+            <div class="field">
+              <label>Flow rate Q</label>
+              <input type="number" id="flow" value="20" min="0.001" step="0.1">
+            </div>
+            <div class="field">
+              <label>Unit</label>
+              <select id="flow-unit" onchange="onFlowUnitChange()">
+                <optgroup label="Liquid">
+                  <option value="m3h">m³/h</option>
+                  <option value="lmin">L/min</option>
+                  <option value="lh">L/h</option>
+                  <option value="usgpm">US gpm</option>
+                  <option value="ukgph">UK gal/h</option>
+                </optgroup>
+                <optgroup label="Gas (normalised)" id="gas-units-group">
+                  <option value="nm3h">Nm³/h</option>
+                  <option value="nm3min">Nm³/min</option>
+                  <option value="scfh">SCFH</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <div class="sec">Pressures</div>
+          <div class="row2">
+            <div class="field">
+              <label>Inlet P1
+                <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Pressure%20at%20valve%20inlet.">i</span>
+              </label>
+              <input type="number" id="p1" value="6" min="0" step="0.1">
+            </div>
+            <div class="field">
+              <label>Outlet P2</label>
+              <input type="number" id="p2" value="5" min="0" step="0.1">
+            </div>
+          </div>
+          <div class="field">
+            <label>Pressure unit</label>
+            <select id="p-unit" onchange="onPUnitChange()">
+              <option value="barg">bar g (gauge)</option>
+              <option value="barabs">bar abs</option>
+              <option value="psig">psi g</option>
+              <option value="psiabs">psi abs</option>
+              <option value="kpag">kPa g</option>
+              <option value="kpaabs">kPa abs</option>
+            </select>
+          </div>
+
+          <div class="sec">Temperature &amp; safety factor</div>
+          <div class="row2">
+            <div class="field">
+              <label>Temperature
+                <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Upstream%20fluid%20temperature.%20Mainly%20affects%20gas%20and%20steam%20Kv.">i</span>
+              </label>
+              <div class="row2" style="margin:0;gap:6px">
+                <input type="number" id="temp" value="20" step="1">
+                <select id="temp-unit">
+                  <option value="C">°C</option>
+                  <option value="F">°F</option>
+                  <option value="K">K</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label>Safety factor
+                <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Applied%20to%20calculated%20Kv.%201.3%C3%97%20recommended%20%E2%80%94%20covers%20measurement%20uncertainty%20and%20future%20capacity.">i</span>
+              </label>
+              <select id="sf" onchange="onSFChange()">
+                <option value="1.0">1.0× (none)</option>
+                <option value="1.1">1.1×</option>
+                <option value="1.2">1.2×</option>
+                <option value="1.3" selected>1.3× (recommended)</option>
+                <option value="1.4">1.4×</option>
+                <option value="1.5">1.5×</option>
+                <option value="custom">Custom…</option>
+              </select>
+            </div>
+          </div>
+          <div class="field hidden" id="sf-custom-field">
+            <label>Custom safety factor</label>
+            <input type="number" id="sf-custom" value="1.3" min="1.0" max="5.0" step="0.01">
+          </div>
+
+          <div class="sec">Output units</div>
+          <div class="field">
+            <label>Show results in</label>
+            <div class="tog-group">
+              <button class="tog on" onclick="setOutputUnit('metric',this)">Metric (Kv)</button>
+              <button class="tog" onclick="setOutputUnit('imperial',this)">Imperial (Cv)</button>
+              <button class="tog" onclick="setOutputUnit('both',this)">Both</button>
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calculate()">&#9654; Calculate required Kv / Cv</button>
+        </div><!-- end mode-a-inputs -->
+
+        <!-- ══ MODE B ══ -->
+        <div id="mode-b-inputs" class="hidden">
+          <div class="sec">Fluid</div>
+          <div class="field">
+            <label>Fluid type</label>
+            <select id="b-fluid" onchange="onBFluidChange()">
+              <option value="liquid">Liquid — Water (SG = 1.0)</option>
+              <option value="liquid_other">Liquid — Other (set SG)</option>
+              <option value="gas">Gas — Air / N₂</option>
+              <option value="steam">Steam — saturated</option>
+            </select>
+          </div>
+          <div class="field hidden" id="b-sg-field">
+            <label>Specific gravity SG</label>
+            <input type="number" id="b-sg" value="1.0" min="0.1" max="20" step="0.01">
+          </div>
+          <div class="field hidden" id="b-gas-sg-field">
+            <label>Gas SG (rel. to air)</label>
+            <select id="b-gas-sg">
+              <option value="1.0">Air / N₂ — 1.000</option>
+              <option value="1.519">CO₂ — 1.519</option>
+              <option value="0.554">Methane (CH₄) — 0.554</option>
+              <option value="1.562">Propane (C₃H₈) — 1.562</option>
+              <option value="1.105">Oxygen (O₂) — 1.105</option>
+            </select>
+          </div>
+
+          <div class="sec">Valve from catalogue</div>
+          <div class="field">
+            <label>Kvs from datasheet (m³/h)
+              <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="The%20rated%20flow%20coefficient%20of%20your%20valve%20at%20fully%20open%2C%20as%20stated%20in%20the%20manufacturer%E2%80%99s%20catalogue.%20Sometimes%20listed%20as%20Kv%2C%20Kvs%2C%20or%20Cv%20(convert%3A%20Kv%20%3D%20Cv%20%C3%B7%201.156).">i</span>
+            </label>
+            <input type="number" id="b-kvs-m3h" value="" placeholder="e.g. 63" min="0.001" step="0.1">
+          </div>
+          <div class="field">
+            <label>— or enter as Cv (US gpm @ 1 psi)</label>
+            <input type="number" id="b-kvs-cv" value="" placeholder="e.g. 72.8" min="0.001" step="0.1" oninput="syncKvCv('cv')">
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin:-4px 0 12px;font-family:var(--mono)">Kv and Cv fields sync automatically. Fill either one.</div>
+
+          <div class="sec">Flow rate</div>
+          <div class="row2">
+            <div class="field">
+              <label>Flow rate Q</label>
+              <input type="number" id="b-flow" value="20" min="0.001" step="0.1">
+            </div>
+            <div class="field">
+              <label>Unit</label>
+              <select id="b-flow-unit">
+                <optgroup label="Liquid">
+                  <option value="m3h">m³/h</option>
+                  <option value="lmin">L/min</option>
+                  <option value="lh">L/h</option>
+                  <option value="usgpm">US gpm</option>
+                </optgroup>
+                <optgroup label="Gas">
+                  <option value="nm3h">Nm³/h</option>
+                  <option value="scfh">SCFH</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <div class="sec">Upstream conditions (gas only)</div>
+          <div class="row2" id="b-gas-extra">
+            <div class="field">
+              <label>Inlet P1
+                <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Required%20for%20gas%20%CE%94P%20calculation.%20Enter%20inlet%20pressure%20in%20bar%20g.">i</span>
+              </label>
+              <input type="number" id="b-p1" value="6" min="0" step="0.1">
+            </div>
+            <div class="field">
+              <label>Temperature</label>
+              <div class="row2" style="margin:0;gap:6px">
+                <input type="number" id="b-temp" value="20" step="1">
+                <select id="b-temp-unit">
+                  <option value="C">°C</option>
+                  <option value="F">°F</option>
+                  <option value="K">K</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Pressure unit (output)</label>
+            <select id="b-p-unit">
+              <option value="barg">bar</option>
+              <option value="psig">psi</option>
+              <option value="kpag">kPa</option>
+            </select>
+          </div>
+
+          <button class="calc-btn teal-btn" onclick="calculateReverse()">&#9654; Calculate pressure drop</button>
+        </div><!-- end mode-b-inputs -->
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Results -->
+    <div id="right-panel">
+
+      <div id="placeholder" class="panel">
+        <div class="placeholder">
+          <div class="ph-icon">◎</div>
+          <div class="ph-title">Ready to calculate</div>
+          <div class="ph-sub">Choose a mode, enter your process conditions, and press Calculate.</div>
+        </div>
+      </div>
+
+      <!-- Mode A results -->
+      <div id="results" class="hidden">
+        <div class="result-hero">
+          <div class="rh-label">Minimum required flow coefficient — safety factor applied</div>
+          <div class="rh-grid" id="hero-grid"></div>
+        </div>
+        <div class="cards-row">
+          <div class="card">
+            <div class="card-val" id="dp-val">—</div>
+            <div class="card-lbl">ΔP actual</div>
+            <div class="card-sub" id="dp-sub">bar differential</div>
+          </div>
+          <div class="card">
+            <div class="card-val" id="q-val">—</div>
+            <div class="card-lbl">Flow rate</div>
+            <div class="card-sub" id="q-sub">m³/h</div>
+          </div>
+          <div class="card">
+            <div class="card-val" id="kv-bare-val">—</div>
+            <div class="card-lbl">Kv bare (no SF)</div>
+            <div class="card-sub">before safety factor</div>
+          </div>
+        </div>
+        <div id="warnings-area"></div>
+        <div class="formula">
+          <div class="formula-title">Calculation — IEC 60534 / ISA 75.01</div>
+          <div class="formula-eq" id="formula-eq">—</div>
+          <div class="formula-vals" id="formula-vals">—</div>
+        </div>
+        <div class="conv-box">
+          <div class="conv-hdr"><div class="conv-hdr-title">Full unit conversion table</div></div>
+          <div id="conv-rows"></div>
+        </div>
+        <div class="instruction">
+          <div class="instr-title">&#8599; How to use this result</div>
+          <div class="instr-body" id="instr-body">—</div>
+        </div>
+      </div>
+
+      <!-- Mode B results -->
+      <div id="results-b" class="hidden">
+        <div class="result-hero teal">
+          <div class="rh-label">Pressure drop across your valve at the given flow rate</div>
+          <div class="rh-grid" id="b-hero-grid"></div>
+        </div>
+        <div class="cards-row">
+          <div class="card">
+            <div class="card-val" id="b-kvs-display">—</div>
+            <div class="card-lbl">Valve Kvs</div>
+            <div class="card-sub">from your catalogue</div>
+          </div>
+          <div class="card">
+            <div class="card-val" id="b-q-display">—</div>
+            <div class="card-lbl">Flow rate</div>
+            <div class="card-sub" id="b-q-sub">m³/h</div>
+          </div>
+          <div class="card">
+            <div class="card-val" id="b-util-display">—</div>
+            <div class="card-lbl">Kvs utilisation</div>
+            <div class="card-sub">Q as % of max Kvs</div>
+          </div>
+        </div>
+        <div id="b-warnings-area"></div>
+        <div class="formula">
+          <div class="formula-title">Calculation — IEC 60534 rearranged for ΔP</div>
+          <div class="formula-eq" id="b-formula-eq">—</div>
+          <div class="formula-vals" id="b-formula-vals">—</div>
+        </div>
+        <div class="conv-box">
+          <div class="conv-hdr"><div class="conv-hdr-title">ΔP in all pressure units</div></div>
+          <div id="b-conv-rows"></div>
+        </div>
+        <div class="instruction">
+          <div class="instr-title">&#8599; How to interpret this result</div>
+          <div class="instr-body" id="b-instr-body">—</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Floating tooltip -->
+<div id="tip-float"></div>
+
+<script>
+// ══ TOOLTIP ══════════════════════════════════════════════════════
+function showTip(el, evt) {
+  var t = document.getElementById('tip-float');
+  t.innerHTML = decodeURIComponent(el.getAttribute('data-tip'));
+  t.style.display = 'block';
+  moveTip(evt);
+}
+function moveTip(evt) {
+  var t = document.getElementById('tip-float');
+  if (t.style.display === 'none') return;
+  var x = evt.clientX + 14, y = evt.clientY - 10;
+  if (x + 260 > window.innerWidth - 8) x = evt.clientX - 270;
+  if (y + 80 > window.innerHeight - 8) y = window.innerHeight - 90;
+  t.style.left = x + 'px'; t.style.top = y + 'px';
+}
+function hideTip() { document.getElementById('tip-float').style.display = 'none'; }
+
+// ══ MODE SWITCHER ══════════════════════════════════════════════════
+function setMode(m) {
+  document.getElementById('mode-a-inputs').classList.toggle('hidden', m !== 'a');
+  document.getElementById('mode-b-inputs').classList.toggle('hidden', m !== 'b');
+  document.getElementById('btn-mode-a').classList.toggle('on', m === 'a');
+  document.getElementById('btn-mode-b').classList.toggle('on', m === 'b');
+  document.getElementById('placeholder').classList.remove('hidden');
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('results-b').classList.add('hidden');
+}
+
+// ══ CONSTANTS ════════════════════════════════════════════════════
+const ATM = 1.01325;
+let outputUnit = 'metric';
+
+// ══ UI HELPERS ════════════════════════════════════════════════════
+function setOutputUnit(u, el) {
+  outputUnit = u;
+  document.querySelectorAll('.tog').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function onFluidChange() {
+  const f = document.getElementById('fluid').value;
+  document.getElementById('sg-field').style.display         = f === 'liquid_other' ? '' : 'none';
+  document.getElementById('gas-type-field').style.display   = f === 'gas' ? '' : 'none';
+  document.getElementById('gas-sg-custom-field').classList.add('hidden');
+  const isGas = f === 'gas';
+  document.querySelectorAll('#flow-unit option').forEach(o => {
+    if (['nm3h','nm3min','scfh'].includes(o.value)) o.disabled = !isGas;
+    if (['m3h','lmin','lh','usgpm','ukgph'].includes(o.value)) o.disabled = isGas;
+  });
+  const fu = document.getElementById('flow-unit');
+  if (isGas && ['m3h','lmin','lh','usgpm','ukgph'].includes(fu.value)) fu.value = 'nm3h';
+  if (!isGas && ['nm3h','nm3min','scfh'].includes(fu.value)) fu.value = 'm3h';
+}
+
+function onGasSGChange() {
+  document.getElementById('gas-sg-custom-field').classList.toggle('hidden',
+    document.getElementById('gas-sg').value !== 'custom');
+}
+
+function onFlowUnitChange() {}
+
+function onSFChange() {
+  document.getElementById('sf-custom-field').classList.toggle('hidden',
+    document.getElementById('sf').value !== 'custom');
+}
+
+function onPUnitChange() {}
+
+function getSF() {
+  const s = document.getElementById('sf').value;
+  if (s === 'custom') { const v = parseFloat(document.getElementById('sf-custom').value); return isNaN(v) ? 1.3 : Math.max(1, Math.min(10, v)); }
+  return parseFloat(s);
+}
+
+// ══ UNIT CONVERSIONS ═════════════════════════════════════════════
+function toBarAbs(val, unit) {
+  switch(unit) {
+    case 'barg':   return val + ATM;
+    case 'barabs': return val;
+    case 'psig':   return val * 0.0689476 + ATM;
+    case 'psiabs': return val * 0.0689476;
+    case 'kpag':   return val * 0.01 + ATM;
+    case 'kpaabs': return val * 0.01;
+    default:       return val + ATM;
+  }
+}
+
+function toM3H(val, unit) {
+  switch(unit) {
+    case 'm3h':    return val;
+    case 'lmin':   return val * 0.06;
+    case 'lh':     return val * 0.001;
+    case 'usgpm':  return val * 0.227125;
+    case 'ukgph':  return val * 0.004546;
+    case 'nm3h':   return val;
+    case 'nm3min': return val * 60;
+    case 'scfh':   return val * 0.028317;
+    default:       return val;
+  }
+}
+
+function toKelvin(val, unit) {
+  switch(unit) {
+    case 'C': return val + 273.15;
+    case 'F': return (val - 32) * 5/9 + 273.15;
+    case 'K': return val;
+    default:  return val + 273.15;
+  }
+}
+
+function dpDisplay(dpBar, pUnit) {
+  switch(pUnit) {
+    case 'barg': case 'barabs': return { val: dpBar.toFixed(4), unit: 'bar' };
+    case 'psig': case 'psiabs': return { val: (dpBar / 0.0689476).toFixed(3), unit: 'psi' };
+    case 'kpag': case 'kpaabs': return { val: (dpBar * 100).toFixed(2), unit: 'kPa' };
+    default: return { val: dpBar.toFixed(4), unit: 'bar' };
+  }
+}
+
+function flowLabel(unit) {
+  const map = { m3h:'m³/h', lmin:'L/min', lh:'L/h', usgpm:'US gpm', ukgph:'UK gal/h', nm3h:'Nm³/h', nm3min:'Nm³/min', scfh:'SCFH' };
+  return map[unit] || unit;
+}
+
+function fmt(n) {
+  if (isNaN(n) || !isFinite(n)) return '—';
+  if (Math.abs(n) >= 1000) return Math.round(n).toLocaleString();
+  if (Math.abs(n) >= 100)  return n.toFixed(1);
+  if (Math.abs(n) >= 10)   return n.toFixed(2);
+  if (Math.abs(n) >= 1)    return n.toFixed(3);
+  return n.toFixed(4);
+}
+
+function warnHTML(warnings) {
+  return warnings.map(w => `
+    <div class="callout ${w.t === 'danger' ? 'c-red' : 'c-amber'}">
+      <div class="callout-icon">${w.t === 'danger' ? '⊗' : '⚠'}</div>
+      <div>${w.m}</div>
+    </div>`).join('');
+}
+
+// ══ CALCULATE ════════════════════════════════════════════════════
+function calculate() {
+  const fluid    = document.getElementById('fluid').value;
+  const flowRaw  = parseFloat(document.getElementById('flow').value) || 0;
+  const flowUnit = document.getElementById('flow-unit').value;
+  const p1raw    = parseFloat(document.getElementById('p1').value) || 0;
+  const p2raw    = parseFloat(document.getElementById('p2').value) || 0;
+  const pUnit    = document.getElementById('p-unit').value;
+  const tempRaw  = parseFloat(document.getElementById('temp').value) || 20;
+  const tempUnit = document.getElementById('temp-unit').value;
+  const sf       = getSF();
+
+  const Q     = toM3H(flowRaw, flowUnit);
+  const p1abs = toBarAbs(p1raw, pUnit);
+  const p2abs = toBarAbs(p2raw, pUnit);
+  const dP    = Math.max(p1abs - p2abs, 0.0001);
+  const T_K   = toKelvin(tempRaw, tempUnit);
+
+  const SG_liquid = fluid === 'liquid_other'
+    ? (parseFloat(document.getElementById('sg').value) || 1.0) : 1.0;
+
+  let SG_gas = 1.0;
+  if (fluid === 'gas') {
+    const gsgSel = document.getElementById('gas-sg').value;
+    SG_gas = gsgSel === 'custom'
+      ? (parseFloat(document.getElementById('gas-sg-custom').value) || 1.0)
+      : parseFloat(gsgSel);
+  }
+
+  let Kv_bare, feq, fvals, warnings = [];
+
+  if (fluid === 'liquid' || fluid === 'liquid_other') {
+    Kv_bare = Q * Math.sqrt(SG_liquid / dP);
+    feq   = 'Kv = Q × √( SG / ΔP )';
+    fvals = `Q   = ${Q.toFixed(4)} m³/h\nSG  = ${SG_liquid.toFixed(4)}\nΔP  = ${dP.toFixed(4)} bar\n─────────────────────────\nKv  = ${Q.toFixed(4)} × √( ${SG_liquid.toFixed(4)} / ${dP.toFixed(4)} )\n    = ${Kv_bare.toFixed(4)} m³/h`;
+    const Pv = 0.023;
+    const sigma = (p2abs - Pv) / dP;
+    if (sigma < 0.5) warnings.push({ t:'danger', m:`Cavitation risk: σ = ${sigma.toFixed(2)} (below critical threshold of 0.5). Vapour bubbles will form and collapse, damaging the valve. Increase P2 or use multi-stage ΔP reduction.` });
+    else if (sigma < 0.8) warnings.push({ t:'warn', m:`Cavitation caution: σ = ${sigma.toFixed(2)} — approaching risk zone. Monitor for vibration and noise at this operating point.` });
+
+  } else if (fluid === 'gas') {
+    const rhoN = 1.293 * SG_gas;
+    const critRatio = p2abs / p1abs;
+    if (critRatio > 0.5) {
+      const denom = Math.sqrt(p1abs * p1abs - p2abs * p2abs);
+      Kv_bare = (Q * Math.sqrt(rhoN * T_K)) / (514 * denom);
+      feq   = 'Kv = QN × √(ρN · T) / ( 514 × √(P1² − P2²) )   [subcritical]';
+      fvals = `Flow regime: SUBCRITICAL  (P2/P1 = ${critRatio.toFixed(3)} > 0.5)\nQN  = ${Q.toFixed(4)} Nm³/h\nρN  = ${rhoN.toFixed(4)} kg/m³  (SG = ${SG_gas})\nT   = ${T_K.toFixed(2)} K\nP1  = ${p1abs.toFixed(4)} bar abs\nP2  = ${p2abs.toFixed(4)} bar abs\n─────────────────────────────────────\nKv  = ${Q.toFixed(4)} × √(${rhoN.toFixed(4)} × ${T_K.toFixed(2)}) / (514 × √(${p1abs.toFixed(4)}² − ${p2abs.toFixed(4)}²))\n    = ${Kv_bare.toFixed(4)} m³/h`;
+    } else {
+      Kv_bare = (Q * Math.sqrt(rhoN * T_K)) / (257 * p1abs);
+      feq   = 'Kv = QN × √(ρN · T) / ( 257 × P1abs )   [supercritical / choked]';
+      fvals = `Flow regime: SUPERCRITICAL / CHOKED  (P2/P1 = ${critRatio.toFixed(3)} ≤ 0.5)\nQN  = ${Q.toFixed(4)} Nm³/h\nρN  = ${rhoN.toFixed(4)} kg/m³  (SG = ${SG_gas})\nT   = ${T_K.toFixed(2)} K\nP1  = ${p1abs.toFixed(4)} bar abs\n─────────────────────────────────────\nKv  = ${Q.toFixed(4)} × √(${rhoN.toFixed(4)} × ${T_K.toFixed(2)}) / (257 × ${p1abs.toFixed(4)})\n    = ${Kv_bare.toFixed(4)} m³/h`;
+      warnings.push({ t:'warn', m:`Choked (supercritical) flow: P2/P1 = ${critRatio.toFixed(3)} ≤ 0.5. Increasing ΔP beyond this point will not increase flow. The supercritical formula has been applied.` });
+    }
+  } else {
+    Kv_bare = Q / (10.54 * Math.sqrt(dP));
+    feq   = 'Kv = Q / ( 10.54 × √ΔP )   [saturated steam, IEC 60534]';
+    fvals = `Q   = ${Q.toFixed(4)} kg/h\nΔP  = ${dP.toFixed(4)} bar\n─────────────────────────────\nKv  = ${Q.toFixed(4)} / (10.54 × √${dP.toFixed(4)})\n    = ${Kv_bare.toFixed(4)} m³/h`;
+    warnings.push({ t:'warn', m:`Steam: constant 10.54 is calibrated for saturated steam. For superheated steam, apply a +5–10% correction and verify against manufacturer data.` });
+  }
+
+  const Kv_design = Kv_bare * sf;
+  const KV_TO_CV  = 1.1561;
+  const Cv_design = Kv_design * KV_TO_CV;
+  const Cv_bare   = Kv_bare   * KV_TO_CV;
+  const Kv_lmin   = Kv_design * 1000 / 60;
+  const Kv_lh     = Kv_design * 1000;
+  const Kv_m3s    = Kv_design / 3600;
+  const dpD       = dpDisplay(dP, pUnit);
+
+  document.getElementById('placeholder').classList.add('hidden');
+  document.getElementById('results-b').classList.add('hidden');
+  document.getElementById('results').classList.remove('hidden');
+
+  const heroGrid = document.getElementById('hero-grid');
+  if (outputUnit === 'both') {
+    heroGrid.innerHTML = `
+      <div class="rh-item">
+        <div class="rh-name">Kv required <span style="opacity:.5;font-size:10px">(metric)</span></div>
+        <div class="rh-val">${fmt(Kv_design)}<span class="rh-unit">m³/h</span></div>
+        <div class="rh-sub">IEC 60534 · at 1 bar ΔP, fully open</div>
+      </div>
+      <div class="rh-item">
+        <div class="rh-name">Cv required <span style="opacity:.5;font-size:10px">(imperial)</span></div>
+        <div class="rh-val">${fmt(Cv_design)}<span class="rh-unit">US gpm</span></div>
+        <div class="rh-sub">ISA 75.01 · at 1 psi ΔP, fully open</div>
+      </div>`;
+  } else if (outputUnit === 'imperial') {
+    heroGrid.innerHTML = `
+      <div class="rh-item" style="grid-column:1/-1">
+        <div class="rh-name">Cv required (ISA 75.01)</div>
+        <div class="rh-val" style="font-size:52px">${fmt(Cv_design)}<span class="rh-unit">US gpm @ 1 psi</span></div>
+        <div class="rh-sub">Safety factor ${sf}× applied · bare Cv = ${fmt(Cv_bare)}</div>
+      </div>`;
+  } else {
+    heroGrid.innerHTML = `
+      <div class="rh-item" style="grid-column:1/-1">
+        <div class="rh-name">Kv required (IEC 60534)</div>
+        <div class="rh-val" style="font-size:52px">${fmt(Kv_design)}<span class="rh-unit">m³/h</span></div>
+        <div class="rh-sub">Safety factor ${sf}× applied · bare Kv = ${fmt(Kv_bare)}</div>
+      </div>`;
+  }
+
+  document.getElementById('dp-val').textContent     = dpD.val;
+  document.getElementById('dp-sub').textContent     = dpD.unit + ' differential';
+  document.getElementById('q-val').textContent      = fmt(Q);
+  document.getElementById('q-sub').textContent      = flowLabel(flowUnit);
+  document.getElementById('kv-bare-val').textContent = fmt(Kv_bare);
+  document.getElementById('warnings-area').innerHTML = warnHTML(warnings);
+  document.getElementById('formula-eq').textContent  = feq;
+  document.getElementById('formula-vals').textContent = fvals;
+
+  document.getElementById('conv-rows').innerHTML = [
+    { name:'Kv (m³/h)',   val:fmt(Kv_design),  primary: outputUnit !== 'imperial' },
+    { name:'Cv (US gpm)', val:fmt(Cv_design),   primary: outputUnit === 'imperial' },
+    { name:'Kv (L/min)',  val:fmt(Kv_lmin),     primary: false },
+    { name:'Kv (L/h)',    val:fmt(Kv_lh),       primary: false },
+    { name:'Kv (m³/s)',   val:fmt(Kv_m3s),      primary: false },
+    { name:'Kv bare (no SF)', val:fmt(Kv_bare), primary: false },
+    { name:'Cv bare (no SF)', val:fmt(Cv_bare),  primary: false },
+  ].map(r => `
+    <div class="conv-row${r.primary?' primary':''}">
+      <div class="conv-name">${r.name}</div>
+      <div class="conv-val">${r.val}</div>
+      <div class="conv-badge ${r.primary?'badge-primary':'badge-derived'}">${r.primary?'selected':'derived'}</div>
+    </div>`).join('');
+
+  const isGas = fluid === 'gas', isSteam = fluid === 'steam';
+  document.getElementById('instr-body').innerHTML = `
+    Your valve must have a <strong>Kv ≥ ${fmt(Kv_design)} m³/h</strong> (Cv ≥ ${fmt(Cv_design)}) to pass ${fmt(flowRaw)} ${flowLabel(flowUnit)} at a pressure drop of ${dpD.val} ${dpD.unit}.
+    This already includes a <strong>${sf}× safety factor</strong> — select the next standard valve size <em>above</em> this value from your catalogue.<br><br>
+    ${isGas ? 'For compressed gas applications, verify the valve manufacturer has certified the Kv at your working pressure and temperature, not just at reference conditions.' : ''}
+    ${isSteam ? 'For steam valves, confirm the manufacturer specifies the Kv for saturated steam — not water or gas — and that the body and trim materials are rated for the saturated steam temperature.' : ''}
+    ${!isGas && !isSteam ? 'Check the valve\'s rated Kvs in its datasheet — if Kvs > ' + fmt(Kv_design) + ' m³/h the valve will pass your required flow. If Kvs < ' + fmt(Kv_design) + ' m³/h it will not pass full flow.' : ''}`;
+}
+
+// ══ SYNC KV/CV ════════════════════════════════════════════════════
+const KV_TO_CV = 1.1561;
+function syncKvCv(from) {
+  const kvEl = document.getElementById('b-kvs-m3h');
+  const cvEl = document.getElementById('b-kvs-cv');
+  if (from === 'kv') {
+    const kv = parseFloat(kvEl.value);
+    if (!isNaN(kv) && kv > 0) cvEl.value = (kv * KV_TO_CV).toFixed(3);
+  } else {
+    const cv = parseFloat(cvEl.value);
+    if (!isNaN(cv) && cv > 0) kvEl.value = (cv / KV_TO_CV).toFixed(3);
+  }
+}
+document.getElementById('b-kvs-m3h').addEventListener('input', () => syncKvCv('kv'));
+
+function onBFluidChange() {
+  const f = document.getElementById('b-fluid').value;
+  document.getElementById('b-sg-field').classList.toggle('hidden',     f !== 'liquid_other');
+  document.getElementById('b-gas-sg-field').classList.toggle('hidden', f !== 'gas');
+  document.getElementById('b-gas-extra').style.opacity = f === 'gas' ? '1' : '0.35';
+}
+
+// ══ CALCULATE REVERSE ════════════════════════════════════════════
+function calculateReverse() {
+  const fluid    = document.getElementById('b-fluid').value;
+  const Kvs      = parseFloat(document.getElementById('b-kvs-m3h').value);
+  const flowRaw  = parseFloat(document.getElementById('b-flow').value) || 0;
+  const flowUnit = document.getElementById('b-flow-unit').value;
+  const pOutUnit = document.getElementById('b-p-unit').value;
+  const tempRaw  = parseFloat(document.getElementById('b-temp').value) || 20;
+  const tempUnit = document.getElementById('b-temp-unit').value;
+  const p1raw    = parseFloat(document.getElementById('b-p1').value) || 0;
+
+  if (!Kvs || Kvs <= 0) { alert('Please enter the valve Kvs from your catalogue.'); return; }
+
+  const Q   = toM3H(flowRaw, flowUnit);
+  const T_K = toKelvin(tempRaw, tempUnit);
+  const SG_liquid = fluid === 'liquid_other'
+    ? (parseFloat(document.getElementById('b-sg').value) || 1.0) : 1.0;
+  const SG_gas = parseFloat(document.getElementById('b-gas-sg').value) || 1.0;
+  const utilPct = Math.min(999, Math.round((Q / Kvs) * 100));
+
+  let dP_bar, feq, fvals, bWarnings = [];
+
+  if (fluid === 'liquid' || fluid === 'liquid_other') {
+    dP_bar = SG_liquid * Math.pow(Q / Kvs, 2);
+    feq    = 'ΔP = SG × ( Q / Kvs )²';
+    fvals  = `Q   = ${Q.toFixed(4)} m³/h\nKvs = ${Kvs} m³/h\nSG  = ${SG_liquid}\n───────────────────────────\nΔP  = ${SG_liquid} × ( ${Q.toFixed(4)} / ${Kvs} )²\n    = ${dP_bar.toFixed(5)} bar`;
+    const Pv = 0.023, p1ba = toBarAbs(p1raw, 'barg'), p2ba = p1ba - dP_bar;
+    if (p2ba > 0) { const sigma = (p2ba - Pv) / dP_bar; if (sigma < 0.5) bWarnings.push({ t:'danger', m:`Cavitation risk at this flow: σ = ${sigma.toFixed(2)} < 0.5. Downstream pressure is too close to vapour pressure.` }); }
+    if (Q > Kvs) bWarnings.push({ t:'danger', m:`Flow rate Q = ${fmt(Q)} m³/h exceeds valve Kvs = ${Kvs} m³/h. This valve cannot physically pass this flow. Choose a larger Kvs.` });
+
+  } else if (fluid === 'gas') {
+    const rhoN = 1.293 * SG_gas, p1abs = p1raw + ATM;
+    const A = (Q * Math.sqrt(rhoN * T_K)) / (514 * Kvs);
+    const p2sq = p1abs * p1abs - A * A;
+    if (p2sq <= 0) {
+      const Q_choked = (257 * Kvs * p1abs) / Math.sqrt(rhoN * T_K);
+      dP_bar = p1abs - ATM;
+      feq    = 'CHOKED — valve cannot pass this flow rate at P1';
+      fvals  = `Q requested  = ${fmt(Q)} Nm³/h\nMax Q at choke = ${fmt(Q_choked)} Nm³/h\nValve Kvs = ${Kvs}\nP1abs = ${p1abs.toFixed(3)} bar abs\n──────────────────────────────────\nFlow is choked. Increase Kvs or P1.`;
+      bWarnings.push({ t:'danger', m:`Choked flow: the valve cannot pass ${fmt(Q)} Nm³/h at P1 = ${p1raw} bar g. Maximum flow at this condition is ${fmt(Q_choked)} Nm³/h. Use a larger Kvs or increase P1.` });
+    } else {
+      const p2abs = Math.sqrt(p2sq); dP_bar = p1abs - p2abs;
+      const critRatio = p2abs / p1abs;
+      feq    = 'P2 = √( P1² − [QN×√(ρN·T) / (514×Kvs)]² ),  ΔP = P1 − P2   [subcritical gas]';
+      fvals  = `QN  = ${fmt(Q)} Nm³/h,  Kvs = ${Kvs} m³/h\nρN  = ${rhoN.toFixed(4)} kg/m³,  T = ${T_K.toFixed(1)} K\nP1  = ${p1abs.toFixed(4)} bar abs\nA   = QN×√(ρN·T) / (514×Kvs) = ${A.toFixed(5)}\nP2  = √(${p1abs.toFixed(4)}² − ${A.toFixed(5)}²) = ${p2abs.toFixed(4)} bar abs\n──────────────────────────────────\nΔP  = ${p1abs.toFixed(4)} − ${p2abs.toFixed(4)} = ${dP_bar.toFixed(5)} bar`;
+      if (critRatio <= 0.5) bWarnings.push({ t:'warn', m:`Result approaches choked flow (P2/P1 = ${critRatio.toFixed(3)}). At this ratio the subcritical formula breaks down. Actual ΔP may be higher.` });
+    }
+  } else {
+    dP_bar = Math.pow(Q / (10.54 * Kvs), 2);
+    feq    = 'ΔP = ( Q / (10.54 × Kvs) )²   [saturated steam]';
+    fvals  = `Q   = ${fmt(Q)} kg/h\nKvs = ${Kvs} m³/h\n───────────────────────────\nΔP  = ( ${fmt(Q)} / (10.54 × ${Kvs}) )²\n    = ${dP_bar.toFixed(5)} bar`;
+    bWarnings.push({ t:'warn', m:`Steam constant 10.54 is for saturated steam only. Apply +5–10% correction for superheated steam.` });
+  }
+
+  const dpBar = dP_bar, dpPsi = dP_bar / 0.0689476, dpKPa = dP_bar * 100;
+  let heroVal, heroUnit;
+  if (pOutUnit === 'psig')      { heroVal = fmt(dpPsi); heroUnit = 'psi'; }
+  else if (pOutUnit === 'kpag') { heroVal = fmt(dpKPa); heroUnit = 'kPa'; }
+  else                          { heroVal = fmt(dpBar); heroUnit = 'bar'; }
+
+  document.getElementById('placeholder').classList.add('hidden');
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('results-b').classList.remove('hidden');
+
+  document.getElementById('b-hero-grid').innerHTML = `
+    <div class="rh-item" style="grid-column:1/-1">
+      <div class="rh-name">Pressure drop ΔP across valve</div>
+      <div class="rh-val" style="font-size:52px">${heroVal}<span class="rh-unit">${heroUnit}</span></div>
+      <div class="rh-sub">at Q = ${fmt(Q)} ${flowLabel(flowUnit)}  ·  Kvs = ${Kvs} m³/h</div>
+    </div>`;
+
+  document.getElementById('b-kvs-display').textContent  = fmt(Kvs);
+  document.getElementById('b-q-display').textContent    = fmt(Q);
+  document.getElementById('b-q-sub').textContent        = flowLabel(flowUnit);
+  document.getElementById('b-util-display').textContent = utilPct + '%';
+  document.getElementById('b-warnings-area').innerHTML  = warnHTML(bWarnings);
+  document.getElementById('b-formula-eq').textContent   = feq;
+  document.getElementById('b-formula-vals').textContent = fvals;
+
+  document.getElementById('b-conv-rows').innerHTML = [
+    { name:'ΔP in bar',    val:fmt(dpBar),        primary: pOutUnit === 'barg' },
+    { name:'ΔP in psi',    val:fmt(dpPsi),        primary: pOutUnit === 'psig' },
+    { name:'ΔP in kPa',    val:fmt(dpKPa),        primary: pOutUnit === 'kpag' },
+    { name:'ΔP in mbar',   val:fmt(dpBar * 1000), primary: false },
+    { name:'ΔP in mmH₂O',  val:fmt(dpBar * 10197.2), primary: false },
+  ].map(r => `
+    <div class="conv-row${r.primary?' primary':''}">
+      <div class="conv-name">${r.name}</div>
+      <div class="conv-val">${r.val}</div>
+      <div class="conv-badge ${r.primary?'badge-primary':'badge-derived'}">${r.primary?'selected':'derived'}</div>
+    </div>`).join('');
+
+  document.getElementById('b-instr-body').innerHTML = `
+    With your valve (Kvs = ${fmt(Kvs)} m³/h) fully open and passing ${fmt(Q)} ${flowLabel(flowUnit)},
+    the pressure drop across it is <strong>${heroVal} ${heroUnit}</strong>.<br><br>
+    Use this to check whether your system has enough available ΔP to drive the required flow,
+    or to budget the valve's pressure loss in your overall piping calculation.
+    If the ΔP is too high, you need a valve with a larger Kvs. If it's very low, your valve
+    has excess capacity — which for isolation duty is perfectly fine.`;
+}
+
+// Init
+onFluidChange();
+onBFluidChange();
+</script>
+</body>
+</html>

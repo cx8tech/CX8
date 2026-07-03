@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valve Torque Profile — CX8 Technologies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f0ede8;
+  --bg2:       #e6e2db;
+  --surface:   #faf9f7;
+  --surface2:  #f3f1ed;
+  --border:    #ddd8cf;
+  --border2:   #c8c1b4;
+  --text:      #1c1814;
+  --text2:     #5a524a;
+  --text3:     #9a9087;
+  --navy:      #1e2d4a;
+  --navy2:     #2c4070;
+  --navy-bg:   #eef1f7;
+  --navy-bg2:  #dde4f0;
+  --teal:      #0d7a6e;
+  --teal-bg:   #e8f5f4;
+  --teal-bg2:  #c8eeeb;
+  --amber:     #b85c00;
+  --amber-bg:  #fef3e2;
+  --amber-bg2: #fde8c0;
+  --red:       #c0392b;
+  --red-bg:    #fdf2f1;
+  --green:     #1a6b3a;
+  --green-bg:  #edfaf3;
+  --green-bg2: #d4f5e3;
+  --radius:    10px;
+  --shadow:    0 1px 3px rgba(0,0,0,.07), 0 4px 14px rgba(0,0,0,.05);
+  --shadow2:   0 2px 8px rgba(0,0,0,.10), 0 8px 28px rgba(0,0,0,.07);
+  --mono: "DM Mono", monospace;
+  --sans: "DM Sans", sans-serif;
+  --serif: "Sora", sans-serif;
+  --display: "Sora", sans-serif;
+
+  /* torque colours — kept vivid for chart readability */
+  --bto: #e8365d; --rto: #f07830; --eto: #e8b020;
+  --btc: #0ea86e; --rtc: #0098b8; --etc: #8858e8;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-weight: 300; min-height: 100vh; }
+
+/* ── Header ── */
+.header {
+  background: var(--navy);
+  padding: 0 32px;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 16px rgba(0,0,0,.22);
+  flex-shrink: 0;
+}
+.hdr-left { display: flex; align-items: center; gap: 14px; }
+.cx8-mark {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: linear-gradient(135deg, #0d8a7b, #243d70);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display); font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.hdr-brand { display: flex; flex-direction: column; gap: 1px; }
+.hdr-name { font-family: var(--display); font-size: 15px; font-weight: 600; color: #fff; letter-spacing: -.01em; line-height: 1.1; }
+.hdr-sub  { font-family: var(--mono); font-size: 8px; color: rgba(255,255,255,.38); letter-spacing: .1em; text-transform: uppercase; }
+.hdr-right { display: flex; align-items: center; gap: 16px; }
+.hdr-tags { display: flex; gap: 6px; }
+.hdr-tag  { font-family: var(--mono); font-size: 9px; font-weight: 500; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.45); letter-spacing: .06em; }
+
+/* ── Page wrap — defined in main layout section ── */
+
+/* ── Tool hero ── */
+.intro-banner {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+  border-radius: 0;
+  padding: 24px 28px 20px;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.intro-banner h1 { font-family: var(--display); font-size: 21px; font-weight: 600; color: #fff; margin-bottom: 6px; letter-spacing: -.02em; }
+.intro-banner p  { font-size: 12.5px; color: rgba(255,255,255,.5); line-height: 1.75; max-width: 860px; }
+.intro-banner p strong { color: rgba(255,255,255,.8); font-weight: 600; }
+.hero-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hero-chip  { font-family: var(--mono); font-size: 9px; font-weight: 500; padding: 3px 9px; border-radius: 12px; border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.45); letter-spacing: .06em; }
+
+/* ── Main layout ── */
+.wrap { max-width: 1400px; margin: 0 auto; padding: 22px 24px 60px; }
+.main-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+.left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Panel ── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.panel-hdr {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 11px 18px;
+  display: flex; align-items: center; gap: 8px;
+}
+.panel-hdr-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--navy); color: #fff;
+  font-size: 10px; font-weight: 600; font-family: var(--mono);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.panel-hdr-title { font-family: var(--mono); font-size: 9.5px; font-weight: 500; letter-spacing: .13em; color: var(--text2); text-transform: uppercase; }
+.panel-hdr-sub   { font-size: 10px; color: var(--text3); margin-left: auto; font-style: italic; }
+.panel-body { padding: 16px 18px; }
+
+/* ── Section label ── */
+.sec { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: .14em; color: var(--text3); text-transform: uppercase; margin: 16px 0 9px; display: flex; align-items: center; gap: 8px; }
+.sec:first-child { margin-top: 0; }
+.sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── Fields ── */
+.field { margin-bottom: 10px; }
+.field label { display: flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 500; color: var(--text2); margin-bottom: 4px; }
+.req { color: var(--red); font-size: 11px; margin-left: 1px; }
+.hint { font-size: 10px; color: var(--text3); margin-top: 3px; font-style: italic; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+input[type=number], input[type=text], select {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text); font-family: var(--sans);
+  font-size: 13px; font-weight: 400; padding: 8px 10px; outline: none;
+  transition: border-color .15s, box-shadow .15s; -webkit-appearance: none;
+}
+input[type=number]:focus, input[type=text]:focus, select:focus {
+  border-color: var(--navy); box-shadow: 0 0 0 3px var(--navy-bg2); background: var(--surface);
+}
+
+/* ── Tooltip ── */
+.tip { display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;
+  background:var(--navy-bg2);color:var(--navy2);font-size:9px;font-weight:700;cursor:default;
+  border:1px solid var(--navy-bg2);position:relative;font-family:var(--sans);flex-shrink:0; }
+.tip:hover { background:var(--navy);color:#fff; }
+#tip-float { position:fixed;z-index:9999;background:var(--navy);color:#fff;font-family:var(--sans);
+  font-size:11px;font-weight:300;line-height:1.6;padding:9px 12px;border-radius:8px;width:250px;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);pointer-events:none;display:none;white-space:normal; }
+
+/* ── Valve type toggle ── */
+.vtype-group { display: flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; margin-bottom: 4px; }
+.vtype-btn { flex: 1; padding: 9px 6px; font-size: 12px; font-weight: 500; text-align: center; cursor: pointer; color: var(--text3); background: var(--bg); border: none; transition: all .12s; font-family: var(--sans); }
+.vtype-btn.on { background: var(--navy); color: #fff; }
+
+/* ── SF sliders ── */
+.sf-block { background: var(--amber-bg); border: 1px solid var(--amber-bg2); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
+.sf-block-title { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: .12em; color: var(--amber); text-transform: uppercase; margin-bottom: 12px; }
+.sl-row { margin-bottom: 12px; }
+.sl-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.sl-name { font-size: 11px; color: var(--text2); font-weight: 500; }
+.sl-val  { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--amber); }
+.sl-desc { font-size: 10px; color: var(--text3); margin-top: 3px; font-style: italic; }
+
+input[type=range] {
+  display: block; width: 100%; height: 4px;
+  -webkit-appearance: none; appearance: none;
+  background: var(--border2); border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--amber); border: 2px solid var(--surface); cursor: pointer;
+  box-shadow: 0 1px 4px rgba(184,92,0,.35);
+}
+input[type=range]::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--amber); border: 2px solid var(--surface);
+}
+
+/* combined SF result */
+.sf-result { background: var(--surface); border: 1px solid var(--amber-bg2); border-radius: 8px; padding: 10px 14px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center; }
+.sf-result-label { font-size: 11px; color: var(--text2); }
+.sf-result-val { font-family: var(--mono); font-size: 18px; font-weight: 600; color: var(--amber); }
+
+/* corrected BTO */
+.bto-result { background: var(--navy); border-radius: var(--radius); padding: 14px 16px; margin-top: 10px; }
+.bto-result-label { font-family: var(--mono); font-size: 9px; letter-spacing: .12em; color: rgba(255,255,255,.4); text-transform: uppercase; margin-bottom: 6px; }
+.bto-result-val { font-family: var(--serif); font-size: 36px; font-weight: 600; color: #fff; line-height: 1; }
+.bto-result-sub { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 5px; font-family: var(--mono); }
+
+/* ── Calculate button ── */
+.btn-calc {
+  width: 100%; padding: 13px; background: var(--navy); color: #fff;
+  font-family: var(--sans); font-size: 13px; font-weight: 500; letter-spacing: .03em;
+  border: none; border-radius: 7px; cursor: pointer; transition: all .15s; margin-top: 6px;
+  box-shadow: 0 2px 8px rgba(30,45,74,.28);
+}
+.btn-calc:hover { background: var(--navy2); transform: translateY(-1px); }
+
+/* ── RIGHT side ── */
+.right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 44px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+.right-col::-webkit-scrollbar { width: 4px; }
+.right-col::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* valve SVG panel */
+.valve-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.valve-panel-hdr { background: var(--navy); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; }
+.valve-panel-title { font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; color: rgba(255,255,255,.55); text-transform: uppercase; }
+.valve-panel-badges { display: flex; gap: 8px; align-items: center; }
+.vbadge { font-family: var(--mono); font-size: 10px; padding: 3px 9px; border-radius: 12px; background: rgba(255,255,255,.1); color: rgba(255,255,255,.7); }
+.vbadge.angle { background: var(--teal); color: #fff; }
+
+.valve-viz { display: grid; grid-template-columns: 200px 1fr; gap: 0; }
+.svg-wrap { background: #f8f6f2; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; border-right: 1px solid var(--border); }
+#vsvg { width: 170px; height: auto; }
+
+.angle-scrub { padding: 10px 14px; border-top: 1px solid var(--border); }
+.scrub-labels { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9px; color: var(--text3); margin-bottom: 6px; }
+input#aslider {
+  display: block; width: 100%; height: 5px;
+  -webkit-appearance: none; appearance: none;
+  background: var(--border2); border-radius: 3px; outline: none; cursor: pointer;
+}
+input#aslider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--navy); border: 3px solid var(--surface); cursor: pointer;
+  box-shadow: 0 2px 8px rgba(30,45,74,.4);
+}
+
+/* chart area */
+.chart-wrap { padding: 14px 16px; flex: 1; }
+.chart-title { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: .13em; color: var(--text3); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.chart-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+#cc { display: block; width: 100%; height: 220px; }
+
+/* ── Torque cards ── */
+.torque-cards { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; }
+.tc {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 12px;
+  box-shadow: var(--shadow); border-top-width: 3px; position: relative;
+}
+.tc-pos  { font-family: var(--mono); font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+.tc-val  { font-family: var(--serif); font-size: 20px; font-weight: 600; line-height: 1; margin-bottom: 2px; }
+.tc-ratio{ font-size: 10px; color: var(--text3); }
+.tc-edit { font-size: 9px; color: var(--text3); margin-top: 5px; cursor: pointer; text-decoration: underline; }
+.tc-edit:hover { color: var(--amber); }
+.tc.overridden { background: var(--amber-bg); border-color: var(--amber-bg2); }
+
+/* override input */
+.override-popup {
+  background: var(--amber-bg); border: 1px solid var(--amber-bg2);
+  border-radius: var(--radius); padding: 12px 14px; margin-top: 8px;
+}
+.override-popup-title { font-size: 10px; font-weight: 600; color: var(--amber); margin-bottom: 8px; font-family: var(--mono); letter-spacing: .06em; }
+.override-row { display: flex; align-items: center; gap: 8px; }
+.override-row input { flex: 1; font-size: 15px; font-weight: 600; }
+.override-row button { padding: 6px 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; cursor: pointer; color: var(--text2); font-family: var(--sans); white-space: nowrap; }
+.override-row button:hover { background: var(--border); }
+.override-hint { font-size: 10px; color: var(--text3); margin-top: 5px; font-style: italic; }
+
+/* ── Summary table ── */
+.summary-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.summary-hdr { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; }
+.summary-title { font-family: var(--mono); font-size: 9.5px; font-weight: 500; letter-spacing: .13em; color: var(--text3); text-transform: uppercase; }
+.btn-export { padding: 7px 16px; background: var(--teal); color: #fff; border: none; border-radius: 6px; font-size: 11.5px; font-weight: 500; cursor: pointer; font-family: var(--sans); transition: all .15s; }
+.btn-export:hover { opacity: .88; transform: translateY(-1px); }
+
+.sum-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.sum-table th { background: var(--surface2); padding: 9px 14px; text-align: left; font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: .1em; color: var(--text3); text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.sum-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+.sum-table tr:last-child td { border-bottom: none; }
+.sum-table td.label { font-weight: 500; color: var(--text2); font-size: 11.5px; }
+.sum-table td.val { font-family: var(--mono); font-size: 13px; color: var(--navy); font-weight: 500; }
+.sum-table td.note { font-size: 11px; color: var(--text3); font-style: italic; }
+.sum-table tr.highlight td { background: var(--navy-bg); }
+
+/* ── Language switcher ── */
+.lang-switch { display:flex; gap:4px; align-items:center; }
+.lang-btn {
+  padding: 4px 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,.18);
+  background: transparent; color: rgba(255,255,255,.45); font-family: var(--mono);
+  font-size: 10px; font-weight: 500; cursor: pointer; letter-spacing: .06em;
+  transition: all .15s;
+}
+.lang-btn:hover { background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); }
+.lang-btn.active { background: rgba(255,255,255,.18); color: #fff; border-color: rgba(255,255,255,.35); }
+
+/* ── Hidden ── */
+.placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; gap: 10px; color: var(--text3); text-align: center; padding: 40px; }
+.ph-icon { font-size: 32px; opacity: .2; }
+.ph-title { font-family: var(--serif); font-size: 16px; color: var(--text3); }
+.ph-sub { font-size: 12px; color: var(--text3); max-width: 240px; line-height: 1.65; }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hdr-left">
+    <div class="cx8-mark">CX8</div>
+    <div class="hdr-brand">
+      <div class="hdr-name">Valve Torque Profile Visualizer</div>
+      <div class="hdr-sub">CX8 Technologies · Tools Made for Engineers</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+      <button class="lang-btn" onclick="setLang('de',this)">DE</button>
+      <button class="lang-btn" onclick="setLang('tr',this)">TR</button>
+    </div>
+    <div class="hdr-tags">
+      <div class="hdr-tag">ISO 5211</div>
+      <div class="hdr-tag">IEC 60534</div>
+    </div>
+  </div>
+</div>
+
+<div class="intro-banner">
+  <div style="max-width:1400px;margin:0 auto;padding:0 4px">
+    <h1 data-t="intro_title">Visualize the Torque Profile of Your Valve</h1>
+    <p data-t="intro_body">
+      This tool derives the <strong>full torque profile</strong> of your valve — BTO, RTO, ETO, BTC, RTC and ETC —
+      from the <strong>base torque stated in your valve manufacturer's datasheet</strong>.
+      It does not guess or look up values — you provide the base torque and Kv from your specific valve's catalogue page,
+      and the tool applies industry-standard ratios plus your chosen safety factors to build the complete profile
+      your actuator engineer needs.
+    </p>
+    <div class="hero-chips">
+      <span class="hero-chip">Ball &amp; Butterfly Valves</span>
+      <span class="hero-chip">BTO · RTO · ETO · BTC · RTC · ETC</span>
+      <span class="hero-chip">Safety Factor Correction</span>
+      <span class="hero-chip">Manual Override</span>
+      <span class="hero-chip">Excel Export</span>
+      <span class="hero-chip">EN · DE · TR</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="main-grid">
+
+    <!-- ═══ LEFT PANEL ═══ -->
+    <div class="left-col">
+
+      <!-- Step 1: Valve specs from datasheet -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-hdr-num">1</div>
+          <div class="panel-hdr-title" data-t="step1_title">Valve specifications — from manufacturer datasheet</div>
+        </div>
+        <div class="panel-body">
+          <div class="sec" data-t="sec_valvetype">Valve type</div>
+          <div class="vtype-group">
+            <button class="vtype-btn on" id="btn-ball" onclick="setValveType('ball',this)" data-t="btn_ball">Ball Valve</button>
+            <button class="vtype-btn" id="btn-butterfly" onclick="setValveType('butterfly',this)" data-t="btn_butterfly">Butterfly Valve</button>
+          </div>
+          <div class="sec"><span data-t="sec_datasheet">From the datasheet</span> <span style="font-size:9px;font-style:italic;text-transform:none;letter-spacing:0" data-t="sec_datasheet_sub">find these values on your valve's catalogue page</span></div>
+
+          <!-- BTO — only mandatory field, full width -->
+          <div class="field">
+            <label><span data-t="lbl_bto">Base torque (BTO)</span> <span class="req">*</span>
+              <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Break-to-Open%20torque%20from%20your%20valve%20datasheet%20at%20the%20relevant%20%CE%94P.%20This%20is%20the%20torque%20to%20initially%20move%20the%20valve%20from%20fully%20closed.%20Find%20it%20in%20the%20torque%20table%20of%20the%20catalogue%20%E2%80%94%20it%20is%20usually%20listed%20per%20DN%20and%20%CE%94P.">i</span>
+            </label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="number" id="bto-input" value="" placeholder="e.g. 86" min="1" max="50000" oninput="onInputChange()" style="flex:1">
+              <span style="font-family:var(--mono);font-size:12px;color:var(--text3);white-space:nowrap;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 10px">Nm</span>
+            </div>
+            <div class="hint" data-t="hint_bto">From the torque table in the manufacturer's datasheet</div>
+          </div>
+
+          <!-- Kv and DN — optional, side by side -->
+          <div class="row2">
+            <div class="field">
+              <label><span data-t="lbl_kv">Kv (fully open)</span>
+                <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Flow%20coefficient%20at%20fully%20open.%20Also%20called%20Kvs.%20Optional%20%E2%80%94%20used%20in%20summary%20only%2C%20not%20in%20torque%20calculation.">i</span>
+              </label>
+              <input type="number" id="kv-input" value="" placeholder="e.g. 270" min="0.01" step="0.1" oninput="onInputChange()">
+              <div class="hint" data-t="hint_kv">Kvs at 100% open (optional)</div>
+            </div>
+            <div class="field">
+              <label><span data-t="lbl_dn">DN / NPS</span></label>
+              <input type="text" id="dn-input" value="" placeholder="e.g. 50 or 2&quot;">
+              <div class="hint" data-t="hint_dn">Optional — for summary</div>
+            </div>
+          </div>
+
+          <!-- Pressure class and ΔP — optional, side by side -->
+          <div class="row2">
+            <div class="field">
+              <label><span data-t="lbl_pn">Pressure class</span>
+                <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="PN%20rating%20or%20ASME%20class.%20E.g.%20PN16%2C%20PN40%2C%20Class%20150.%20Optional%20%E2%80%94%20used%20in%20summary%20only.">i</span>
+              </label>
+              <input type="text" id="pn-input" value="" placeholder="e.g. PN40">
+              <div class="hint">Optional — for summary</div>
+            </div>
+            <div class="field">
+              <label><span data-t="lbl_dp">ΔP at rated torque</span>
+                <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="The%20differential%20pressure%20at%20which%20the%20datasheet%20torque%20is%20stated.%20Optional%20%E2%80%94%20used%20in%20summary.">i</span>
+              </label>
+              <div style="display:flex;gap:6px;align-items:center">
+                <input type="number" id="dp-input" value="" placeholder="e.g. 16" min="0" step="0.1" style="flex:1;min-width:0">
+                <span style="font-family:var(--mono);font-size:11px;color:var(--text3);white-space:nowrap;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 6px">bar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec"><span data-t="sec_media">Media details</span> <span style="font-size:9px;font-style:italic;text-transform:none;letter-spacing:0" data-t="sec_media_sub">for summary only — not used in calculations</span></div>
+          <div class="field">
+            <label data-t="lbl_media">Media / fluid</label>
+            <input type="hidden" id="media-input">
+            <select id="media-select" onchange="g('media-input').value=this.value">
+              <option value="">— Select —</option>
+              <option value="Water">Water</option>
+              <option value="Hot Water">Hot Water (&gt;60°C)</option>
+              <option value="Steam">Steam</option>
+              <option value="Compressed Air">Compressed Air</option>
+              <option value="Natural Gas">Natural Gas</option>
+              <option value="Nitrogen">Nitrogen (N₂)</option>
+              <option value="CO2">Carbon Dioxide (CO₂)</option>
+              <option value="Hydraulic Oil">Hydraulic Oil</option>
+              <option value="Thermal Oil">Thermal Oil</option>
+              <option value="Diesel / Fuel Oil">Diesel / Fuel Oil</option>
+              <option value="Glycol (50%)">Glycol Solution (50%)</option>
+              <option value="Chemical / Acid">Chemical / Acid</option>
+              <option value="Slurry">Slurry / Abrasive</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label data-t="lbl_temp">Operating temperature</label>
+            <div style="display:flex;gap:8px">
+              <input type="number" id="temp-input" value="" placeholder="e.g. 80" style="flex:1">
+              <select id="temp-unit" style="width:76px;flex-shrink:0">
+                <option value="C">°C</option>
+                <option value="F">°F</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Step 2: Safety factors -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-hdr-num">2</div>
+          <div class="panel-hdr-title" data-t="step2_title">Safety factor — corrections to base torque</div>
+        </div>
+        <div class="panel-body">
+          <p style="font-size:11.5px;color:var(--text2);line-height:1.7;margin-bottom:14px" data-t="step2_body">
+            The base torque from the datasheet is a catalogue value under standard conditions.
+            Real-world factors increase the torque demand on the actuator.
+            Adjust the sliders below — the combined safety factor is applied to the base BTO
+            to give the <strong>corrected BTO</strong> your actuator must deliver.
+          </p>
+          <div class="sf-block">
+            <div class="sf-block-title" data-t="sf_block_title">Correction factors</div>
+            <div class="sl-row">
+              <div class="sl-top">
+                <span class="sl-name"><span data-t="sf_temp_name">Temperature effect</span>
+                  <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="High%20temperatures%20increase%20seat%20friction%20and%20reduce%20seal%20elasticity%2C%20requiring%20more%20torque.%20%3E120%C2%B0C%20typically%20adds%2010%E2%80%9320%25.%20Cryogenic%20temperatures%20also%20increase%20torque%20due%20to%20material%20contraction.">i</span>
+                </span>
+                <span class="sl-val" id="sf-temp-val">1.00×</span>
+              </div>
+              <input type="range" id="sf-temp" min="1.0" max="1.5" value="1.0" step="0.01" oninput="onSFChange()">
+              <div class="sl-desc" id="sf-temp-desc" data-t="sf_temp_desc0">Ambient — no temperature correction needed</div>
+            </div>
+            <div class="sl-row">
+              <div class="sl-top">
+                <span class="sl-name"><span data-t="sf_other_name">Other factors</span>
+                  <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Covers%3A%20media%20viscosity%2C%20particulates%2Fslurry%2C%20aging%2Fwear%2C%20extended%20service%20intervals%2C%20stem%20packing%20tightness%2C%20or%20any%20other%20application-specific%20uncertainty%20not%20covered%20by%20temperature%20alone.">i</span>
+                </span>
+                <span class="sl-val" id="sf-other-val">1.25×</span>
+              </div>
+              <input type="range" id="sf-other" min="1.0" max="2.0" value="1.25" step="0.01" oninput="onSFChange()">
+              <div class="sl-desc" id="sf-other-desc" data-t="sf_other_desc1">Industry standard minimum safety factor</div>
+            </div>
+            <div class="sf-result">
+              <div class="sf-result-label" data-t="sf_combined_label">Combined safety factor (temp × other)</div>
+              <div class="sf-result-val" id="sf-combined">1.25×</div>
+            </div>
+          </div>
+          <div class="bto-result" id="bto-result-box">
+            <div class="bto-result-label" data-t="corrected_bto_label">Corrected BTO — actuator must deliver ≥ this</div>
+            <div class="bto-result-val" id="corrected-bto-val">— Nm</div>
+            <div class="bto-result-sub" id="corrected-bto-sub" data-t="corrected_bto_sub">Enter base torque above to calculate</div>
+          </div>
+          <button class="btn-calc" onclick="calculate()" data-t="btn_calculate">Generate torque profile →</button>
+
+        </div>
+      </div>
+
+    </div><!-- end left-col -->
+
+    <!-- ═══ RIGHT COLUMN ═══ -->
+    <div class="right-col">
+
+      <!-- Placeholder -->
+      <div class="panel" id="placeholder-panel">
+        <div class="placeholder">
+          <div class="ph-icon">⟳</div>
+          <div class="ph-title">No profile yet</div>
+          <div class="ph-sub">Fill in your valve datasheet values and press Generate to see the full torque profile.</div>
+        </div>
+      </div>
+
+      <!-- Results (hidden until calculated) -->
+      <div id="results-area" class="hidden">
+
+        <!-- Valve SVG + chart -->
+        <div class="valve-panel">
+          <div class="valve-panel-hdr">
+            <div class="valve-panel-title" id="vp-title">Ball valve torque profile</div>
+            <div class="valve-panel-badges">
+              <div class="vbadge" id="badge-dn">—</div>
+              <div class="vbadge" id="badge-pn">—</div>
+              <div class="vbadge angle" id="badge-angle">0° closed</div>
+              <div class="vbadge" id="badge-torque" style="background:rgba(232,54,93,.18);color:var(--bto)">— Nm</div>
+            </div>
+          </div>
+
+          <div class="valve-viz">
+            <!-- SVG -->
+            <div class="svg-wrap">
+              <svg id="vsvg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="ballGrad" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stop-color="#c8d8f0"/>
+                    <stop offset="100%" stop-color="#8eaad0"/>
+                  </radialGradient>
+                  <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                </defs>
+                <!-- Pipe left -->
+                <rect x="0" y="82" width="36" height="36" fill="#ddd8cf" stroke="#c8c1b4" stroke-width="1"/>
+                <rect x="0" y="88" width="36" height="24" fill="#e8e4de"/>
+                <!-- Pipe right -->
+                <rect x="164" y="82" width="36" height="36" fill="#ddd8cf" stroke="#c8c1b4" stroke-width="1"/>
+                <rect x="164" y="88" width="36" height="24" fill="#e8e4de"/>
+                <!-- Flow arrows -->
+                <g id="flow-grp" opacity="0">
+                  <line x1="4" y1="100" x2="26" y2="100" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 3"/>
+                  <polygon points="26,96 33,100 26,104" fill="var(--teal)"/>
+                </g>
+                <!-- Body -->
+                <circle cx="100" cy="100" r="56" fill="#e8e4de" stroke="#c8c1b4" stroke-width="2"/>
+                <circle cx="100" cy="100" r="44" fill="#f0ede8" stroke="#ddd8cf" stroke-width="1.5"/>
+                <!-- Port adapters -->
+                <rect x="36" y="88" width="12" height="24" fill="#e8e4de" stroke="#c8c1b4" stroke-width="1"/>
+                <rect x="152" y="88" width="12" height="24" fill="#e8e4de" stroke="#c8c1b4" stroke-width="1"/>
+                <!-- BALL -->
+                <g id="ball-g" transform="rotate(0,100,100)">
+                  <circle cx="100" cy="100" r="34" fill="url(#ballGrad)" stroke="#8eaad0" stroke-width="1.5"/>
+                  <clipPath id="bclip"><circle cx="100" cy="100" r="34"/></clipPath>
+                  <g clip-path="url(#bclip)">
+                    <rect x="68" y="88" width="64" height="24" rx="12" fill="rgba(30,45,74,.12)"/>
+                  </g>
+                  <!-- Stem nib -->
+                  <rect x="97" y="66" width="6" height="18" rx="2" fill="#8eaad0"/>
+                  <circle cx="100" cy="62" r="4" fill="var(--navy)" filter="url(#glow)"/>
+                </g>
+                <!-- Seats -->
+                <ellipse cx="48" cy="100" rx="4" ry="13" fill="#c8c1b4" stroke="#b8b0a4" stroke-width="1"/>
+                <ellipse cx="152" cy="100" rx="4" ry="13" fill="#c8c1b4" stroke="#b8b0a4" stroke-width="1"/>
+                <!-- Stem -->
+                <rect x="97" y="22" width="6" height="40" rx="2.5" fill="#c8c1b4" stroke="#b8b0a4" stroke-width=".8"/>
+                <rect x="91" y="18" width="18" height="9" rx="2.5" fill="#ddd8cf" stroke="#c8c1b4" stroke-width=".8"/>
+                <!-- Torque arc -->
+                <path id="t-arc" d="" fill="none" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+                <!-- Labels -->
+                <text x="3" y="79" fill="var(--text3)" font-size="7" font-family="monospace">INLET</text>
+                <text x="157" y="79" fill="var(--text3)" font-size="7" font-family="monospace">OUTLET</text>
+                <text x="100" y="14" fill="var(--text3)" font-size="7" font-family="monospace" text-anchor="middle">STEM</text>
+
+                <!-- Butterfly disc (hidden by default) -->
+                <g id="butterfly-g" style="display:none">
+                  <ellipse id="bf-disc" cx="100" cy="100" rx="6" ry="38" fill="var(--navy2)" opacity=".85"/>
+                  <line x1="100" y1="18" x2="100" y2="62" stroke="#c8c1b4" stroke-width="5" stroke-linecap="round"/>
+                  <circle cx="100" cy="62" r="4" fill="var(--navy)" filter="url(#glow)"/>
+                </g>
+              </svg>
+              <div class="angle-scrub">
+                <div class="scrub-labels">
+                  <span>0° closed</span><span id="scrub-mid">90° open</span><span>0° closed</span>
+                </div>
+                <input type="range" id="aslider" min="0" max="180" value="0" step="1">
+              </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="chart-wrap">
+              <div class="chart-title">Full stroke torque curve</div>
+              <canvas id="cc"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Torque profile cards -->
+        <div class="panel">
+          <div class="panel-hdr">
+            <div class="panel-hdr-num">3</div>
+            <div class="panel-hdr-title" data-t="step3_title">Torque profile — click any value to override</div>
+            <div class="panel-hdr-sub" data-t="step3_sub">Ratios per ISO / industry standard · click ✎ to override with datasheet or test value</div>
+          </div>
+          <div class="panel-body">
+            <div style="font-size:11.5px;color:var(--text2);line-height:1.7;margin-bottom:12px" data-t="step3_body">
+              Values below are derived from your corrected BTO using industry-standard ratios.
+              If your manufacturer provides specific torque values for RTO, ETO etc., click <strong>✎ override</strong>
+              to enter them directly. Overridden values appear in amber and update the chart and summary.
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:10px">
+              <div>
+                <div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;margin-bottom:8px" data-t="opening_label">↑ Opening stroke — air/actuator</div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div class="tc" style="border-top-color:var(--bto)" id="tc-bto">
+                    <div class="tc-pos" data-t="pos_bto">BTO — Break to Open · 0°</div>
+                    <div class="tc-val" id="val-bto" style="color:var(--bto)">—</div>
+                    <div class="tc-ratio" id="ratio-bto">1.00 × corrected BTO</div>
+                    <div class="tc-edit" onclick="toggleOverride('bto')" data-t="override_btn">✎ override</div>
+                  </div>
+                  <div class="tc" style="border-top-color:var(--rto)" id="tc-rto">
+                    <div class="tc-pos" data-t="pos_rto">RTO — Running · 45°</div>
+                    <div class="tc-val" id="val-rto" style="color:var(--rto)">—</div>
+                    <div class="tc-ratio" id="ratio-rto">0.40 × corrected BTO</div>
+                    <div class="tc-edit" onclick="toggleOverride('rto')" data-t="override_btn">✎ override</div>
+                  </div>
+                  <div class="tc" style="border-top-color:var(--eto)" id="tc-eto">
+                    <div class="tc-pos" data-t="pos_eto">ETO — End to Open · 90°</div>
+                    <div class="tc-val" id="val-eto" style="color:var(--eto)">—</div>
+                    <div class="tc-ratio" id="ratio-eto">0.60 × corrected BTO</div>
+                    <div class="tc-edit" onclick="toggleOverride('eto')" data-t="override_btn">✎ override</div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;margin-bottom:8px" data-t="closing_label">↓ Closing stroke — spring / actuator</div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div class="tc" style="border-top-color:var(--btc)" id="tc-btc">
+                    <div class="tc-pos" data-t="pos_btc">BTC — Break to Close · 90°</div>
+                    <div class="tc-val" id="val-btc" style="color:var(--btc)">—</div>
+                    <div class="tc-ratio" id="ratio-btc">0.75 × corrected BTO</div>
+                    <div class="tc-edit" onclick="toggleOverride('btc')" data-t="override_btn">✎ override</div>
+                  </div>
+                  <div class="tc" style="border-top-color:var(--rtc)" id="tc-rtc">
+                    <div class="tc-pos" data-t="pos_rtc">RTC — Running · 45°</div>
+                    <div class="tc-val" id="val-rtc" style="color:var(--rtc)">—</div>
+                    <div class="tc-ratio" id="ratio-rtc">0.40 × corrected BTO</div>
+                    <div class="tc-edit" onclick="toggleOverride('rtc')" data-t="override_btn">✎ override</div>
+                  </div>
+                  <div class="tc" style="border-top-color:var(--etc)" id="tc-etc">
+                    <div class="tc-pos" data-t="pos_etc">ETC — End to Close · 0°</div>
+                    <div class="tc-val" id="val-etc" style="color:var(--etc)">—</div>
+                    <div class="tc-ratio" id="ratio-etc">0.80 × corrected BTO</div>
+                    <div class="tc-edit" onclick="toggleOverride('etc')" data-t="override_btn">✎ override</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="override-popup hidden" id="override-popup">
+              <div class="override-popup-title" id="override-title">Override: BTO</div>
+              <div class="override-row">
+                <input type="number" id="override-input" placeholder="Enter Nm" min="0" oninput="applyOverride()">
+                <span style="font-family:var(--mono);font-size:12px;color:var(--text3)">Nm</span>
+                <button onclick="clearOverride()" data-t="btn_reset">Reset to ratio</button>
+                <button onclick="closeOverride()" data-t="btn_close">Close</button>
+              </div>
+              <div class="override-hint" id="override-hint">—</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Step 4: Summary table -->
+        <div class="summary-panel">
+          <div class="summary-hdr">
+            <div class="summary-title" data-t="summary_title">Summary — valve torque specification</div>
+            <button class="btn-export" onclick="exportExcel()" data-t="btn_export">↓ Download Excel</button>
+          </div>
+          <table class="sum-table" id="sum-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="sum-tbody">
+              <!-- filled by JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div><!-- end results-area -->
+    </div><!-- end right-col -->
+  </div><!-- end main-grid -->
+</div><!-- end wrap -->
+
+<div id="tip-float"></div>
+
+<script>
+// ── FLOATING TOOLTIP ──
+function showTip(el, evt) {
+  var t = document.getElementById('tip-float');
+  t.innerHTML = decodeURIComponent(el.getAttribute('data-tip'));
+  t.style.display = 'block';
+  moveTip(evt);
+}
+function moveTip(evt) {
+  var t = document.getElementById('tip-float');
+  if (t.style.display === 'none') return;
+  var x = evt.clientX + 14, y = evt.clientY - 10;
+  if (x + 250 > window.innerWidth - 8) x = evt.clientX - 260;
+  if (y + 80 > window.innerHeight - 8) y = window.innerHeight - 90;
+  t.style.left = x + 'px'; t.style.top = y + 'px';
+}
+function hideTip() { document.getElementById('tip-float').style.display = 'none'; }
+</script>
+
+<script>
+var RATIOS = { bto:1.0, rto:0.4, eto:0.6, btc:0.75, rtc:0.4, etc:0.8 };
+var OVERRIDES = {};
+var activeEdit = null;
+var valveType = 'ball';
+var lastT = 100; // last corrected BTO
+var sliderAngle = 0;
+
+var COLORS = {
+  bto:'#e8365d', rto:'#f07830', eto:'#e8b020',
+  btc:'#0ea86e', rtc:'#0098b8', etc:'#8858e8'
+};
+
+var META = {
+  bto:{label:'BTO (Break to Open, 0°)',   ratio:1.00, hint:'This is your corrected BTO — the baseline for all other ratios.'},
+  rto:{label:'RTO (Running Torque, 45°)',  ratio:0.40, hint:'Typically 35–45% of BTO. Ball free from seat, mid-stroke.'},
+  eto:{label:'ETO (End to Open, 90°)',     ratio:0.60, hint:'Typically 55–70% of BTO. Ball re-entering fully open seat.'},
+  btc:{label:'BTC (Break to Close, 90°)',  ratio:0.75, hint:'Typically 70–85% of BTO. Spring or actuator initiates close.'},
+  rtc:{label:'RTC (Running Close, 45°)',   ratio:0.40, hint:'Typically 35–45% of BTO. Similar to RTO.'},
+  etc:{label:'ETC (End to Close, 0°)',     ratio:0.80, hint:'Typically 75–90% of BTO. Final seating force.'},
+};
+
+function g(id){ return document.getElementById(id); }
+
+function setValveType(t, btn){
+  valveType = t;
+  document.querySelectorAll('.vtype-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  g('butterfly-g').style.display  = t === 'butterfly' ? '' : 'none';
+  g('ball-g').style.display       = t === 'ball'      ? '' : 'none';
+  updateVP();
+  onInputChange();
+}
+
+// ── SF sliders live update ──
+function onSFChange(){
+  var temp  = parseFloat(g('sf-temp').value);
+  var other = parseFloat(g('sf-other').value);
+  g('sf-temp-val').textContent  = temp.toFixed(2)  + '×';
+  g('sf-other-val').textContent = other.toFixed(2) + '×';
+  var combined = temp * other;
+  g('sf-combined').textContent  = combined.toFixed(2) + '×';
+
+  // Descriptive labels
+  var tDesc = temp <= 1.02 ? 'Ambient — no correction needed'
+            : temp <= 1.10 ? 'Slightly elevated — minor correction'
+            : temp <= 1.25 ? 'High temp (100–180°C) — moderate correction'
+            : 'Very high temp (>180°C) — significant correction';
+  var oDesc = other <= 1.05 ? 'Minimal — clean service, known media'
+            : other <= 1.25 ? 'Industry standard minimum safety factor'
+            : other <= 1.50 ? 'Conservative — abrasive / viscous media or long intervals'
+            : 'High — very uncertain or aggressive service conditions';
+  g('sf-temp-desc').textContent  = tDesc;
+  g('sf-other-desc').textContent = oDesc;
+
+  onInputChange();
+}
+
+function getCorrectedBTO(){
+  var base = parseFloat(g('bto-input').value) || 0;
+  var temp  = parseFloat(g('sf-temp').value)  || 1.0;
+  var other = parseFloat(g('sf-other').value) || 1.25;
+  return { base, temp, other, combined: temp * other, corrected: base * temp * other };
+}
+
+function onInputChange(){
+  var res = getCorrectedBTO();
+  if(res.base > 0){
+    var T = res.corrected;
+    g('corrected-bto-val').textContent = nf(T,1) + ' Nm';
+    g('corrected-bto-sub').textContent =
+      'Base ' + nf(res.base,1) + ' Nm × temp ' + nf(res.temp,2) + '× × SF ' + nf(res.other,2) + '× = ' + nf(T,1) + ' Nm';
+  } else {
+    g('corrected-bto-val').textContent = '— Nm';
+    g('corrected-bto-sub').textContent = T['en'].corrected_bto_sub;
+  }
+}
+
+// ── MAIN CALCULATE ──
+function calculate(){
+  var res = getCorrectedBTO();
+  if(!res.base || res.base <= 0){ alert('Please enter the base torque from your valve datasheet.'); return; }
+
+  var kv  = g('kv-input').value  || '—';
+  var dn  = g('dn-input').value  || '—';
+  var pn  = g('pn-input').value  || '—';
+  var dp  = g('dp-input').value  || '—';
+  var media = g('media-select') ? (g('media-select').value || '—') : '—';
+  var temp  = g('temp-input').value;
+  var tempU = g('temp-unit').value;
+  var tempStr = temp ? temp + ' °' + tempU : '—';
+
+  lastT = res.corrected;
+
+  // Show results area
+  g('placeholder-panel').classList.add('hidden');
+  g('results-area').classList.remove('hidden');
+
+  // Update header badges — PN prefix logic
+  var pnDisplay = '—';
+  if (pn !== '—' && pn !== '') {
+    var pnUpper = pn.toUpperCase();
+    if (pnUpper.indexOf('PN') === 0 || pnUpper.indexOf('CLASS') === 0 || pnUpper.indexOf('CL') === 0) {
+      pnDisplay = pn; // already has prefix
+    } else {
+      pnDisplay = 'PN ' + pn; // add PN prefix
+    }
+  }
+  g('vp-title').textContent = (valveType === 'ball' ? 'Ball' : 'Butterfly') + ' valve torque profile';
+  g('badge-dn').textContent = dn !== '—' && dn !== '' ? 'DN ' + dn : '—';
+  g('badge-pn').textContent = pnDisplay;
+
+  // Update torque cards
+  updateCards(lastT);
+
+  // Draw chart + SVG
+  g('aslider').value = 0;
+  sliderAngle = 0;
+  updateSVG(0, lastT, getVals(lastT));
+  drawChart(0, lastT, getVals(lastT));
+
+  // Build summary table
+  buildSummary(res, kv, dn, pn, dp, media, tempStr);
+}
+
+function getVals(T){
+  var vals = {};
+  ['bto','rto','eto','btc','rtc','etc'].forEach(function(k){
+    vals[k] = OVERRIDES[k] !== undefined ? OVERRIDES[k] : Math.round(T * RATIOS[k] * 10)/10;
+  });
+  return vals;
+}
+
+function updateCards(T){
+  var vals = getVals(T);
+  ['bto','rto','eto','btc','rtc','etc'].forEach(function(k){
+    g('val-'+k).textContent = nf(vals[k],1) + ' Nm';
+    var isOvr = OVERRIDES[k] !== undefined;
+    g('tc-'+k).classList.toggle('overridden', isOvr);
+    g('ratio-'+k).textContent = isOvr
+      ? '✎ overridden — ratio was ' + META[k].ratio.toFixed(2) + '×'
+      : META[k].ratio.toFixed(2) + ' × corrected BTO';
+  });
+}
+
+function updateVP(){
+  // Show/hide ball vs butterfly in SVG
+  if(!g('ball-g')) return;
+  g('ball-g').style.display       = valveType === 'ball'      ? '' : 'none';
+  g('butterfly-g').style.display  = valveType === 'butterfly' ? '' : 'none';
+}
+
+// ── SVG ANIMATION ──
+function updateSVG(s, T, vals){
+  var isClosing = s > 90;
+  var a = isClosing ? 180 - s : s;
+
+  if(valveType === 'ball'){
+    g('ball-g').setAttribute('transform', 'rotate('+a+',100,100)');
+    g('butterfly-g').style.display = 'none';
+    g('ball-g').style.display = '';
+  } else {
+    g('ball-g').style.display = 'none';
+    g('butterfly-g').style.display = '';
+    // butterfly: rotate disc around centre (ry changes simulating rotation)
+    var visAngle = a; // 0=closed(thin), 90=open(thin horizontal)
+    var ry = Math.max(3, 38 * Math.abs(Math.cos((visAngle * Math.PI)/90)));
+    g('bf-disc').setAttribute('rx', 6);
+    g('bf-disc').setAttribute('ry', ry.toFixed(1));
+  }
+
+  var angleLabel = a + '°';
+  var stateLabel = a === 0 ? 'Closed' : a === 90 ? 'Open' : (isClosing ? 'Closing' : 'Opening');
+  g('badge-angle').textContent = angleLabel + ' ' + stateLabel;
+
+  var curT = isClosing ? torqueAtAngle(a, T, true, vals) : torqueAtAngle(a, T, false, vals);
+  var col   = isClosing ? COLORS.btc : COLORS.bto;
+  if(!isClosing && a > 5 && a < 85) col = COLORS.rto;
+  if(!isClosing && a >= 85) col = COLORS.eto;
+  g('badge-torque').textContent = nf(curT,1) + ' Nm';
+  g('badge-torque').style.color = col;
+  g('badge-torque').style.background = col + '22';
+
+  // Torque arc on SVG
+  if(a > 1){
+    var cx=100,cy=100,r=46;
+    var sa = -85*Math.PI/180, sw=(a/90)*170*Math.PI/180, ea=sa+sw;
+    var x1=cx+r*Math.cos(sa),y1=cy+r*Math.sin(sa);
+    var x2=cx+r*Math.cos(ea),y2=cy+r*Math.sin(ea);
+    var largeArc = sw > Math.PI ? 1 : 0;
+    g('t-arc').setAttribute('d','M'+x1.toFixed(1)+','+y1.toFixed(1)+' A'+r+','+r+' 0 '+largeArc+',1 '+x2.toFixed(1)+','+y2.toFixed(1));
+    g('t-arc').setAttribute('stroke', isClosing ? COLORS.btc : COLORS.bto);
+  } else {
+    g('t-arc').setAttribute('d','');
+  }
+
+  // Flow arrows opacity
+  if(g('flow-grp')) g('flow-grp').style.opacity = a > 20 ? Math.min(1,(a-20)/40)*0.7 : 0;
+}
+
+function torqueAtAngle(a, T, isClosing, vals){
+  var t;
+  if(!isClosing){
+    var vBTO = vals ? vals.bto : T*1.0;
+    var vRTO = vals ? vals.rto : T*0.4;
+    var vETO = vals ? vals.eto : T*0.6;
+    if(a <= 45){
+      var p = a/45;
+      t = vBTO + (vRTO - vBTO)*(p*p*(3-2*p));
+    } else {
+      var p = (a-45)/45;
+      t = vRTO + (vETO - vRTO)*p;
+    }
+  } else {
+    var vBTC = vals ? vals.btc : T*0.75;
+    var vRTC = vals ? vals.rtc : T*0.4;
+    var vETC = vals ? vals.etc : T*0.8;
+    if(a >= 45){
+      var p = (a-45)/45;
+      t = vRTC + (vBTC - vRTC)*p;
+    } else {
+      var p = a/45;
+      t = vETC + (vRTC - vETC)*p;
+    }
+  }
+  return Math.round(t*10)/10;
+}
+
+// ── CANVAS CHART ──
+function drawChart(sliderVal, T, vals){
+  var canvas = g('cc');
+  if(!canvas) return;
+  var W = canvas.clientWidth, H = canvas.clientHeight || 220;
+  if(!W || !H) return;
+  var dpr = window.devicePixelRatio||1;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  var pl=46,pr=14,pt=18,pb=26;
+  var cW=W-pl-pr, cH=H-pt-pb;
+
+  var allV=[];
+  for(var a=0;a<=90;a++){allV.push(torqueAtAngle(a,T,false,vals));allV.push(torqueAtAngle(a,T,true,vals));}
+  var maxV=Math.max.apply(null,allV)*1.18;
+
+  function tx(step){ return pl+(step/180)*cW; }
+  function ty(v){ return pt+cH-(v/maxV)*cH; }
+  function va(step){ return step<=90?step:180-step; }
+
+  // Grid
+  ctx.strokeStyle='rgba(28,24,20,0.06)'; ctx.lineWidth=1;
+  for(var i=0;i<=5;i++){
+    var y=pt+(i/5)*cH;
+    ctx.beginPath();ctx.moveTo(pl,y);ctx.lineTo(pl+cW,y);ctx.stroke();
+    ctx.fillStyle='rgba(90,82,74,.7)';ctx.font='9px monospace';ctx.textAlign='right';
+    ctx.fillText(Math.round(maxV*(1-i/5)),pl-4,y+3);
+  }
+  [0,30,60,90,120,150,180].forEach(function(step){
+    var x=tx(step), ang=va(step);
+    ctx.beginPath();ctx.moveTo(x,pt);ctx.lineTo(x,pt+cH);
+    ctx.strokeStyle='rgba(28,24,20,0.06)';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle='rgba(90,82,74,.7)';ctx.font='9px monospace';ctx.textAlign='center';
+    ctx.fillText(ang+'°',x,pt+cH+16);
+  });
+
+  // Centre divider
+  var midX=tx(90);
+  ctx.beginPath();ctx.moveTo(midX,pt);ctx.lineTo(midX,pt+cH);
+  ctx.strokeStyle='rgba(28,24,20,0.15)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(28,24,20,0.3)';ctx.font='bold 8px monospace';ctx.textAlign='center';
+  ctx.fillText('90° OPEN',midX,pt-5);
+
+  // Zone labels
+  ctx.fillStyle='rgba(232,54,93,0.5)';ctx.font='8px monospace';ctx.textAlign='center';
+  ctx.fillText('↑ OPENING',pl+cW*0.25,pt+10);
+  ctx.fillStyle='rgba(14,168,110,0.5)';ctx.textAlign='center';
+  ctx.fillText('↓ CLOSING',pl+cW*0.75,pt+10);
+
+  // AIR opening curve
+  var airPts=[];
+  for(var s=0;s<=90;s++) airPts.push([tx(s), ty(torqueAtAngle(va(s),T,false,vals))]);
+
+  ctx.beginPath();ctx.moveTo(airPts[0][0],airPts[0][1]);
+  for(var i=1;i<airPts.length;i++) ctx.lineTo(airPts[i][0],airPts[i][1]);
+  ctx.lineTo(tx(90),pt+cH);ctx.lineTo(tx(0),pt+cH);ctx.closePath();
+  ctx.fillStyle='rgba(232,54,93,0.07)';ctx.fill();
+
+  for(var seg=0;seg<90;seg++){
+    var p=seg/90;
+    var rr=232,gg=Math.round(54+120*p),bb=Math.round(93*(1-p)+32*p);
+    ctx.beginPath();ctx.moveTo(airPts[seg][0],airPts[seg][1]);ctx.lineTo(airPts[seg+1][0],airPts[seg+1][1]);
+    ctx.strokeStyle='rgb('+rr+','+gg+','+bb+')';ctx.lineWidth=2.5;ctx.stroke();
+  }
+
+  // SPRING closing curve
+  var sprPts=[];
+  for(var s=90;s<=180;s++) sprPts.push([tx(s), ty(torqueAtAngle(va(s),T,true,vals))]);
+
+  ctx.beginPath();ctx.moveTo(sprPts[0][0],sprPts[0][1]);
+  for(var i=1;i<sprPts.length;i++) ctx.lineTo(sprPts[i][0],sprPts[i][1]);
+  ctx.lineTo(tx(180),pt+cH);ctx.lineTo(tx(90),pt+cH);ctx.closePath();
+  ctx.fillStyle='rgba(14,168,110,0.07)';ctx.fill();
+
+  for(var seg=0;seg<sprPts.length-1;seg++){
+    var p=seg/(sprPts.length-1);
+    var rr=Math.round(14+120*p),gg=Math.round(168-60*p),bb=Math.round(110+26*p);
+    ctx.beginPath();ctx.moveTo(sprPts[seg][0],sprPts[seg][1]);ctx.lineTo(sprPts[seg+1][0],sprPts[seg+1][1]);
+    ctx.strokeStyle='rgb('+rr+','+gg+','+bb+')';ctx.lineWidth=2.5;ctx.stroke();
+  }
+
+  // Key dots
+  var kpts=[
+    {s:0,  v:vals.bto, l:'BTO', c:COLORS.bto, ya:-10, xa:8,  ta:'left'},
+    {s:45, v:vals.rto, l:'RTO', c:COLORS.rto, ya:-10, xa:0,  ta:'center'},
+    {s:90, v:vals.eto, l:'ETO', c:COLORS.eto, ya:-10, xa:-6, ta:'right'},
+    {s:90, v:vals.btc, l:'BTC', c:COLORS.btc, ya:14,  xa:6,  ta:'left'},
+    {s:135,v:vals.rtc, l:'RTC', c:COLORS.rtc, ya:-10, xa:0,  ta:'center'},
+    {s:180,v:vals.etc, l:'ETC', c:COLORS.etc, ya:-10, xa:-6, ta:'right'},
+  ];
+  kpts.forEach(function(p){
+    var x=tx(p.s), y=ty(p.v);
+    ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.fillStyle=p.c;ctx.fill();
+    ctx.fillStyle=p.c;ctx.font='bold 9px monospace';ctx.textAlign=p.ta;
+    ctx.fillText(p.l,x+p.xa,y+p.ya);
+  });
+
+  // Tracker dot
+  var isClosing = sliderVal > 90;
+  var valveAngle = isClosing ? 180-sliderVal : sliderVal;
+  var curT = isClosing ? torqueAtAngle(valveAngle,T,true,vals) : torqueAtAngle(valveAngle,T,false,vals);
+  var trackerX = tx(sliderVal);
+  var trackerY = ty(curT);
+  var trackerColor = isClosing ? COLORS.btc : COLORS.bto;
+
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(trackerX,trackerY);ctx.lineTo(trackerX,pt+cH);
+  ctx.strokeStyle='rgba(28,24,20,0.2)';ctx.lineWidth=1;ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.beginPath();ctx.arc(trackerX,trackerY,8,0,Math.PI*2);
+  ctx.fillStyle=trackerColor+'22';ctx.fill();
+  ctx.beginPath();ctx.arc(trackerX,trackerY,4,0,Math.PI*2);
+  ctx.fillStyle=trackerColor;ctx.fill();
+
+  ctx.fillStyle=trackerColor;ctx.font='bold 10px monospace';
+  ctx.textAlign = trackerX > pl+cW*0.8 ? 'right' : 'left';
+  ctx.fillText(nf(curT,1)+' Nm', trackerX+(trackerX>pl+cW*0.8?-10:10), trackerY-6);
+}
+
+// ── NUMBER FORMAT — comma decimal for DE ──────────────────────────
+function nf(val, decimals){
+  var s = val.toFixed(decimals !== undefined ? decimals : 1);
+  return LANG === 'de' ? s.replace('.', ',') : s;
+}
+
+// ── OVERRIDE SYSTEM ──
+function toggleOverride(key){
+  if(activeEdit === key){ closeOverride(); return; }
+  activeEdit = key;
+  var T = getCorrectedBTO().corrected;
+  var popup = g('override-popup');
+  popup.classList.remove('hidden');
+  g('override-title').textContent = 'Override: ' + META[key].label;
+  var currentVal = OVERRIDES[key] !== undefined ? OVERRIDES[key] : Math.round(T*RATIOS[key]*10)/10;
+  g('override-input').value = currentVal;
+  g('override-hint').textContent =
+    'Standard ratio: ' + META[key].ratio.toFixed(2) + '× = ' + nf(Math.round(T*RATIOS[key]*10)/10,1) + ' Nm.  ' + META[key].hint;
+  Object.keys(META).forEach(function(k){
+    var tc = g('tc-'+k);
+    if(tc) tc.style.boxShadow = k===key ? '0 0 0 2px var(--amber)' : '';
+  });
+}
+
+function applyOverride(){
+  if(!activeEdit) return;
+  var val = parseFloat(g('override-input').value);
+  if(!isNaN(val) && val > 0) OVERRIDES[activeEdit] = Math.round(val*10)/10;
+  refreshAll();
+}
+
+function clearOverride(){
+  if(!activeEdit) return;
+  delete OVERRIDES[activeEdit];
+  var T = getCorrectedBTO().corrected;
+  g('override-input').value = Math.round(T*RATIOS[activeEdit]*10)/10;
+  refreshAll();
+}
+
+function closeOverride(){
+  activeEdit = null;
+  g('override-popup').classList.add('hidden');
+  Object.keys(META).forEach(function(k){
+    var tc = g('tc-'+k); if(tc) tc.style.boxShadow = '';
+  });
+}
+
+function refreshAll(){
+  var T = lastT;
+  var vals = getVals(T);
+  updateCards(T);
+  updateSVG(sliderAngle, T, vals);
+  drawChart(sliderAngle, T, vals);
+  buildSummary(getCorrectedBTO(),
+    g('kv-input').value||'—', g('dn-input').value||'—', g('pn-input').value||'—',
+    g('dp-input').value||'—', g('media-input').value||'—',
+    (g('temp-input').value||'—') + (g('temp-input').value ? ' °'+g('temp-unit').value : ''));
+}
+
+// ── SLIDER ──
+g('aslider').addEventListener('input', function(){
+  sliderAngle = +this.value;
+  var T = lastT;
+  var vals = getVals(T);
+  updateSVG(sliderAngle, T, vals);
+  drawChart(sliderAngle, T, vals);
+});
+
+// ── BUILD SUMMARY ──
+function buildSummary(res, kv, dn, pn, dp, media, tempStr){
+  var vals = getVals(res.corrected);
+  var d = T[LANG];
+  var labels = d ? d.sum_labels : T['en'].sum_labels;
+  var valveLabel = valveType === 'ball'
+    ? (d ? d.btn_ball : 'Ball valve')
+    : (d ? d.btn_butterfly : 'Butterfly valve');
+
+  var pnDisplay = '—';
+  if (pn && pn !== '—') {
+    var pnUp = pn.toUpperCase();
+    pnDisplay = (pnUp.indexOf('PN')===0||pnUp.indexOf('CLASS')===0||pnUp.indexOf('CL')===0) ? pn : 'PN ' + pn;
+  }
+
+  var rows = [
+    [labels[0],  valveLabel, ''],
+    [labels[1],  dn ? 'DN ' + dn : '—', ''],
+    [labels[2],  pnDisplay, ''],
+    [labels[3],  kv ? kv + ' m³/h' : '—', 'Kvs'],
+    [labels[4],  media || '—', ''],
+    [labels[5],  tempStr, ''],
+    [labels[6],  dp ? dp + ' bar' : '—', ''],
+    [labels[7],  nf(res.base,1) + ' Nm', ''],
+    [labels[8],  nf(res.temp,2) + '×', ''],
+    [labels[9],  nf(res.other,2) + '×', ''],
+    [labels[10], nf(res.combined,2) + '×', ''],
+    [labels[11], nf(res.corrected,1) + ' Nm', ''],
+    [labels[12], nf(vals.bto,1) + ' Nm', OVERRIDES.bto!==undefined?'⚠ Override':'1.00×'],
+    [labels[13], nf(vals.rto,1) + ' Nm', OVERRIDES.rto!==undefined?'⚠ Override':'0.40×'],
+    [labels[14], nf(vals.eto,1) + ' Nm', OVERRIDES.eto!==undefined?'⚠ Override':'0.60×'],
+    [labels[15], nf(vals.btc,1) + ' Nm', OVERRIDES.btc!==undefined?'⚠ Override':'0.75×'],
+    [labels[16], nf(vals.rtc,1) + ' Nm', OVERRIDES.rtc!==undefined?'⚠ Override':'0.40×'],
+    [labels[17], nf(vals.etc,1) + ' Nm', OVERRIDES.etc!==undefined?'⚠ Override':'0.80×'],
+  ];
+  var highlights = [7,11,12,13,14,15,16,17];
+  var tbody = g('sum-tbody');
+  tbody.innerHTML = rows.map(function(r,i){
+    var hl = highlights.indexOf(i) >= 0 ? ' class="highlight"' : '';
+    return '<tr'+hl+'><td class="label">'+r[0]+'</td><td class="val">'+r[1]+'</td><td class="note">'+r[2]+'</td></tr>';
+  }).join('');
+}
+
+// ── EXCEL EXPORT — proper .xlsx via SheetJS ──
+function exportExcel(){
+  // Load SheetJS if not already loaded
+  if(typeof XLSX === 'undefined'){
+    var script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    script.onload = function(){ doExport(); };
+    document.head.appendChild(script);
+  } else {
+    doExport();
+  }
+}
+
+function doExport(){
+  var vals = getVals(lastT);
+  var res  = getCorrectedBTO();
+  var dn   = g('dn-input').value  || '';
+  var pn   = g('pn-input').value  || '';
+  var kv   = g('kv-input').value  || '';
+  var media = g('media-select') ? (g('media-select').value || '') : '';
+  var temp  = g('temp-input').value || '';
+  var tempU = g('temp-unit').value;
+
+  // PN prefix
+  var pnDisplay = pn;
+  if (pn && !pn.toUpperCase().match(/^(PN|CLASS|CL)/)) pnDisplay = 'PN ' + pn;
+
+  // Always export temp in °C
+  var tempC = temp ? (tempU === 'F' ? String(((parseFloat(temp)-32)*5/9).toFixed(1)) : temp) : '';
+
+  // Number formatter — comma decimal for German, dot for EN/TR
+  function ef1(v){ return parseFloat(parseFloat(v).toFixed(1)); } // return number so Excel formats it
+  function ef2(v){ return parseFloat(parseFloat(v).toFixed(2)); }
+
+  // ── Header row ──
+  var header = [
+    'Serial No.',
+    'Valve Size (DN/inch)',
+    'Kv (m3/h)',
+    'PN - Nominal Pressure (bar)',
+    'Operating Temperature (deg C)',
+    'Base Torque (Nm)',
+    'BTO, 0deg (Nm)',
+    'RTO, 45deg (Nm)',
+    'ETO, 90deg (Nm)',
+    'BTC, 90deg (Nm)',
+    'RTC, 45deg (Nm)',
+    'ETC, 0deg - Reseating Torque (Nm)',
+    'Media / Fluid',
+    'Valve Type',
+    'Factor of Safety',
+  ];
+
+  // ── Data row — numbers as numbers so Excel auto-formats ──
+  var dataRow = [
+    1,
+    dn ? 'DN ' + dn : '',
+    kv ? parseFloat(kv) : '',
+    pnDisplay || '',
+    tempC ? parseFloat(tempC) : '',
+    ef1(res.base),
+    ef1(vals.bto),
+    ef1(vals.rto),
+    ef1(vals.eto),
+    ef1(vals.btc),
+    ef1(vals.rtc),
+    ef1(vals.etc),
+    media || '',
+    valveType === 'ball' ? 'Ball Valve' : 'Butterfly Valve',
+    ef2(res.combined),
+  ];
+
+  // ── Notes row ──
+  var noteRow = [
+    '', '', '', '', '',
+    'Corrected BTO: ' + ef1(res.corrected) + ' Nm',
+    OVERRIDES.bto!==undefined?'* Overridden':'Ratio 1.00x',
+    OVERRIDES.rto!==undefined?'* Overridden':'Ratio 0.40x',
+    OVERRIDES.eto!==undefined?'* Overridden':'Ratio 0.60x',
+    OVERRIDES.btc!==undefined?'* Overridden':'Ratio 0.75x',
+    OVERRIDES.rtc!==undefined?'* Overridden':'Ratio 0.40x',
+    OVERRIDES.etc!==undefined?'* Overridden':'Ratio 0.80x',
+    '', '',
+    LANG==='de' ? 'Sicherheitsfaktor' : LANG==='tr' ? 'Guvenlik Faktoru' : 'Safety Factor',
+  ];
+
+  // Build worksheet data array
+  var wsData = [
+    ['CX8 Technologies - Valve Torque Profile'],
+    ['Generated: ' + new Date().toLocaleDateString()],
+    [],
+    header,
+    dataRow,
+  ];
+
+  var ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Column widths
+  ws['!cols'] = [
+    {wch:10}, {wch:18}, {wch:10}, {wch:24}, {wch:22},
+    {wch:16}, {wch:14}, {wch:14}, {wch:14},
+    {wch:14}, {wch:14}, {wch:30},
+    {wch:16}, {wch:14}, {wch:16},
+  ];
+
+  // Bold the header row (row index 3 = row 4)
+  var range = XLSX.utils.decode_range(ws['!ref']);
+  for(var C = range.s.c; C <= range.e.c; C++){
+    var hdrCell = XLSX.utils.encode_cell({r:3, c:C});
+    if(ws[hdrCell]){
+      ws[hdrCell].s = { font: { bold: true } };
+    }
+  }
+
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Torque Profile');
+
+  XLSX.writeFile(wb, 'CX8_Valve_Torque_Profile.xlsx');
+}
+// ══ TRANSLATIONS ═════════════════════════════════════════════════════
+var LANG = 'en';
+var T = {
+  en: {
+    title:              'Valve Torque Profile',
+    intro_title:        'How to use this tool',
+    intro_body:         'This tool derives the <strong>full torque profile</strong> of your valve — BTO, RTO, ETO, BTC, RTC and ETC — from the <strong>base torque stated in your valve manufacturer\'s datasheet</strong>. It does not guess or look up values — you provide the base torque and Kv from your specific valve\'s catalogue page, and the tool applies industry-standard ratios plus your chosen safety factors to build the complete profile your actuator engineer needs.<br><br><strong>Fields marked <span style="color:var(--red)">*</span> are required.</strong> Temperature and media details are collected for the summary report but do not affect calculations.',
+    step1_title:        'Valve specifications — from manufacturer datasheet',
+    sec_valvetype:      'Valve type',
+    btn_ball:           'Ball Valve',
+    btn_butterfly:      'Butterfly Valve',
+    sec_datasheet:      'From the datasheet',
+    sec_datasheet_sub:  'find these values on your valve\'s catalogue page',
+    lbl_bto:            'Base torque (BTO)',
+    tt_bto:             'Break-to-Open torque from your valve datasheet at the relevant ΔP. This is the torque to initially move the valve from fully closed. Find it in the torque table of the catalogue — it is usually listed per DN and ΔP.',
+    hint_bto:           'From the torque table in the manufacturer\'s datasheet',
+    lbl_kv:             'Kv (fully open)',
+    tt_kv:              'Flow coefficient at fully open from the datasheet. Also called Kvs. Used in the summary report only — not in torque calculation.',
+    hint_kv:            'Flow coefficient at 100% open (Kvs)',
+    lbl_dn:             'DN / NPS',
+    hint_dn:            'DN50 or 2"',
+    lbl_pn:             'Pressure class',
+    tt_pn:              'PN rating or ASME class from the datasheet. E.g. PN16, PN40, Class 150, Class 300. Used in summary only.',
+    lbl_dp:             'ΔP at rated torque',
+    tt_dp:              'The differential pressure at which the datasheet torque value is stated. E.g. if the catalogue shows torque at ΔP = 16 bar, enter 16. Used in summary.',
+    sec_media:          'Media details',
+    sec_media_sub:      'for summary report only — not used in calculations',
+    lbl_media:          'Media / fluid',
+    lbl_temp:           'Operating temperature',
+    step2_title:        'Safety factor — corrections to base torque',
+    step2_body:         'The base torque from the datasheet is a catalogue value under standard conditions. Real-world factors increase the torque demand on the actuator. Adjust the sliders below — the combined safety factor is applied to the base BTO to give the <strong>corrected BTO</strong> your actuator must deliver.',
+    sf_block_title:     'Correction factors',
+    sf_temp_name:       'Temperature effect',
+    tt_sftemp:          'High temperatures increase seat friction and reduce seal elasticity, requiring more torque. >120°C typically adds 10–20%. Cryogenic temperatures also increase torque due to material contraction.',
+    sf_other_name:      'Other factors',
+    tt_sfother:         'Covers: media viscosity, particulates/slurry, aging/wear, extended service intervals, stem packing tightness, or any other application-specific uncertainty not covered by temperature alone.',
+    sf_combined_label:  'Combined safety factor (temp × other)',
+    corrected_bto_label:'Corrected BTO — actuator must deliver ≥ this',
+    corrected_bto_sub:  'Enter base torque above to calculate',
+    btn_calculate:      'Generate torque profile →',
+    step3_title:        'Torque profile — click any value to override',
+    step3_sub:          'Ratios per ISO / industry standard · click ✎ to override with datasheet or test value',
+    step3_body:         'Values below are derived from your corrected BTO using industry-standard ratios. If your manufacturer provides specific torque values for RTO, ETO etc., click <strong>✎ override</strong> to enter them directly. Overridden values appear in amber and update the chart and summary.',
+    opening_label:      '↑ Opening stroke — air/actuator',
+    closing_label:      '↓ Closing stroke — spring / actuator',
+    pos_bto:            'BTO — Break to Open · 0°',
+    pos_rto:            'RTO — Running · 45°',
+    pos_eto:            'ETO — End to Open · 90°',
+    pos_btc:            'BTC — Break to Close · 90°',
+    pos_rtc:            'RTC — Running · 45°',
+    pos_etc:            'ETC — End to Close · 0°',
+    override_btn:       '✎ override',
+    btn_reset:          'Reset to ratio',
+    btn_close:          'Close',
+    summary_title:      'Summary — valve torque specification',
+    btn_export:         '↓ Download Excel',
+    // SF descriptions
+    sf_temp_desc:       ['Ambient — no temperature correction needed','Slightly elevated — minor correction','High temp (100–180°C) — moderate correction','Very high temp (>180°C) — significant correction'],
+    sf_other_desc:      ['Minimal — clean service, known media','Industry standard minimum safety factor','Conservative — abrasive / viscous media or long intervals','High — very uncertain or aggressive service conditions'],
+    // summary row labels
+    sum_labels:         ['Valve type','DN / NPS','Pressure class','Kv (fully open)','Media / Fluid','Operating temp.','ΔP (rated torque)','Base BTO (datasheet)','Temperature factor','Safety factor (other)','Combined safety factor','Corrected BTO','BTO — Break to Open (0°)','RTO — Running to Open (45°)','ETO — End to Open (90°)','BTC — Break to Close (90°)','RTC — Running to Close (45°)','ETC — End to Close (0°)'],
+    ball_profile:       'Ball valve torque profile',
+    butterfly_profile:  'Butterfly valve torque profile',
+    alert_bto:          'Please enter the base torque from your valve datasheet.',
+    closed_label:       '0° closed', open_label: '90° open',
+  },
+  de: {
+    title:              'Ventil-Drehmomentprofil',
+    intro_title:        'So verwenden Sie dieses Tool',
+    intro_body:         'Dieses Tool berechnet das <strong>vollständige Drehmomentprofil</strong> Ihres Ventils — BTO, RTO, ETO, BTC, RTC und ETC — basierend auf dem <strong>Basisdrehmoment aus dem Datenblatt des Herstellers</strong>. Es rät keine Werte — Sie geben Basisdrehmoment und Kv von der Katalogeite Ihres Ventils ein, und das Tool wendet branchenübliche Verhältnisse plus Ihre Sicherheitsfaktoren an.<br><br><strong>Felder mit <span style="color:var(--red)">*</span> sind Pflichtfelder.</strong> Temperatur und Medium werden nur für den Bericht erfasst und haben keinen Einfluss auf die Berechnungen.',
+    step1_title:        'Ventilspezifikationen — aus dem Hersteller-Datenblatt',
+    sec_valvetype:      'Ventiltyp',
+    btn_ball:           'Kugelventil',
+    btn_butterfly:      'Klappenventil',
+    sec_datasheet:      'Aus dem Datenblatt',
+    sec_datasheet_sub:  'diese Werte auf der Katalogeite Ihres Ventils finden',
+    lbl_bto:            'Basisdrehmoment (BTO)',
+    tt_bto:             'Break-to-Open Drehmoment aus dem Datenblatt beim relevanten ΔP. Dies ist das Drehmoment, um das Ventil erstmalig aus der vollständig geschlossenen Position zu bewegen. Es steht in der Drehmomenttabelle des Katalogs — meist pro DN und ΔP.',
+    hint_bto:           'Aus der Drehmomenttabelle im Hersteller-Datenblatt',
+    lbl_kv:             'Kv (vollständig geöffnet)',
+    tt_kv:              'Durchflusskoeffizient bei vollständig geöffnetem Ventil aus dem Datenblatt. Auch Kvs genannt. Nur im Bericht verwendet — nicht in der Drehmomentberechnung.',
+    hint_kv:            'Durchflusskoeffizient bei 100% Öffnung (Kvs)',
+    lbl_dn:             'DN / NPS',
+    hint_dn:            'DN50 oder 2"',
+    lbl_pn:             'Druckklasse',
+    tt_pn:              'PN-Klasse oder ASME-Klasse aus dem Datenblatt. Z.B. PN16, PN40, Klasse 150, Klasse 300. Nur im Bericht verwendet.',
+    lbl_dp:             'ΔP bei Nenndrehmoment',
+    tt_dp:              'Der Differenzdruck, bei dem das Datenblattwert gilt. Z.B. wenn der Katalog das Drehmoment bei ΔP = 16 bar angibt, 16 eingeben. Im Bericht verwendet.',
+    sec_media:          'Mediendetails',
+    sec_media_sub:      'nur für den Bericht — nicht in Berechnungen verwendet',
+    lbl_media:          'Medium / Fluid',
+    lbl_temp:           'Betriebstemperatur',
+    step2_title:        'Sicherheitsfaktor — Korrekturen zum Basisdrehmoment',
+    step2_body:         'Das Basisdrehmoment aus dem Datenblatt ist ein Katalogwert unter Standardbedingungen. Reale Faktoren erhöhen den Drehmomenbedarf des Aktors. Passen Sie die Schieberegler an — der kombinierte Sicherheitsfaktor wird auf das Basis-BTO angewendet, um das <strong>korrigierte BTO</strong> zu ergeben, das Ihr Aktor liefern muss.',
+    sf_block_title:     'Korrekturfaktoren',
+    sf_temp_name:       'Temperatureinfluss',
+    tt_sftemp:          'Hohe Temperaturen erhöhen die Sitzreibung und verringern die Elastizität der Dichtung. >120°C fügt typischerweise 10–20% hinzu. Kryogene Temperaturen erhöhen ebenfalls das Drehmoment.',
+    sf_other_name:      'Weitere Faktoren',
+    tt_sfother:         'Beinhaltet: Medienviskosität, Feststoffe/Schlamm, Alterung/Verschleiß, lange Serviceintervalle, Packungsdichtheit oder andere anwendungsspezifische Unsicherheiten.',
+    sf_combined_label:  'Kombinierter Sicherheitsfaktor (Temp × Andere)',
+    corrected_bto_label:'Korrigiertes BTO — Aktor muss mindestens diesen Wert liefern',
+    corrected_bto_sub:  'Basisdrehmoment oben eingeben um zu berechnen',
+    btn_calculate:      'Drehmomentprofil erstellen →',
+    step3_title:        'Drehmomentprofil — Wert anklicken zum Überschreiben',
+    step3_sub:          'Verhältnisse nach ISO / Branchenstandard · ✎ klicken zum Überschreiben mit Datenblattwert',
+    step3_body:         'Die Werte unten werden aus Ihrem korrigierten BTO mit branchenüblichen Verhältnissen abgeleitet. Wenn Ihr Hersteller spezifische Drehmomentwerte für RTO, ETO usw. angibt, klicken Sie auf <strong>✎ überschreiben</strong> um sie direkt einzugeben.',
+    opening_label:      '↑ Öffnungshub — Druckluft/Aktor',
+    closing_label:      '↓ Schließhub — Feder / Aktor',
+    pos_bto:            'BTO — Öffnungsmoment · 0°',
+    pos_rto:            'RTO — Laufmoment · 45°',
+    pos_eto:            'ETO — Endmoment offen · 90°',
+    pos_btc:            'BTC — Schließmoment · 90°',
+    pos_rtc:            'RTC — Laufmoment schließen · 45°',
+    pos_etc:            'ETC — Endmoment geschlossen · 0°',
+    override_btn:       '✎ überschreiben',
+    btn_reset:          'Auf Verhältnis zurücksetzen',
+    btn_close:          'Schließen',
+    summary_title:      'Zusammenfassung — Ventil-Drehmomenspezifikation',
+    btn_export:         '↓ Excel herunterladen',
+    sf_temp_desc:       ['Umgebung — keine Temperaturkorrektur','Leicht erhöht — geringfügige Korrektur','Hohe Temp (100–180°C) — moderate Korrektur','Sehr hohe Temp (>180°C) — erhebliche Korrektur'],
+    sf_other_desc:      ['Minimal — sauberes Medium, bekanntes Fluid','Branchenüblicher Mindestsicherheitsfaktor','Konservativ — abrasives / viskoses Medium oder lange Intervalle','Hoch — sehr ungewisse oder aggressive Bedingungen'],
+    sum_labels:         ['Ventiltyp','DN / NPS','Druckklasse','Kv (vollständig geöffnet)','Medium / Fluid','Betriebstemperatur','ΔP (Nenndrehmoment)','Basis-BTO (Datenblatt)','Temperaturfaktor','Sicherheitsfaktor (Andere)','Kombinierter Sicherheitsfaktor','Korrigiertes BTO','BTO — Öffnungsmoment (0°)','RTO — Laufmoment öffnen (45°)','ETO — Endmoment offen (90°)','BTC — Schließmoment (90°)','RTC — Laufmoment schließen (45°)','ETC — Endmoment geschlossen (0°)'],
+    ball_profile:       'Kugelventil-Drehmomentprofil',
+    butterfly_profile:  'Klappenventil-Drehmomentprofil',
+    alert_bto:          'Bitte geben Sie das Basisdrehmoment aus dem Hersteller-Datenblatt ein.',
+    closed_label:       '0° geschlossen', open_label: '90° offen',
+  },
+  tr: {
+    title:              'Vana Tork Profili',
+    intro_title:        'Bu araç nasıl kullanılır',
+    intro_body:         'Bu araç, vananızın <strong>tam tork profilini</strong> — BTO, RTO, ETO, BTC, RTC ve ETC — <strong>üretici teknik veri sayfasındaki baz tork değerinden</strong> hesaplar. Değerleri tahmin etmez — siz kendi vananızın katalog sayfasından baz tork ve Kv değerlerini girersiniz, araç sektörel standart oranları ve seçtiğiniz güvenlik faktörlerini uygulayarak aktuatör mühendisinin ihtiyaç duyduğu profili oluşturur.<br><br><strong><span style="color:var(--red)">*</span> ile işaretli alanlar zorunludur.</strong> Sıcaklık ve akışkan bilgileri yalnızca özet raporu için toplanır, hesaplamaları etkilemez.',
+    step1_title:        'Vana özellikleri — üretici teknik veri sayfasından',
+    sec_valvetype:      'Vana tipi',
+    btn_ball:           'Küresel Vana',
+    btn_butterfly:      'Kelebek Vana',
+    sec_datasheet:      'Veri sayfasından',
+    sec_datasheet_sub:  'bu değerleri vananızın katalog sayfasında bulun',
+    lbl_bto:            'Baz tork (BTO)',
+    tt_bto:             'İlgili ΔP\'deki vana veri sayfasından Açma Kırılma Torku. Bu, vananın tamamen kapalı konumdan ilk hareketi için gereken torktur. Katalogdaki tork tablosunda, genellikle DN ve ΔP başına listelenir.',
+    hint_bto:           'Üretici veri sayfasındaki tork tablosundan',
+    lbl_kv:             'Kv (tam açık)',
+    tt_kv:              'Veri sayfasından tam açık koumdaki akış katsayısı. Kvs olarak da bilinir. Yalnızca özet raporda kullanılır — tork hesaplamasında kullanılmaz.',
+    hint_kv:            '%100 açıklıktaki akış katsayısı (Kvs)',
+    lbl_dn:             'DN / NPS',
+    hint_dn:            'DN50 veya 2"',
+    lbl_pn:             'Basınç sınıfı',
+    tt_pn:              'Veri sayfasından PN veya ASME sınıfı. Örn. PN16, PN40, Sınıf 150, Sınıf 300. Yalnızca özet raporda kullanılır.',
+    lbl_dp:             'Nominal tork ΔP\'si',
+    tt_dp:              'Veri sayfası tork değerinin geçerli olduğu diferansiyel basınç. Örn. katalog ΔP = 16 bar\'da tork gösteriyorsa 16 girin. Özet raporda kullanılır.',
+    sec_media:          'Akışkan bilgileri',
+    sec_media_sub:      'yalnızca özet raporu için — hesaplamalarda kullanılmaz',
+    lbl_media:          'Akışkan / medya',
+    lbl_temp:           'Çalışma sıcaklığı',
+    step2_title:        'Güvenlik faktörü — baz torka düzeltmeler',
+    step2_body:         'Veri sayfasındaki baz tork, standart koşullar altındaki bir katalog değeridir. Gerçek koşullar aktuatörun tork gereksinimini artırır. Kaydırıcıları ayarlayın — birleşik güvenlik faktörü baz BTO\'ya uygulanarak aktuatörün sağlaması gereken <strong>düzeltilmiş BTO</strong>\'yu verir.',
+    sf_block_title:     'Düzeltme faktörleri',
+    sf_temp_name:       'Sıcaklık etkisi',
+    tt_sftemp:          'Yüksek sıcaklıklar koltuk sürtünmesini artırır ve conta esnekliğini azaltır. >120°C genellikle %10–20 ekler. Kriyojenik sıcaklıklar da malzeme daralması nedeniyle torku artırır.',
+    sf_other_name:      'Diğer faktörler',
+    tt_sfother:         'Şunları kapsar: akışkan viskozitesi, partikül/çamur, yaşlanma/aşınma, uzun servis aralıkları, sap conta sıkılığı veya sıcaklık dışındaki diğer belirsizlikler.',
+    sf_combined_label:  'Birleşik güvenlik faktörü (sıcaklık × diğer)',
+    corrected_bto_label:'Düzeltilmiş BTO — aktuatör en az bu değeri sağlamalı',
+    corrected_bto_sub:  'Hesaplamak için yukarıya baz torku girin',
+    btn_calculate:      'Tork profili oluştur →',
+    step3_title:        'Tork profili — değere tıklayarak geçersiz kılın',
+    step3_sub:          'ISO / sektör standardına göre oranlar · veri sayfası değeriyle geçersiz kılmak için ✎ tıklayın',
+    step3_body:         'Aşağıdaki değerler, düzeltilmiş BTO\'nuzdan sektör standardı oranlar kullanılarak türetilmiştir. Üreticiniz RTO, ETO vb. için belirli tork değerleri sağlıyorsa, doğrudan girmek için <strong>✎ geçersiz kıl</strong>\'a tıklayın.',
+    opening_label:      '↑ Açma hareketi — basınçlı hava/aktuatör',
+    closing_label:      '↓ Kapama hareketi — yay / aktuatör',
+    pos_bto:            'BTO — Açılış kırılma torku · 0°',
+    pos_rto:            'RTO — Çalışma torku · 45°',
+    pos_eto:            'ETO — Açık son tork · 90°',
+    pos_btc:            'BTC — Kapanış kırılma torku · 90°',
+    pos_rtc:            'RTC — Kapanış çalışma torku · 45°',
+    pos_etc:            'ETC — Kapalı son tork · 0°',
+    override_btn:       '✎ geçersiz kıl',
+    btn_reset:          'Orana sıfırla',
+    btn_close:          'Kapat',
+    summary_title:      'Özet — vana tork spesifikasyonu',
+    btn_export:         '↓ Excel indir',
+    sf_temp_desc:       ['Ortam — sıcaklık düzeltmesi gerekmez','Hafif yükselmiş — küçük düzeltme','Yüksek sıcaklık (100–180°C) — orta düzeltme','Çok yüksek sıcaklık (>180°C) — önemli düzeltme'],
+    sf_other_desc:      ['Minimal — temiz servis, bilinen akışkan','Sektör standardı minimum güvenlik faktörü','Muhafazakâr — aşındırıcı / viskoz akışkan veya uzun aralıklar','Yüksek — çok belirsiz veya agresif servis koşulları'],
+    sum_labels:         ['Vana tipi','DN / NPS','Basınç sınıfı','Kv (tam açık)','Akışkan / Medya','Çalışma sıcaklığı','ΔP (nominal tork)','Baz BTO (veri sayfası)','Sıcaklık faktörü','Güvenlik faktörü (diğer)','Birleşik güvenlik faktörü','Düzeltilmiş BTO','BTO — Açılış kırılma torku (0°)','RTO — Açılış çalışma torku (45°)','ETO — Açık son tork (90°)','BTC — Kapanış kırılma torku (90°)','RTC — Kapanış çalışma torku (45°)','ETC — Kapalı son tork (0°)'],
+    ball_profile:       'Küresel vana tork profili',
+    butterfly_profile:  'Kelebek vana tork profili',
+    alert_bto:          'Lütfen üretici veri sayfasından baz torku girin.',
+    closed_label:       '0° kapalı', open_label: '90° açık',
+  }
+};
+
+function setLang(lang, btn) {
+  LANG = lang;
+  document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  var d = T[lang];
+
+  // Update all data-t elements
+  document.querySelectorAll('[data-t]').forEach(function(el){
+    var key = el.getAttribute('data-t');
+    if(d[key] !== undefined){
+      // Use innerHTML for keys that contain HTML tags
+      var htmlKeys = ['intro_body','step2_body','step3_body','corrected_bto_label'];
+      if(htmlKeys.indexOf(key) >= 0) el.innerHTML = d[key];
+      else el.textContent = d[key];
+    }
+  });
+
+  // Update page title only (logo is now fixed CX8 branding)
+  document.title = d.title + ' — CX8 Technologies';
+
+  // Update SVG scrub labels
+  var scrubSpans = document.querySelectorAll('.scrub-labels span');
+  if(scrubSpans.length >= 3){
+    scrubSpans[0].textContent = d.closed_label;
+    scrubSpans[2].textContent = d.closed_label;
+    g('scrub-mid').textContent = d.open_label;
+  }
+
+  // Re-run SF descriptions with current slider values
+  onSFChange();
+}
+
+// patch onSFChange to use translated descriptions
+var _origSFChange = onSFChange;
+onSFChange = function(){
+  var temp  = parseFloat(g('sf-temp').value);
+  var other = parseFloat(g('sf-other').value);
+  g('sf-temp-val').textContent  = temp.toFixed(2)  + '×';
+  g('sf-other-val').textContent = other.toFixed(2) + '×';
+  var combined = temp * other;
+  g('sf-combined').textContent  = combined.toFixed(2) + '×';
+
+  var d = T[LANG];
+  var tIdx = temp <= 1.02 ? 0 : temp <= 1.10 ? 1 : temp <= 1.25 ? 2 : 3;
+  var oIdx = other <= 1.05 ? 0 : other <= 1.25 ? 1 : other <= 1.50 ? 2 : 3;
+  g('sf-temp-desc').textContent  = d.sf_temp_desc[tIdx];
+  g('sf-other-desc').textContent = d.sf_other_desc[oIdx];
+
+  onInputChange();
+};
+
+// patch calculate() alert message
+var _origCalculate = calculate;
+calculate = function(){
+  var res = getCorrectedBTO();
+  if(!res.base || res.base <= 0){ alert(T[LANG].alert_bto); return; }
+  _origCalculate();
+  // update valve panel title
+  g('vp-title').textContent = valveType === 'ball' ? T[LANG].ball_profile : T[LANG].butterfly_profile;
+};
+
+window.addEventListener('resize', function(){
+  if(lastT) drawChart(sliderAngle, lastT, getVals(lastT));
+});
+</script>
+</body>
+</html>
