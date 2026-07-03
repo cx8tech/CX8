@@ -230,7 +230,7 @@ img { max-width: 100%; display: block; }
 .tools-category { margin-bottom: 32px; }
 .tools-category-label { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .12em; color: var(--text3); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
 .tools-grid-page { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
-.tool-card-page { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 10px; transition: all .18s; }
+.tool-card-page { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 10px; transition: all .18s; cursor: pointer; color: inherit; text-decoration: none; }
 .tool-card-page:hover { border-color: var(--teal2); box-shadow: var(--shadow); transform: translateY(-2px); }
 .tool-card-page .tool-icon { margin-bottom: 2px; }
 .tool-badge { display: inline-flex; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: .04em; margin-top: 4px; align-self: flex-start; }

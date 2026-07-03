@@ -67,13 +67,13 @@ export default function Tools() {
             {freeTools.map(tool => {
               const ToolIcon = ToolIcons[tool.icon]
               return (
-                <div key={tool.id} className="tool-card-page">
+                <Link key={tool.id} to={`/tools/${tool.id}`} className="tool-card-page">
                   <div className="tool-icon"><ToolIcon /></div>
                   <div className="tool-name" style={{ fontFamily: 'var(--display)', fontSize: 14, fontWeight: 600 }}>{tool.name}</div>
                   <div className="tool-desc" style={{ fontSize: 12.5, color: 'var(--text2)', lineHeight: 1.55, flex: 1 }}>{tool.desc}</div>
                   <span className="tool-badge free">FREE</span>
-                  <Link to={`/tools/${tool.id}`} className="open-tool-btn">Open Tool <IconArrow /></Link>
-                </div>
+                  <div className="open-tool-btn">Open Tool <IconArrow /></div>
+                </Link>
               )
             })}
           </div>
@@ -85,17 +85,17 @@ export default function Tools() {
             {paidTools.map(tool => {
               const ToolIcon = ToolIcons[tool.icon]
               return (
-                <div key={tool.id} className="tool-card-page">
+                <Link key={tool.id} to={`/tools/${tool.id}`} className="tool-card-page">
                   <div className="tool-icon" style={{ background: 'var(--amber-bg)' }}>
                     <ToolIcon />
                   </div>
                   <div className="tool-name" style={{ fontFamily: 'var(--display)', fontSize: 14, fontWeight: 600 }}>{tool.name}</div>
                   <div className="tool-desc" style={{ fontSize: 12.5, color: 'var(--text2)', lineHeight: 1.55, flex: 1 }}>{tool.desc}</div>
                   <span className="tool-badge paid">PRO</span>
-                  <Link to={`/tools/${tool.id}`} className="open-tool-btn" style={{ background: 'var(--amber)', gap: 6 }}>
+                  <div className="open-tool-btn" style={{ background: 'var(--amber)', gap: 6 }}>
                     <IconLock /> Unlock Access
-                  </Link>
-                </div>
+                  </div>
+                </Link>
               )
             })}
           </div>
