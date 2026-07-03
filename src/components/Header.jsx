@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 
 const IconHome = () => (
   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -75,7 +76,20 @@ const navItems = [
 
 export default function Header() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null))
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const logout = async () => {
+    await supabase.auth.signOut()
+    navigate('/')
+  }
 
   const close = () => setMenuOpen(false)
 
@@ -110,8 +124,17 @@ export default function Header() {
           <button className="icon-btn" aria-label="Search">
             <IconSearch />
           </button>
-          <Link to="/login" className="btn-login">Login</Link>
-          <Link to="/register" className="btn-register">Register</Link>
+          {user ? (
+            <>
+              <span className="hdr-user-email">{user.email}</span>
+              <button className="btn-login" onClick={logout}>Logout</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="btn-login">Login</Link>
+              <Link to="/register" className="btn-register">Register</Link>
+            </>
+          )}
         </div>
 
         <button className="hdr-menu-btn" aria-label="Toggle menu" onClick={() => setMenuOpen(o => !o)}>
@@ -133,8 +156,14 @@ export default function Header() {
             </Link>
           ))}
           <div className="mobile-nav-auth">
-            <Link to="/login" className="btn-login" onClick={close}>Login</Link>
-            <Link to="/register" className="btn-register mobile-register" onClick={close}>Register</Link>
+            {user ? (
+              <button className="btn-login" style={{ flex: 1, textAlign: 'center' }} onClick={() => { logout(); close() }}>Logout</button>
+            ) : (
+              <>
+                <Link to="/login" className="btn-login" onClick={close}>Login</Link>
+                <Link to="/register" className="btn-register mobile-register" onClick={close}>Register</Link>
+              </>
+            )}
           </div>
         </div>
       )}

@@ -4,6 +4,8 @@ import Footer from './components/Footer'
 import Home from './pages/Home'
 import Tools from './pages/Tools'
 import ToolViewer from './pages/ToolViewer'
+import Login from './pages/Login'
+import Register from './pages/Register'
 import ComingSoon from './pages/ComingSoon'
 
 function AppLayout() {
@@ -18,6 +20,8 @@ function AppLayout() {
           <Route path="/" element={<Home />} />
           <Route path="/tools" element={<Tools />} />
           <Route path="/tools/:toolId" element={<ToolViewer />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/suppliers" element={<ComingSoon page="Supplier Directory" />} />
           <Route path="/community" element={<ComingSoon page="Community" />} />
           <Route path="/courses" element={<ComingSoon page="Courses" />} />
