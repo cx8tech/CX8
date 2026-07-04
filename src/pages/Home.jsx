@@ -1,20 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 // ── SVG Icons ────────────────────────────────────────────
 const IconArrow = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-  </svg>
-)
-const IconChevLeft = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="15 18 9 12 15 6"/>
-  </svg>
-)
-const IconChevRight = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="9 18 15 12 9 6"/>
   </svg>
 )
 const IconCheck = () => (
@@ -94,17 +84,6 @@ const ToolIcons = {
 }
 
 // ── Data ─────────────────────────────────────────────────
-const engineers = [
-  { name: 'Arun Prakash',      role: 'Process Engineer',          quote: '"Good engineering starts with the right calculations."', color: '#1a3060' },
-  { name: 'Elena Martinez',    role: 'Mechanical Engineer',        quote: '"I trust data, not catalogs."',                          color: '#0a4a3a' },
-  { name: 'Lukas Schneider',   role: 'Instrumentation Engineer',  quote: '"Specifications are the language between engineers and suppliers."', color: '#2d1a5e' },
-  { name: 'Wei Chen',          role: 'Project Engineer',           quote: '"Better tools. Better decisions. Better projects."',     color: '#1a3d2a' },
-  { name: 'Sarah O\'Brien',    role: 'Chemical Engineer',          quote: '"Every number in a spec sheet tells a story."',          color: '#3d1a1a' },
-  { name: 'Marco Rossi',       role: 'Mechanical Engineer',        quote: '"Precision in engineering is the difference between working and failing."', color: '#1a2d4a' },
-  { name: 'Priya Sharma',      role: 'Instrumentation Engineer',  quote: '"The best tools give you confidence, not just answers."', color: '#2a3d1a' },
-  { name: 'James Okafor',      role: 'Process Engineer',           quote: '"Engineering is about solving real problems for real people."', color: '#3d2a1a' },
-]
-
 const homeTools = [
   { id: 'valve-torque',             name: 'Valves',            desc: 'Size control, safety, check, ball and butterfly valves.',        icon: 'valve'      },
   { id: 'flow-rate',                name: 'Flow Rate',         desc: 'Calculate liquid, gas and steam flow rates with accuracy.',      icon: 'flow'       },
@@ -137,102 +116,33 @@ const courses = [
 // ── Sub-components ────────────────────────────────────────
 
 function HeroSection() {
-  const [slide, setSlide] = useState(0)
-  const timerRef = useRef(null)
-
-  const startTimer = () => {
-    timerRef.current = setInterval(() => setSlide(s => (s + 1) % (engineers.length - 3)), 3500)
-  }
-
-  useEffect(() => {
-    startTimer()
-    return () => clearInterval(timerRef.current)
-  }, [])
-
-  const go = (dir) => {
-    clearInterval(timerRef.current)
-    setSlide(s => {
-      const max = engineers.length - 4
-      return Math.max(0, Math.min(max, s + dir))
-    })
-    startTimer()
-  }
-
-  const visible = engineers.slice(slide, slide + 4)
-  const initials = (name) => name.split(' ').map(w => w[0]).join('').slice(0, 2)
-
   return (
     <section className="hero">
-      <div className="hero-grid">
-        {/* Left: copy */}
-        <div>
-          <div className="hero-eyebrow">Engineering Intelligence Platform</div>
-          <h1 className="hero-title">
-            Vendor-Neutral Engineering Tools<br/>
-            <em>Size Right</em>, <span className="em-amber">Specify Smart</span>, <em>Source Better</em>.
-          </h1>
-          <p className="hero-sub">
-            CX8 Technologies provides free, vendor-neutral engineering tools that help you size the right specifications and connect with trusted suppliers worldwide.
-          </p>
-          <div className="hero-cta-row">
-            <Link to="/tools" className="cta-primary">Start Sizing Now <IconArrow /></Link>
-            <Link to="/tools" className="cta-secondary">Explore All Tools</Link>
-          </div>
-          <div className="hero-stats">
-            {[
-              { icon: <IconShield />, label: '100% Vendor Neutral' },
-              { icon: <IconClock />,  label: 'Save Engineering Time' },
-              { icon: <IconDoc />,    label: 'Quotation Ready Outputs' },
-              { icon: <IconConnect />,label: 'Connect with Verified Suppliers' },
-            ].map(({ icon, label }) => (
-              <div key={label} className="hstat">
-                <div className="hstat-ic">{icon}</div>
-                <div className="hstat-text"><span className="hstat-label">{label}</span></div>
-              </div>
-            ))}
-          </div>
+      <div className="hero-content">
+        <div className="hero-eyebrow">Engineering Intelligence Platform</div>
+        <h1 className="hero-title">
+          Vendor-Neutral Engineering Tools<br/>
+          <em>Size Right</em>, <span className="em-amber">Specify Smart</span>, <em>Source Better</em>.
+        </h1>
+        <p className="hero-sub">
+          CX8 Technologies provides free, vendor-neutral engineering tools that help you size the right specifications and connect with trusted suppliers worldwide.
+        </p>
+        <div className="hero-cta-row">
+          <Link to="/tools" className="cta-primary">Start Sizing Now <IconArrow /></Link>
+          <Link to="/tools" className="cta-secondary">Explore All Tools</Link>
         </div>
-
-        {/* Right: carousel */}
-        <div className="hero-carousel">
-          <div className="carousel-track">
-            {visible.map((eng) => {
-              const init = initials(eng.name)
-              return (
-                <div key={eng.name} className="eng-card" style={{ width: 'calc(25% - 9px)', flexShrink: 0 }}>
-                  <div className="eng-photo-placeholder" style={{ background: `linear-gradient(160deg, ${eng.color} 0%, #0d1829 100%)`, height: 180, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                      <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--display)', fontSize: 20, fontWeight: 700, color: '#fff', border: '2px solid rgba(255,255,255,.2)' }}>
-                        {init}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="eng-info">
-                    <div className="eng-name">{eng.name}</div>
-                    <div className="eng-role">{eng.role}</div>
-                    <div className="eng-quote">{eng.quote}</div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          <button className="carousel-btn carousel-prev" onClick={() => go(-1)} disabled={slide === 0} style={{ opacity: slide === 0 ? 0.3 : 1 }}>
-            <IconChevLeft />
-          </button>
-          <button className="carousel-btn carousel-next" onClick={() => go(1)} disabled={slide >= engineers.length - 4} style={{ opacity: slide >= engineers.length - 4 ? 0.3 : 1 }}>
-            <IconChevRight />
-          </button>
-
-          <div className="carousel-footer">
-            <span className="carousel-caption">Celebrating engineers who build a better tomorrow.</span>
-            <div className="carousel-dots">
-              {Array.from({ length: engineers.length - 3 }).map((_, i) => (
-                <button key={i} className={`carousel-dot ${i === slide ? 'active' : ''}`} onClick={() => setSlide(i)} />
-              ))}
+        <div className="hero-stats">
+          {[
+            { icon: <IconShield />, label: '100% Vendor Neutral' },
+            { icon: <IconClock />,  label: 'Save Engineering Time' },
+            { icon: <IconDoc />,    label: 'Quotation Ready Outputs' },
+            { icon: <IconConnect />,label: 'Connect with Verified Suppliers' },
+          ].map(({ icon, label }) => (
+            <div key={label} className="hstat">
+              <div className="hstat-ic">{icon}</div>
+              <div className="hstat-text"><span className="hstat-label">{label}</span></div>
             </div>
-            <span className="carousel-counter">{slide + 1} – {Math.min(slide + 4, engineers.length)} of {engineers.length} Engineers</span>
-          </div>
+          ))}
         </div>
       </div>
     </section>
