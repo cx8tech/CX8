@@ -215,13 +215,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:
 .grp-l{border-left:2px solid rgba(15,31,61,.12)!important;}
 .hidden{display:none!important;}
 
-/* ── RESPONSIVE: Tablet (≤768px) ── */
+/* ── RESPONSIVE: Tablet + Mobile (≤768px) ── */
 @media(max-width:768px){
-  .hdr{padding:10px 16px;}
-  .hdr-pills{display:none;}
-  .hero-slim{padding:8px 16px;}
+  /* Prevent horizontal overflow */
+  html,body{overflow-x:hidden;min-width:0;}
+
+  /* Hide the tool's own header — ToolViewer bar already shows the name */
+  .hdr,.hdr-accent,.hero-slim{display:none;}
+
   .wrap{padding:16px 14px 40px;}
   .card{padding:16px;}
+
+  /* Fix long card labels overflowing */
+  .card-title{white-space:normal;word-break:break-word;font-size:12px;}
+  .compare-row .clabel{white-space:normal;word-break:break-word;}
 
   /* Actuator grid: 4 → 2 columns */
   .act-grid{grid-template-columns:repeat(2,1fr);}
@@ -242,23 +249,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:
 
   /* Pressure row: stack */
   .pressure-row{flex-direction:column;align-items:flex-start;gap:6px;}
-  .pressure-row label{min-width:auto;}
+  .pressure-row label{min-width:auto;white-space:normal;}
   .pressure-row input[type=range]{width:100%;}
   .pval{text-align:left;}
 
   /* Multi-results export header */
   .multi-results-hdr{flex-direction:column;align-items:flex-start;}
-}
-
-/* ── RESPONSIVE: Mobile (≤480px) ── */
-@media(max-width:480px){
-  .hdr-brand{font-size:12px;}
-  .act-grid{grid-template-columns:1fr 1fr;}
-  .ag-val{font-size:12px;}
-  .type-row{flex-wrap:wrap;}
-  .tbtn{flex:1;text-align:center;font-size:10.5px;padding:8px 10px;}
-  .type-row-binary .tbtn{flex:1;}
-  .card-title{font-size:12px;}
 }
 </style>
 </head>
