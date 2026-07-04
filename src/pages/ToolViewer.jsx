@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import { allTools } from '../data/tools'
 
 const IconBack = () => (
@@ -19,7 +19,7 @@ const IconPlay = () => (
   </svg>
 )
 
-function GateModal({ onClose }) {
+function GateModal({ onClose, toolPath }) {
   const navigate = useNavigate()
   return (
     <div className="gate-overlay" onClick={onClose}>
@@ -28,7 +28,7 @@ function GateModal({ onClose }) {
         <h2 className="gate-title">Subscription Required</h2>
         <p className="gate-sub">Login with an active CX8 Pro subscription to view cross-reference results.</p>
         <div className="gate-actions">
-          <Link to="/login" className="gate-btn-primary">Login to Get Results</Link>
+          <Link to={`/login?redirect=${encodeURIComponent(toolPath)}`} className="gate-btn-primary">Login to Get Results</Link>
           <a
             href="https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg"
             target="_blank"
@@ -46,6 +46,7 @@ function GateModal({ onClose }) {
 
 export default function ToolViewer() {
   const { toolId } = useParams()
+  const location = useLocation()
   const tool = allTools.find(t => t.id === toolId)
   const [showGate, setShowGate] = useState(false)
 
@@ -70,7 +71,7 @@ export default function ToolViewer() {
 
   return (
     <div className="tool-viewer">
-      {showGate && <GateModal onClose={() => setShowGate(false)} />}
+      {showGate && <GateModal onClose={() => setShowGate(false)} toolPath={location.pathname} />}
       <div className="tool-viewer-bar">
         <Link to="/tools" className="tool-back-btn">
           <IconBack /> Back to Tools
