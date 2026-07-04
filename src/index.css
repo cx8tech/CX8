@@ -265,6 +265,22 @@ img { max-width: 100%; display: block; }
 .tool-viewer-sep { color: var(--border); margin: 0 2px; }
 .tool-viewer-iframe { flex: 1; border: none; width: 100%; }
 
+/* ── Pro gate modal ── */
+.gate-overlay { position: fixed; inset: 0; background: rgba(10,18,36,.65); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 24px; }
+.gate-modal { background: var(--surface); border-radius: 16px; padding: 40px 36px; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,.22); }
+.gate-icon { width: 56px; height: 56px; border-radius: 50%; background: var(--navy-bg); color: var(--navy); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.gate-icon svg { width: 24px; height: 24px; }
+.gate-title { font-family: var(--display); font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.gate-sub { font-size: 13.5px; color: var(--text2); line-height: 1.65; margin-bottom: 28px; }
+.gate-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.gate-btn-primary { display: flex; align-items: center; justify-content: center; background: var(--teal2); color: #fff; border: none; border-radius: var(--radius-sm); padding: 13px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: background .15s; }
+.gate-btn-primary:hover { background: #0a7569; }
+.gate-btn-secondary { display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; color: var(--text); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 20px; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: border-color .15s; }
+.gate-btn-secondary:hover { border-color: var(--teal2); color: var(--teal2); }
+.gate-btn-secondary svg { width: 15px; height: 15px; }
+.gate-btn-home { background: none; border: none; color: var(--text3); font-size: 12.5px; cursor: pointer; padding: 4px; transition: color .15s; }
+.gate-btn-home:hover { color: var(--teal2); }
+
 /* ── Coming soon ── */
 .coming-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 32px; text-align: center; min-height: 400px; }
 .coming-soon-badge { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: var(--teal2); background: var(--teal-bg); padding: 4px 12px; border-radius: 20px; margin-bottom: 16px; }
