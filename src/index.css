@@ -329,6 +329,9 @@ img { max-width: 100%; display: block; }
   .hero-title { font-size: 28px; letter-spacing: -.3px; }
   .hero-sub { font-size: 13px; max-width: 100%; }
 
+  /* Gate modal */
+  .gate-modal { padding: 28px 20px; border-radius: 12px; }
+
   /* Sections */
   .section { padding: 28px 16px; }
   .section-inner { padding: 0; }

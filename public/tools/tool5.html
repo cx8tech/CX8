@@ -214,6 +214,52 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:
 .td-link a:hover{text-decoration:underline;}
 .grp-l{border-left:2px solid rgba(15,31,61,.12)!important;}
 .hidden{display:none!important;}
+
+/* ── RESPONSIVE: Tablet (≤768px) ── */
+@media(max-width:768px){
+  .hdr{padding:10px 16px;}
+  .hdr-pills{display:none;}
+  .hero-slim{padding:8px 16px;}
+  .wrap{padding:16px 14px 40px;}
+  .card{padding:16px;}
+
+  /* Actuator grid: 4 → 2 columns */
+  .act-grid{grid-template-columns:repeat(2,1fr);}
+
+  /* Torque input row: stack vertically */
+  .input-row{flex-direction:column;align-items:stretch;}
+  .btn-go{width:100%;height:44px;}
+  .btn-go-wrap{justify-content:stretch;}
+  .btn-go-wrap .btn-go{width:100%;}
+
+  /* Filters: stack */
+  .filters{grid-template-columns:1fr;}
+
+  /* Compare row: stack */
+  .compare-row{flex-direction:column;align-items:stretch;}
+  .compare-controls{flex-direction:column;}
+  .compare-controls select{max-width:100%;}
+
+  /* Pressure row: stack */
+  .pressure-row{flex-direction:column;align-items:flex-start;gap:6px;}
+  .pressure-row label{min-width:auto;}
+  .pressure-row input[type=range]{width:100%;}
+  .pval{text-align:left;}
+
+  /* Multi-results export header */
+  .multi-results-hdr{flex-direction:column;align-items:flex-start;}
+}
+
+/* ── RESPONSIVE: Mobile (≤480px) ── */
+@media(max-width:480px){
+  .hdr-brand{font-size:12px;}
+  .act-grid{grid-template-columns:1fr 1fr;}
+  .ag-val{font-size:12px;}
+  .type-row{flex-wrap:wrap;}
+  .tbtn{flex:1;text-align:center;font-size:10.5px;padding:8px 10px;}
+  .type-row-binary .tbtn{flex:1;}
+  .card-title{font-size:12px;}
+}
 </style>
 </head>
 <body>
