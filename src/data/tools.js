@@ -42,7 +42,7 @@ export const allTools = [
     file: '/tools/tool5.html',
     badge: 'paid',
     icon: 'actuator',
-    logo: '/tool-logos/tool5.jpeg',
+    logo: '/tool-logos/tool6.jpeg',
   },
   {
     id: 'compressor-sizing',
@@ -51,6 +51,6 @@ export const allTools = [
     file: '/tools/tool6.html',
     badge: 'free',
     icon: 'compressor',
-    logo: '/tool-logos/tool6.jpeg',
+    logo: '/tool-logos/tool5.jpeg',
   },
 ]
