@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { allTools } from '../data/tools'
 
 // ── SVG Icons ────────────────────────────────────────────
 const IconArrow = () => (
@@ -84,13 +85,8 @@ const ToolIcons = {
 }
 
 // ── Data ─────────────────────────────────────────────────
-const homeTools = [
-  { id: 'valve-torque',             name: 'Valves',            desc: 'Size control, safety, check, ball and butterfly valves.',        icon: 'valve'      },
-  { id: 'flow-rate',                name: 'Flow Rate',         desc: 'Calculate liquid, gas and steam flow rates with accuracy.',      icon: 'flow'       },
-  { id: 'unit-conversion',          name: 'Unit Conversion',   desc: 'Convert between 150+ engineering units instantly.',              icon: 'unit'       },
-  { id: 'actuator-sizing',          name: 'Actuator Sizing',   desc: 'Select and size the right actuator for your valve.',             icon: 'actuator'   },
-  { id: 'compressor-sizing',        name: 'Compressor Sizing', desc: 'Size reciprocating and centrifugal compressors.',                icon: 'compressor' },
-]
+const homeToolIds = ['valve-torque', 'flow-rate', 'unit-conversion', 'actuator-sizing', 'compressor-sizing']
+const homeTools = allTools.filter(t => homeToolIds.includes(t.id))
 
 const threads = [
   { user: 'Ahmed K.',  title: 'How to select control valve for cavitation service?', time: '2h ago',  replies: 12, color: '#1a6b5f' },
@@ -159,19 +155,16 @@ function ToolsSection() {
           <span className="section-eyebrow-text">Engineering Tools</span>
         </div>
         <div className="tools-layout">
-          <div>
+          <div className="tools-left">
             <div className="tools-grid">
-              {homeTools.map(tool => {
-                const ToolIcon = ToolIcons[tool.icon]
-                return (
-                  <div key={tool.id} className="tool-card" onClick={() => navigate(`/tools/${tool.id}`)}>
-                    <div className="tool-icon"><ToolIcon /></div>
-                    <div className="tool-name">{tool.name}</div>
-                    <div className="tool-desc">{tool.desc}</div>
-                    <div className="tool-link">Open Tool <IconArrow /></div>
-                  </div>
-                )
-              })}
+              {homeTools.map(tool => (
+                <div key={tool.id} className="tool-card" onClick={() => navigate(`/tools/${tool.id}`)}>
+                  {tool.logo && <img src={tool.logo} alt={tool.name} className="tool-card-logo" />}
+                  <div className="tool-name">{tool.name}</div>
+                  <div className="tool-desc">{tool.desc}</div>
+                  <div className="tool-link">Open Tool <IconArrow /></div>
+                </div>
+              ))}
             </div>
             <div className="tools-view-all">
               <Link to="/tools">View All Tools <IconArrow /></Link>
@@ -181,10 +174,7 @@ function ToolsSection() {
           {/* Quotation callout */}
           <div className="quotation-card">
             <div className="quot-visual">
-              <div className="quot-icons">
-                <div className="quot-doc pdf">PDF</div>
-                <div className="quot-doc xls">XLS</div>
-              </div>
+              <img src="/how-it-works.jpeg" alt="How it works" className="quot-img" />
             </div>
             <div className="quot-title">Generate Quotation-Ready Specifications</div>
             <ul className="quot-list">

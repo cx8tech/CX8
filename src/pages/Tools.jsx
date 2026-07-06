@@ -64,40 +64,32 @@ export default function Tools() {
         <div className="tools-category">
           <div className="tools-category-label">Free Tools — {freeTools.length} available</div>
           <div className="tools-grid-page">
-            {freeTools.map(tool => {
-              const ToolIcon = ToolIcons[tool.icon]
-              return (
-                <Link key={tool.id} to={`/tools/${tool.id}`} className="tool-card-page">
-                  <div className="tool-icon"><ToolIcon /></div>
-                  <div className="tool-name" style={{ fontFamily: 'var(--display)', fontSize: 14, fontWeight: 600 }}>{tool.name}</div>
-                  <div className="tool-desc" style={{ fontSize: 12.5, color: 'var(--text2)', lineHeight: 1.55, flex: 1 }}>{tool.desc}</div>
-                  <span className="tool-badge free">FREE</span>
-                  <div className="open-tool-btn">Open Tool <IconArrow /></div>
-                </Link>
-              )
-            })}
+            {freeTools.map(tool => (
+              <Link key={tool.id} to={`/tools/${tool.id}`} className="tool-card-page">
+                {tool.logo && <img src={tool.logo} alt={tool.name} className="tool-card-page-logo" />}
+                <div className="tool-name" style={{ fontFamily: 'var(--display)', fontSize: 14, fontWeight: 600 }}>{tool.name}</div>
+                <div className="tool-desc" style={{ fontSize: 12.5, color: 'var(--text2)', lineHeight: 1.55, flex: 1 }}>{tool.desc}</div>
+                <span className="tool-badge free">FREE</span>
+                <div className="open-tool-btn">Open Tool <IconArrow /></div>
+              </Link>
+            ))}
           </div>
         </div>
 
         <div className="tools-category">
           <div className="tools-category-label">Pro Tools — requires account</div>
           <div className="tools-grid-page">
-            {paidTools.map(tool => {
-              const ToolIcon = ToolIcons[tool.icon]
-              return (
-                <Link key={tool.id} to={`/tools/${tool.id}`} className="tool-card-page">
-                  <div className="tool-icon" style={{ background: 'var(--amber-bg)' }}>
-                    <ToolIcon />
-                  </div>
-                  <div className="tool-name" style={{ fontFamily: 'var(--display)', fontSize: 14, fontWeight: 600 }}>{tool.name}</div>
-                  <div className="tool-desc" style={{ fontSize: 12.5, color: 'var(--text2)', lineHeight: 1.55, flex: 1 }}>{tool.desc}</div>
-                  <span className="tool-badge paid">PRO</span>
-                  <div className="open-tool-btn" style={{ background: 'var(--amber)', gap: 6 }}>
-                    <IconLock /> Unlock Access
-                  </div>
-                </Link>
-              )
-            })}
+            {paidTools.map(tool => (
+              <Link key={tool.id} to={`/tools/${tool.id}`} className="tool-card-page">
+                {tool.logo && <img src={tool.logo} alt={tool.name} className="tool-card-page-logo" />}
+                <div className="tool-name" style={{ fontFamily: 'var(--display)', fontSize: 14, fontWeight: 600 }}>{tool.name}</div>
+                <div className="tool-desc" style={{ fontSize: 12.5, color: 'var(--text2)', lineHeight: 1.55, flex: 1 }}>{tool.desc}</div>
+                <span className="tool-badge paid">PRO</span>
+                <div className="open-tool-btn" style={{ background: 'var(--amber)', gap: 6 }}>
+                  <IconLock /> Unlock Access
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ export const allTools = [
     file: '/tools/tool1.html',
     badge: 'free',
     icon: 'unit',
+    logo: '/tool-logos/tool1.jpeg',
   },
   {
     id: 'flow-rate',
@@ -14,6 +15,7 @@ export const allTools = [
     file: '/tools/tool2.html',
     badge: 'free',
     icon: 'flow',
+    logo: '/tool-logos/tool2.jpeg',
   },
   {
     id: 'valve-torque',
@@ -22,6 +24,7 @@ export const allTools = [
     file: '/tools/tool3.html',
     badge: 'free',
     icon: 'valve',
+    logo: '/tool-logos/tool3.jpeg',
   },
   {
     id: 'actuator-sizing',
@@ -30,6 +33,7 @@ export const allTools = [
     file: '/tools/tool4.html',
     badge: 'free',
     icon: 'actuator',
+    logo: '/tool-logos/tool4.jpeg',
   },
   {
     id: 'actuator-cross-reference',
@@ -38,6 +42,7 @@ export const allTools = [
     file: '/tools/tool5.html',
     badge: 'paid',
     icon: 'actuator',
+    logo: '/tool-logos/tool5.jpeg',
   },
   {
     id: 'compressor-sizing',
@@ -46,5 +51,6 @@ export const allTools = [
     file: '/tools/tool6.html',
     badge: 'free',
     icon: 'compressor',
+    logo: '/tool-logos/tool6.jpeg',
   },
 ]
