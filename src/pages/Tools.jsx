@@ -1,5 +1,12 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { allTools } from '../data/tools'
+
+const IconSearch = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  </svg>
+)
 
 const ToolIcons = {
   valve: () => (
@@ -51,15 +58,28 @@ const IconLock = () => (
   </svg>
 )
 
-const freeTools = allTools.filter(t => t.badge === 'free')
-const paidTools = allTools.filter(t => t.badge === 'paid')
-
 export default function Tools() {
+  const [query, setQuery] = useState('')
+  const q = query.toLowerCase()
+  const match = t => !q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)
+  const freeTools = allTools.filter(t => t.badge === 'free' && match(t))
+  const paidTools = allTools.filter(t => t.badge === 'paid' && match(t))
+
   return (
     <div style={{ background: 'var(--bg)', minHeight: '100%' }}>
       <div className="tools-page">
         <h1 className="tools-page-title">Engineering Tools</h1>
         <p className="tools-page-sub">Vendor-neutral tools for sizing, selection, and specification. Free tools available instantly — no signup required.</p>
+
+        <div className="page-search-bar">
+          <IconSearch />
+          <input
+            className="page-search-input"
+            placeholder="Search tools..."
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+          />
+        </div>
 
         <div className="tools-category">
           <div className="tools-category-label">Free Tools — {freeTools.length} available</div>

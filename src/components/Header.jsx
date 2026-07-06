@@ -121,9 +121,6 @@ export default function Header() {
         </div>
 
         <div className="hdr-right">
-          <button className="icon-btn" aria-label="Search">
-            <IconSearch />
-          </button>
           {user ? (
             <>
               <span className="hdr-user-email">{user.email}</span>

@@ -166,6 +166,13 @@ img { max-width: 100%; display: block; }
 .view-all-link { display: flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600; color: var(--teal2); }
 .view-all-link svg { width: 12px; height: 12px; }
 
+/* ── Shared page search bar ── */
+.page-search-bar { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 16px; margin-bottom: 20px; transition: border-color .15s; }
+.page-search-bar:focus-within { border-color: var(--teal2); }
+.page-search-bar svg { width: 16px; height: 16px; color: var(--text3); flex-shrink: 0; }
+.page-search-input { flex: 1; background: none; border: none; outline: none; font-size: 14px; color: var(--text); font-family: inherit; }
+.page-search-input::placeholder { color: var(--text3); }
+
 /* ── Homepage Supplier Widget ── */
 .supplier-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
 .supplier-filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
