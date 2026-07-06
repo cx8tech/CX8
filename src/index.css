@@ -259,7 +259,7 @@ img { max-width: 100%; display: block; }
 .comm-stat-label { font-size: 11px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .08em; }
 .comm-stat-div { width: 1px; height: 32px; background: rgba(255,255,255,.15); }
 
-.comm-body { max-width: 900px; margin: 0 auto; padding: 28px 32px 60px; }
+.comm-body { max-width: 1400px; margin: 0 auto; padding: 28px 32px 60px; }
 
 .comm-categories { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .comm-cat-btn { padding: 7px 16px; border: 1.5px solid var(--border); border-radius: 20px; font-size: 12.5px; font-weight: 500; color: var(--text2); background: var(--surface); cursor: pointer; transition: all .15s; }
