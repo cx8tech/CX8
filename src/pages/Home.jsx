@@ -237,12 +237,12 @@ function BottomSection() {
             <div className="supplier-grid">
               {suppliers.map(s => (
                 <div key={s.name} className="supplier-item">
-                  <div className="sup-logo">
-                    <span className="sup-logo-text" style={{ color: s.logoColor, fontSize: 13, fontWeight: 800, letterSpacing: -.3 }}>{s.logoText}</span>
+                  <div className="hm-sup-logo">
+                    <span style={{ color: s.logoColor, fontSize: 13, fontWeight: 800, letterSpacing: -.3 }}>{s.logoText}</span>
                   </div>
-                  <div className="sup-name">{s.name}</div>
-                  <div className="sup-country">{s.country}</div>
-                  <span className={`sup-badge ${s.badge}`}>{s.badge === 'featured' ? 'Featured Supplier' : 'Premium Supplier'}</span>
+                  <div className="hm-sup-name">{s.name}</div>
+                  <div className="hm-sup-country">{s.country}</div>
+                  <span className={`hm-sup-badge ${s.badge}`}>{s.badge === 'featured' ? 'Featured Supplier' : 'Premium Supplier'}</span>
                 </div>
               ))}
             </div>
