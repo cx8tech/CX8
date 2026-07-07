@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const IconLinkedIn = () => (
@@ -18,6 +19,48 @@ const IconMail = () => (
     <polyline points="22,6 12,13 2,6"/>
   </svg>
 )
+
+function NewsletterForm() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState(null) // null | 'loading' | 'success' | 'error'
+
+  const submit = async (e) => {
+    e.preventDefault()
+    if (!email) return
+    setStatus('loading')
+    try {
+      const res = await fetch('https://app.kit.com/forms/9655146/subscriptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email_address: email }),
+      })
+      setStatus(res.ok ? 'success' : 'error')
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  if (status === 'success') {
+    return <p className="footer-nl-success">You're in — we'll be in touch.</p>
+  }
+
+  return (
+    <form className="footer-nl-form" onSubmit={submit}>
+      <input
+        className="footer-nl-input"
+        type="email"
+        placeholder="your@email.com"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        required
+      />
+      <button className="footer-nl-btn" type="submit" disabled={status === 'loading'}>
+        {status === 'loading' ? 'Subscribing…' : 'Subscribe'}
+      </button>
+      {status === 'error' && <p className="footer-nl-error">Something went wrong — try again.</p>}
+    </form>
+  )
+}
 
 export default function Footer() {
   return (
@@ -74,8 +117,16 @@ export default function Footer() {
           </div>
         </div>
 
+        <div className="footer-newsletter">
+          <div className="footer-newsletter-text">
+            <div className="footer-newsletter-title">Stay in the loop</div>
+            <div className="footer-newsletter-sub">New tools, resources, and engineering insights — straight to your inbox.</div>
+          </div>
+          <div className="footer-newsletter-form"><NewsletterForm /></div>
+        </div>
+
         <div className="footer-bottom">
-          <span className="footer-copy">© 2024 CX8 Technologies. All rights reserved.</span>
+          <span className="footer-copy">© 2025 CX8 Technologies. All rights reserved.</span>
         </div>
       </div>
     </footer>
