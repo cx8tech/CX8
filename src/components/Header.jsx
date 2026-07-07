@@ -71,7 +71,7 @@ const navItems = [
   { path: '/suppliers',  label: 'Suppliers', Icon: IconSuppliers },
   { path: '/community',  label: 'Community', Icon: IconCommunity },
   { path: '/courses',    label: 'Courses',   Icon: IconCourses },
-  { path: '/resources',  label: 'Resources', Icon: IconResources, chevron: true },
+  { path: '/resources',  label: 'Resources', Icon: IconResources },
 ]
 
 export default function Header() {
@@ -107,7 +107,7 @@ export default function Header() {
         </div>
 
         <div className="hdr-nav">
-          {navItems.map(({ path, label, Icon, chevron }) => (
+          {navItems.map(({ path, label, Icon }) => (
             <Link
               key={path}
               to={path}
@@ -115,7 +115,6 @@ export default function Header() {
             >
               <Icon />
               {label}
-              {chevron && <IconChevron />}
             </Link>
           ))}
         </div>

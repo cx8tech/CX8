@@ -6,9 +6,11 @@ import Tools from './pages/Tools'
 import ToolViewer from './pages/ToolViewer'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import ComingSoon from './pages/ComingSoon'
 import Suppliers from './pages/Suppliers'
 import Community from './pages/Community'
+import Courses from './pages/Courses'
+import Resources from './pages/Resources'
+import ScrollToTop from './components/ScrollToTop'
 
 function AppLayout() {
   const { pathname } = useLocation()
@@ -26,10 +28,11 @@ function AppLayout() {
           <Route path="/register" element={<Register />} />
           <Route path="/suppliers" element={<Suppliers />} />
           <Route path="/community" element={<Community />} />
-          <Route path="/courses" element={<ComingSoon page="Courses" />} />
-          <Route path="/resources" element={<ComingSoon page="Resources" />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/resources" element={<Resources />} />
         </Routes>
       </main>
+      <ScrollToTop />
       {!isToolViewer && <Footer />}
     </div>
   )
