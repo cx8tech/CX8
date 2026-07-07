@@ -29,10 +29,10 @@ function NewsletterForm() {
     if (!email) return
     setStatus('loading')
     try {
-      const res = await fetch('https://app.kit.com/forms/9655146/subscriptions', {
+      const res = await fetch('https://api.convertkit.com/v3/forms/9655146/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email_address: email }),
+        body: JSON.stringify({ api_key: 'qLqDisA5Vn9drORBPyrbEw', email }),
       })
       setStatus(res.ok ? 'success' : 'error')
     } catch {
