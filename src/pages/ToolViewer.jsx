@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import { allTools } from '../data/tools'
+import { supabase } from '../lib/supabase'
 
 const IconBack = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -44,12 +45,61 @@ function GateModal({ onClose, toolPath }) {
   )
 }
 
+// Tool 5 is the only tool with a protected dataset
+const DATA_TOOL_ID = 'tool5'
+
 export default function ToolViewer() {
   const { toolId } = useParams()
   const location = useLocation()
   const tool = allTools.find(t => t.id === toolId)
   const [showGate, setShowGate] = useState(false)
+  const [user, setUser]         = useState(null)
+  const iframeRef               = useRef(null)
+  const dbCacheRef              = useRef(null)   // holds fetched actuator data
+  const iframeReadyRef          = useRef(false)  // true once iframe fires onLoad
 
+  const isDataTool = toolId === DATA_TOOL_ID
+
+  // ── Track auth state ──
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // ── Fetch dataset when user is authenticated and this is tool5 ──
+  useEffect(() => {
+    if (!isDataTool || !user) return
+    if (dbCacheRef.current) {
+      // Already fetched — just push to iframe if it's ready
+      pushDataToIframe()
+      return
+    }
+
+    supabase
+      .from('actuator_data')
+      .select('record')
+      .then(({ data, error }) => {
+        if (error || !data?.length) return
+        dbCacheRef.current = data.map(r => r.record)
+        pushDataToIframe()
+      })
+  }, [user, isDataTool])
+
+  // Send cached data into the iframe (no-op if either isn't ready)
+  function pushDataToIframe() {
+    if (!dbCacheRef.current || !iframeReadyRef.current || !iframeRef.current) return
+    iframeRef.current.contentWindow.postMessage(
+      { type: 'cx8-data', db: dbCacheRef.current },
+      '*'
+    )
+  }
+
+  // ── Listen for messages from the tool iframe ──
   useEffect(() => {
     const handler = (e) => {
       if (e.data?.type === 'cx8-gate') setShowGate(true)
@@ -81,10 +131,15 @@ export default function ToolViewer() {
         {tool.badge === 'paid' && <span className="tool-pro-badge">PRO</span>}
       </div>
       <iframe
+        ref={iframeRef}
         className="tool-viewer-iframe"
         src={tool.file}
         title={tool.name}
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        onLoad={() => {
+          iframeReadyRef.current = true
+          pushDataToIframe()
+        }}
       />
     </div>
   )
