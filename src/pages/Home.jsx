@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { allTools } from '../data/tools'
+import { threads as communityThreads } from '../data/communityThreads'
 
 // ── SVG Icons ────────────────────────────────────────────
 const IconArrow = () => (
@@ -88,12 +89,7 @@ const ToolIcons = {
 const homeToolIds = ['valve-torque', 'flow-rate', 'unit-conversion', 'actuator-sizing', 'compressor-sizing']
 const homeTools = allTools.filter(t => homeToolIds.includes(t.id))
 
-const threads = [
-  { user: 'Ahmed K.',  title: 'How to select control valve for cavitation service?', time: '2h ago',  replies: 12, color: '#1a6b5f' },
-  { user: 'Priya S.',  title: 'Actuator sizing for high differential pressure',       time: '5h ago',  replies: 8,  color: '#3d1a60' },
-  { user: 'Mark D.',   title: 'Recommended materials for sour gas application',       time: '1d ago',  replies: 15, color: '#9e4e00' },
-  { user: 'John L.',   title: 'Flow measurement: DP vs Vortex – when to use?',        time: '1d ago',  replies: 9,  color: '#0a3d5e' },
-]
+const threads = communityThreads.slice(0, 4)
 
 const suppliers = [
   { name: 'Flowserve Corporation', country: 'USA',    badge: 'featured', logoColor: '#e74c3c', logoText: 'FLOWSERVE' },
@@ -206,16 +202,16 @@ function BottomSection() {
             </div>
             <div className="thread-list">
               {threads.map(t => (
-                <div key={t.title} className="thread-item">
+                <Link key={t.id} to={`/community/${t.id}`} className="thread-item thread-item-link">
                   <div className="thread-avatar" style={{ background: t.color }}>
-                    {t.user.split(' ')[0][0]}{t.user.split(' ')[1]?.[0] ?? ''}
+                    {t.initials}
                   </div>
                   <div className="thread-body">
                     <div className="thread-title">{t.title}</div>
                     <div className="thread-meta">{t.user} · {t.time}</div>
                   </div>
-                  <div className="thread-replies">{t.replies}</div>
-                </div>
+                  <div className="thread-replies">{t.replies.length}</div>
+                </Link>
               ))}
             </div>
             <Link to="/community" className="view-all-link">View All Discussions <IconArrow /></Link>

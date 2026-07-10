@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Suppliers from './pages/Suppliers'
 import Community from './pages/Community'
+import CommunityThread from './pages/CommunityThread'
 import Courses from './pages/Courses'
 import Resources from './pages/Resources'
 import ScrollToTop from './components/ScrollToTop'
@@ -28,6 +29,7 @@ function AppLayout() {
           <Route path="/register" element={<Register />} />
           <Route path="/suppliers" element={<Suppliers />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/community/:threadId" element={<CommunityThread />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/resources" element={<Resources />} />
         </Routes>
