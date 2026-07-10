@@ -189,12 +189,17 @@ img { max-width: 100%; display: block; }
 .sup-search::placeholder { color: var(--text3); }
 .supplier-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
 .supplier-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; display: flex; flex-direction: column; gap: 5px; }
-.hm-sup-logo { height: 28px; display: flex; align-items: center; margin-bottom: 2px; }
+.hm-sup-logo { height: 28px; display: flex; align-items: center; justify-content: center; padding: 0 6px; border-radius: 4px; margin-bottom: 2px; }
 .hm-sup-name { font-size: 11.5px; font-weight: 600; color: var(--text); line-height: 1.2; }
 .hm-sup-country { font-size: 10.5px; color: var(--text3); }
 .hm-sup-badge { display: inline-flex; padding: 2px 6px; border-radius: 3px; font-size: 9.5px; font-weight: 700; letter-spacing: .04em; align-self: flex-start; }
 .hm-sup-badge.featured { background: var(--amber-bg); color: var(--amber); }
 .hm-sup-badge.premium { background: var(--navy-bg); color: var(--navy2); }
+.hm-sup-badge.hm-sup-cat { background: var(--teal-bg); color: var(--teal); }
+.supplier-item-link { text-decoration: none; color: inherit; cursor: pointer; transition: border-color .15s, transform .15s; }
+.supplier-item-link:hover { border-color: var(--teal2); transform: translateY(-2px); }
+.supplier-item-link:hover .hm-sup-name { color: var(--teal2); }
+.hm-sup-empty { grid-column: 1 / -1; font-size: 12px; color: var(--text3); text-align: center; padding: 16px 0; }
 .supplier-note { font-size: 11px; color: var(--text3); text-align: center; }
 
 /* ── Suppliers Page ── */
@@ -321,9 +326,12 @@ img { max-width: 100%; display: block; }
 .courses-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
 .course-list { display: flex; flex-direction: column; gap: 1px; margin-bottom: 16px; }
 .course-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.course-item-link { text-decoration: none; color: inherit; transition: opacity .15s; }
+.course-item-link:hover { opacity: .8; }
+.course-item-link:hover .course-title { color: var(--teal2); }
 .course-item:last-child { border-bottom: none; }
 .course-thumb { width: 48px; height: 36px; border-radius: 5px; flex-shrink: 0; overflow: hidden; background: var(--navy-bg2); display: flex; align-items: center; justify-content: center; }
-.course-thumb svg { width: 18px; height: 18px; color: var(--navy2); }
+.course-thumb svg { width: 18px; height: 18px; color: rgba(255,255,255,.85); }
 .course-body { flex: 1; min-width: 0; }
 .course-title { font-size: 12px; font-weight: 500; color: var(--text); line-height: 1.4; margin-bottom: 2px; }
 .course-platform { font-size: 10.5px; color: var(--text3); }
@@ -432,8 +440,10 @@ img { max-width: 100%; display: block; }
 .crs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
 .crs-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: all .18s; }
 .crs-card:hover { border-color: var(--teal2); box-shadow: 0 4px 18px rgba(13,138,123,.1); transform: translateY(-2px); }
+.crs-card-link { text-decoration: none; color: inherit; cursor: pointer; }
+.crs-card-link:hover .crs-card-title { color: var(--teal2); }
 .crs-thumb { height: 120px; display: flex; align-items: center; justify-content: center; position: relative; }
-.crs-thumb svg { width: 40px; height: 40px; color: rgba(255,255,255,.35); }
+.crs-thumb svg { width: 40px; height: 40px; color: rgba(255,255,255,.85); }
 .crs-badge { position: absolute; top: 10px; left: 10px; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .04em; }
 .crs-badge.bestseller { background: #f59e0b; color: #fff; }
 .crs-badge.new { background: var(--teal2); color: #fff; }
@@ -507,7 +517,7 @@ img { max-width: 100%; display: block; }
 .res-coming-soon-note a { color: var(--teal2); font-weight: 600; text-decoration: none; }
 
 /* ── Scroll to top ── */
-.scroll-top-btn { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; background: var(--teal2); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.25); transition: background .15s, transform .15s; z-index: 100; }
+.scroll-top-btn { position: fixed; bottom: 68px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; background: var(--teal2); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.25); transition: background .15s, transform .15s; z-index: 100; }
 .scroll-top-btn:hover { background: #0a7569; transform: translateX(-50%) translateY(-2px); }
 .scroll-top-btn svg { width: 18px; height: 18px; }
 

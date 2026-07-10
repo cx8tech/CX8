@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { allTools } from '../data/tools'
 import { threads as communityThreads } from '../data/communityThreads'
+import { suppliers as allSuppliers, regionColors, getInitials, ALL, REGIONS, CATEGORIES } from '../data/suppliers'
 
 // ── SVG Icons ────────────────────────────────────────────
 const IconArrow = () => (
@@ -91,18 +92,11 @@ const homeTools = allTools.filter(t => homeToolIds.includes(t.id))
 
 const threads = communityThreads.slice(0, 4)
 
-const suppliers = [
-  { name: 'Flowserve Corporation', country: 'USA',    badge: 'featured', logoColor: '#e74c3c', logoText: 'FLOWSERVE' },
-  { name: 'Emerson',               country: 'USA',    badge: 'featured', logoColor: '#1a5276', logoText: 'EMERSON'   },
-  { name: 'Velan Inc.',            country: 'Canada', badge: 'premium',  logoColor: '#117a65', logoText: 'VELAN'     },
-  { name: 'KITZ Corporation',      country: 'Japan',  badge: 'premium',  logoColor: '#922b21', logoText: 'KITZ'      },
-]
-
 const courses = [
-  { title: 'Control Valve Engineering & Sizing', platform: 'Udemy', price: '€94.99', bestseller: true,  color: '#1a3060' },
-  { title: 'Process Engineering Fundamentals',   platform: 'Udemy', price: '€84.99', bestseller: false, color: '#0a4a3a' },
-  { title: 'Rotating Equipment: Pumps & Compressors', platform: 'Udemy', price: '€94.99', bestseller: false, color: '#2d1a5e' },
-  { title: 'Fluid Mechanics for Engineers',      platform: 'Udemy', price: '€79.99', bestseller: false, color: '#3d2a1a' },
+  { title: 'Process Equipment Essentials for a Successful Career Start', platform: 'Udemy', color: '#1a3060', url: 'https://www.udemy.com/course/process-equipment-essentials-for-a-successful-career-start/' },
+  { title: 'Flow of Fluids Through Pipe Fittings, Valves and Pumps',     platform: 'Udemy', color: '#0a4a3a', url: 'https://www.udemy.com/course/flow-of-fluids-through-pipe-fittings-valves-and-pumps/' },
+  { title: 'Valves: Principles, Operation & Designs',                     platform: 'Udemy', color: '#1a2d4a', url: 'https://www.udemy.com/course/valves-principles-operation-designs/' },
+  { title: 'Valve & Control Valve Masterclass: Design, Selection & Sizing', platform: 'Udemy', color: '#2d1a5e', url: 'https://www.udemy.com/course/valve-control-valve-masterclass-design-selection-sizing/' },
 ]
 
 // ── Sub-components ────────────────────────────────────────
@@ -189,6 +183,91 @@ function ToolsSection() {
   )
 }
 
+const HM_PREVIEW = 6
+
+function SupplierPreview() {
+  const [catFilter, setCatFilter] = useState(ALL)
+  const [regionFilter, setRegionFilter] = useState(ALL)
+  const [query, setQuery] = useState('')
+
+  const filtered = allSuppliers.filter(s => {
+    const matchCat = catFilter === ALL || s.category === catFilter
+    const matchRegion = regionFilter === ALL || s.region === regionFilter
+    const q = query.toLowerCase()
+    const matchQ = !q || s.name.toLowerCase().includes(q) || s.country.toLowerCase().includes(q)
+    return matchCat && matchRegion && matchQ
+  })
+
+  const visible = filtered.slice(0, HM_PREVIEW)
+
+  const viewAllUrl = (() => {
+    const p = new URLSearchParams()
+    if (catFilter !== ALL) p.set('category', catFilter)
+    if (regionFilter !== ALL) p.set('region', regionFilter)
+    if (query) p.set('q', query)
+    const qs = p.toString()
+    return qs ? `/suppliers?${qs}` : '/suppliers'
+  })()
+
+  return (
+    <div className="supplier-card">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div className="section-eyebrow" style={{ margin: 0 }}>
+          <span className="section-eyebrow-text">Supplier Directory</span>
+        </div>
+        <Link to={viewAllUrl} className="view-all-link" style={{ fontSize: 12 }}>View All <IconArrow /></Link>
+      </div>
+
+      <div className="supplier-filters">
+        <select
+          className="sup-select"
+          value={catFilter}
+          onChange={e => setCatFilter(e.target.value)}
+        >
+          {CATEGORIES.map(c => <option key={c} value={c}>{c === ALL ? 'All Categories' : c}</option>)}
+        </select>
+        <select
+          className="sup-select"
+          value={regionFilter}
+          onChange={e => setRegionFilter(e.target.value)}
+        >
+          {REGIONS.map(r => <option key={r} value={r}>{r === ALL ? 'All Regions' : r}</option>)}
+        </select>
+        <input
+          className="sup-search"
+          placeholder="Search supplier…"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+        />
+      </div>
+
+      <div className="supplier-grid">
+        {visible.length > 0 ? visible.map(s => (
+          <a key={s.name} href={s.website} target="_blank" rel="noopener noreferrer" className="supplier-item supplier-item-link">
+            <div className="hm-sup-logo" style={{ background: regionColors[s.region] + '22' }}>
+              <span style={{ color: regionColors[s.region], fontSize: 13, fontWeight: 800, letterSpacing: -.3 }}>{getInitials(s.name)}</span>
+            </div>
+            <div className="hm-sup-name">{s.name}</div>
+            <div className="hm-sup-country">{s.country}</div>
+            <span className="hm-sup-badge hm-sup-cat">{s.category}</span>
+          </a>
+        )) : (
+          <div className="hm-sup-empty">No suppliers match your filters.</div>
+        )}
+      </div>
+
+      {filtered.length > HM_PREVIEW && (
+        <div className="supplier-note">
+          Showing {HM_PREVIEW} of {filtered.length} — <Link to={viewAllUrl} className="view-all-link">view all</Link>
+        </div>
+      )}
+      {filtered.length <= HM_PREVIEW && filtered.length > 0 && (
+        <div className="supplier-note">Connect directly with verified suppliers worldwide.</div>
+      )}
+    </div>
+  )
+}
+
 function BottomSection() {
   return (
     <section className="section bottom-section">
@@ -218,32 +297,7 @@ function BottomSection() {
           </div>
 
           {/* Supplier Directory */}
-          <div className="supplier-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <div className="section-eyebrow" style={{ margin: 0 }}>
-                <span className="section-eyebrow-text">Supplier Directory</span>
-              </div>
-              <Link to="/suppliers" className="view-all-link" style={{ fontSize: 12 }}>View All Suppliers <IconArrow /></Link>
-            </div>
-            <div className="supplier-filters">
-              <select className="sup-select"><option>Valves</option><option>Actuators</option><option>Compressors</option></select>
-              <select className="sup-select"><option>All Countries</option><option>USA</option><option>Germany</option><option>Japan</option></select>
-              <input className="sup-search" placeholder="Search Supplier" />
-            </div>
-            <div className="supplier-grid">
-              {suppliers.map(s => (
-                <div key={s.name} className="supplier-item">
-                  <div className="hm-sup-logo">
-                    <span style={{ color: s.logoColor, fontSize: 13, fontWeight: 800, letterSpacing: -.3 }}>{s.logoText}</span>
-                  </div>
-                  <div className="hm-sup-name">{s.name}</div>
-                  <div className="hm-sup-country">{s.country}</div>
-                  <span className={`hm-sup-badge ${s.badge}`}>{s.badge === 'featured' ? 'Featured Supplier' : 'Premium Supplier'}</span>
-                </div>
-              ))}
-            </div>
-            <div className="supplier-note">Connect directly with verified suppliers worldwide.</div>
-          </div>
+          <SupplierPreview />
 
           {/* Courses */}
           <div className="courses-card">
@@ -256,7 +310,7 @@ function BottomSection() {
             </div>
             <div className="course-list">
               {courses.map(c => (
-                <div key={c.title} className="course-item">
+                <a key={c.title} href={c.url} target="_blank" rel="noopener noreferrer" className="course-item course-item-link">
                   <div className="course-thumb" style={{ background: c.color }}>
                     <IconCap style={{ width: 18, height: 18, color: 'rgba(255,255,255,.7)' }} />
                   </div>
@@ -264,11 +318,7 @@ function BottomSection() {
                     <div className="course-title">{c.title}</div>
                     <div className="course-platform">{c.platform}</div>
                   </div>
-                  <div className="course-right">
-                    <span className="course-price">{c.price}</span>
-                    {c.bestseller && <span className="course-badge">BESTSELLER</span>}
-                  </div>
-                </div>
+                </a>
               ))}
             </div>
             <div className="courses-note">We may earn a commission from Udemy (affiliate).</div>
