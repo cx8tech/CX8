@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
+import { suppliers, regionColors, getInitials, ALL, REGIONS, CATEGORIES } from '../data/suppliers'
 
 const IconLocation = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -16,180 +17,136 @@ const IconArrow = () => (
     <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
   </svg>
 )
-const IconFilter = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-  </svg>
-)
-
-const suppliers = [
-  {
-    name: 'Flowserve Corporation',
-    country: 'USA',
-    badge: 'featured',
-    categories: ['Control Valves', 'Pumps', 'Actuators'],
-    description: 'Global manufacturer of flow control products and services for the oil & gas, power, chemical, and water industries.',
-    logoColor: '#c0392b',
-    logoText: 'FLOWSERVE',
-  },
-  {
-    name: 'Emerson',
-    country: 'USA',
-    badge: 'featured',
-    categories: ['Instrumentation', 'Valves', 'Automation'],
-    description: 'Technology and engineering solutions for industrial, commercial, and residential markets worldwide.',
-    logoColor: '#1a5276',
-    logoText: 'EMERSON',
-  },
-  {
-    name: 'Velan Inc.',
-    country: 'Canada',
-    badge: 'premium',
-    categories: ['Industrial Valves', 'Gate Valves', 'Ball Valves'],
-    description: 'Leading manufacturer of industrial valves serving the power, oil & gas, chemical, and cryogenic industries.',
-    logoColor: '#117a65',
-    logoText: 'VELAN',
-  },
-  {
-    name: 'KITZ Corporation',
-    country: 'Japan',
-    badge: 'premium',
-    categories: ['Ball Valves', 'Gate Valves', 'Butterfly Valves'],
-    description: 'One of the world\'s largest valve manufacturers, producing high-quality valves for global industrial markets.',
-    logoColor: '#922b21',
-    logoText: 'KITZ',
-  },
-]
-
-const ALL = 'All'
-const countries = [ALL, ...Array.from(new Set(suppliers.map(s => s.country)))]
-const categories = [ALL, ...Array.from(new Set(suppliers.flatMap(s => s.categories)))]
-
 const IconSearch = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
   </svg>
 )
+const IconExternalLink = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:14,height:14}}>
+    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+  </svg>
+)
 
 export default function Suppliers() {
-  const [countryFilter, setCountryFilter] = useState(ALL)
-  const [categoryFilter, setCategoryFilter] = useState(ALL)
-  const [query, setQuery] = useState('')
+  const [searchParams] = useSearchParams()
+  const [regionFilter, setRegionFilter] = useState(() => {
+    const r = searchParams.get('region')
+    return REGIONS.includes(r) ? r : ALL
+  })
+  const [categoryFilter, setCategoryFilter] = useState(() => {
+    const c = searchParams.get('category')
+    return CATEGORIES.includes(c) ? c : ALL
+  })
+  const [query, setQuery] = useState(() => searchParams.get('q') || '')
 
   const filtered = suppliers.filter(s => {
-    const matchCountry = countryFilter === ALL || s.country === countryFilter
-    const matchCategory = categoryFilter === ALL || s.categories.includes(categoryFilter)
+    const matchRegion = regionFilter === ALL || s.region === regionFilter
+    const matchCategory = categoryFilter === ALL || s.category === categoryFilter
     const q = query.toLowerCase()
-    const matchQuery = !q || s.name.toLowerCase().includes(q) || s.country.toLowerCase().includes(q) || s.categories.some(c => c.toLowerCase().includes(q))
-    return matchCountry && matchCategory && matchQuery
+    const matchQuery = !q || s.name.toLowerCase().includes(q) || s.country.toLowerCase().includes(q) || s.region.toLowerCase().includes(q) || s.category.toLowerCase().includes(q)
+    return matchRegion && matchCategory && matchQuery
   })
 
   return (
     <div className="sup-page">
-      {/* Page header */}
       <div className="sup-header">
         <div className="sup-header-inner">
           <div className="sup-eyebrow">Supplier Directory</div>
           <h1 className="sup-title">Connect with Verified Suppliers</h1>
           <p className="sup-sub">CX8 Technologies partners with trusted, vendor-neutral suppliers worldwide. All listed suppliers are verified by our engineering team.</p>
-          <a href="mailto:contact@cx8technologies.com" className="sup-cta">
+          <a href="/forms/supplier-listing.html" className="sup-cta">
             <IconMail /> Get Your Company Listed
           </a>
         </div>
       </div>
 
       <div className="sup-body">
-        {/* Search */}
         <div className="page-search-bar">
           <IconSearch />
           <input
             className="page-search-input"
-            placeholder="Search suppliers by name, country, or category..."
+            placeholder="Search suppliers by name, country, region, or category..."
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
         </div>
 
-        {/* Filters */}
-        <div className="sup-filters-bar">
-          <div className="sup-filter-group">
-            <IconFilter />
-            <span className="sup-filter-label">Country</span>
-            <div className="sup-filter-pills">
-              {countries.map(c => (
-                <button
-                  key={c}
-                  className={`sup-pill ${countryFilter === c ? 'active' : ''}`}
-                  onClick={() => setCountryFilter(c)}
-                >{c}</button>
-              ))}
-            </div>
+        <div className="sup-dropdowns-bar">
+          <div className="sup-dropdown-group">
+            <label className="sup-dropdown-label" htmlFor="sup-region">Region</label>
+            <select
+              id="sup-region"
+              className="sup-dropdown"
+              value={regionFilter}
+              onChange={e => setRegionFilter(e.target.value)}
+            >
+              {REGIONS.map(r => <option key={r} value={r}>{r === ALL ? 'All Regions' : r}</option>)}
+            </select>
           </div>
-          <div className="sup-filter-group">
-            <span className="sup-filter-label">Category</span>
-            <div className="sup-filter-pills">
-              {categories.map(c => (
-                <button
-                  key={c}
-                  className={`sup-pill ${categoryFilter === c ? 'active' : ''}`}
-                  onClick={() => setCategoryFilter(c)}
-                >{c}</button>
-              ))}
-            </div>
+          <div className="sup-dropdown-group">
+            <label className="sup-dropdown-label" htmlFor="sup-category">Category</label>
+            <select
+              id="sup-category"
+              className="sup-dropdown"
+              value={categoryFilter}
+              onChange={e => setCategoryFilter(e.target.value)}
+            >
+              {CATEGORIES.map(c => <option key={c} value={c}>{c === ALL ? 'All Categories' : c}</option>)}
+            </select>
           </div>
+          {(regionFilter !== ALL || categoryFilter !== ALL) && (
+            <button className="sup-clear-btn" onClick={() => { setRegionFilter(ALL); setCategoryFilter(ALL) }}>
+              Clear filters
+            </button>
+          )}
         </div>
 
-        {/* Results count */}
         <div className="sup-count">{filtered.length} supplier{filtered.length !== 1 ? 's' : ''} found</div>
 
-        {/* Supplier grid */}
         <div className="sup-grid">
-          {filtered.map(s => (
-            <div key={s.name} className="sup-card">
-              <div className="sup-card-top">
-                <div className="sup-logo" style={{ background: s.logoColor }}>
-                  {s.logoText}
-                </div>
-                <div className="sup-card-meta">
-                  <span className={`sup-badge sup-badge-${s.badge}`}>
-                    {s.badge === 'featured' ? 'Featured' : 'Premium'}
-                  </span>
-                  <div className="sup-country">
-                    <IconLocation /> {s.country}
+          {filtered.map(s => {
+            const color = regionColors[s.region] || '#1a3060'
+            const initials = getInitials(s.name)
+            return (
+              <a
+                key={s.name + s.country}
+                href={s.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sup-card sup-card-link"
+              >
+                <div className="sup-card-top">
+                  <div className="sup-logo" style={{ background: color }}>{initials}</div>
+                  <div className="sup-card-meta">
+                    <span
+                      className="sup-badge"
+                      style={{ background: color + '22', color: color, border: `1px solid ${color}44` }}
+                    >{s.region}</span>
+                    <div className="sup-country">
+                      <IconLocation /> {s.country}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="sup-card-name">{s.name}</div>
-              <p className="sup-card-desc">{s.description}</p>
-              <div className="sup-card-categories">
-                {s.categories.map(cat => (
-                  <span key={cat} className="sup-cat-chip">{cat}</span>
-                ))}
-              </div>
-              <button className="sup-card-cta">Contact Supplier <IconArrow /></button>
-            </div>
-          ))}
+                <div className="sup-card-name">{s.name}</div>
+                <div className="sup-card-categories">
+                  <span className="sup-cat-chip">{s.category}</span>
+                </div>
+                <div className="sup-card-website">
+                  <span>{s.website.replace(/^https?:\/\//, '')}</span>
+                  <IconExternalLink />
+                </div>
+              </a>
+            )
+          })}
         </div>
 
         {filtered.length === 0 && (
           <div className="sup-empty">
             <p>No suppliers match the selected filters.</p>
-            <button className="sup-pill active" onClick={() => { setCountryFilter(ALL); setCategoryFilter(ALL) }}>Clear Filters</button>
+            <button className="sup-pill active" onClick={() => { setRegionFilter(ALL); setCategoryFilter(ALL); setQuery('') }}>Clear Filters</button>
           </div>
         )}
-
-        {/* Get listed CTA */}
-        <div className="sup-get-listed">
-          <div className="sup-get-listed-inner">
-            <div>
-              <div className="sup-get-listed-title">Are you a supplier?</div>
-              <div className="sup-get-listed-sub">Join the CX8 verified supplier network and connect with engineers worldwide.</div>
-            </div>
-            <a href="mailto:contact@cx8technologies.com" className="sup-cta sup-cta-outline">
-              <IconMail /> Get Listed
-            </a>
-          </div>
-        </div>
       </div>
     </div>
   )
