@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get Listed — CX8 Supplier Directory</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root{
+    --navy-950:#0A1628;
+    --navy-800:#10243D;
+    --teal-500:#1E8C82;
+    --teal-300:#5CBDB2;
+    --amber-400:#E3A542;
+    --amber-600:#B9791F;
+    --paper-50:#F6F4EE;
+    --ink-900:#12202E;
+    --ink-600:#4A5A68;
+    --line-300:#C9D3D6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper-50);font-family:'DM Sans',sans-serif;color:var(--ink-900);}
+
+  #cx8-form-embed{max-width:820px;margin:0 auto;padding:40px 24px 80px;}
+
+  .cx8-header{
+    background:var(--navy-950);
+    color:#EFEAE0;
+    padding:36px 32px;
+    border-radius:8px;
+    margin-bottom:28px;
+  }
+  .cx8-eyebrow{
+    font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--teal-300);margin-bottom:10px;
+  }
+  .cx8-header h1{
+    font-family:'Sora',sans-serif;font-weight:800;font-size:28px;margin:0 0 10px;
+  }
+  .cx8-header p{margin:0;font-size:14px;line-height:1.55;color:#B9C4CC;max-width:560px;}
+
+  form{background:#fff;border:1px solid var(--line-300);border-radius:8px;overflow:hidden;}
+
+  .cx8-section{padding:26px 32px;border-bottom:1px solid var(--line-300);}
+  .cx8-section:last-of-type{border-bottom:none;}
+  .cx8-section h2{
+    font-family:'Sora',sans-serif;font-size:17px;font-weight:700;margin:0 0 4px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .cx8-section h2::after{content:"";flex:1;height:1px;background:var(--line-300);}
+  .cx8-section .hint{font-size:12.5px;color:var(--ink-600);margin:0 0 18px;}
+
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--ink-600);margin-bottom:6px;
+  }
+  .field label .req{color:var(--amber-600);}
+  .field input[type=text], .field input[type=email], .field input[type=url], .field input[type=number], .field select{
+    width:100%;padding:10px 12px;border:1.5px solid var(--line-300);border-radius:5px;
+    font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink-900);background:#fff;
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--teal-500);outline-offset:1px;border-color:var(--teal-500);}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:600px){.grid2{grid-template-columns:1fr;}}
+
+  .checklist{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;margin-bottom:6px;}
+  @media (max-width:600px){.checklist{grid-template-columns:1fr;}}
+  .check-item{display:flex;align-items:center;gap:8px;font-size:13.5px;padding:4px 0;}
+  .check-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--teal-500);flex-shrink:0;}
+
+  .subcat-group{margin-bottom:18px;}
+  .subcat-group > .subcat-label{
+    font-family:'Sora',sans-serif;font-weight:700;font-size:13.5px;margin-bottom:8px;
+    color:var(--navy-950);
+  }
+
+  .other-input{margin-top:6px;margin-left:24px;max-width:260px;}
+  .other-input input{width:100%;padding:6px 9px;border:1px solid var(--line-300);border-radius:4px;font-size:13px;font-family:'DM Sans',sans-serif;}
+
+  .cx8-footer{padding:28px 32px;background:var(--paper-50);}
+  .submit-btn{
+    font-family:'Sora',sans-serif;font-weight:700;font-size:15px;
+    background:var(--teal-500);color:#fff;border:none;border-radius:6px;
+    padding:14px 30px;cursor:pointer;
+  }
+  .submit-btn:hover{background:#176F67;}
+  .submit-btn:disabled{opacity:.6;cursor:not-allowed;}
+  .footnote{font-size:12px;color:var(--ink-600);margin-top:14px;}
+
+  #cx8-success{
+    display:none;background:var(--navy-950);color:#fff;padding:30px 32px;border-radius:8px;
+    font-family:'Sora',sans-serif;text-align:center;
+  }
+  #cx8-success h3{margin:0 0 8px;font-size:20px;}
+  #cx8-success p{margin:0;color:#B9C4CC;font-family:'DM Sans',sans-serif;font-size:14px;}
+
+  #cx8-error{
+    display:none;background:#fff0f0;border:1.5px solid #f5a0a0;color:#8b0000;
+    padding:14px 20px;border-radius:6px;font-size:13.5px;margin-top:16px;
+  }
+</style>
+</head>
+<body>
+
+<div id="cx8-form-embed">
+
+  <div class="cx8-header">
+    <div class="cx8-eyebrow">CX8 Technologies · Supplier Directory</div>
+    <h1>Get listed on the CX8 Supplier Directory</h1>
+    <p>Tell us what you make, who you are, and what you're certified for. Basic listings are free — we'll confirm your listing is live within 5 business days.</p>
+  </div>
+
+  <form id="cx8-supplier-form">
+
+    <div class="cx8-section">
+      <h2>1. Company Information</h2>
+      <div class="grid2">
+        <div class="field">
+          <label>Company Name <span class="req">*</span></label>
+          <input type="text" name="company_name" required>
+        </div>
+        <div class="field">
+          <label>Website <span class="req">*</span></label>
+          <input type="url" name="website" placeholder="https://" required>
+        </div>
+        <div class="field">
+          <label>Country of Headquarters <span class="req">*</span></label>
+          <input type="text" name="country" required>
+        </div>
+        <div class="field">
+          <label>Year Founded <span class="req">*</span></label>
+          <input type="number" name="year_founded" min="1800" max="2026" required>
+        </div>
+        <div class="field">
+          <label>Total Number of Employees <span class="req">*</span></label>
+          <select name="employees" required>
+            <option value="">Select...</option>
+            <option>1–10</option>
+            <option>11–50</option>
+            <option>51–200</option>
+            <option>201–1000</option>
+            <option>1000+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Primary Contact Name &amp; Title</label>
+          <input type="text" name="contact_name">
+        </div>
+        <div class="field">
+          <label>Contact Email <span class="req">*</span></label>
+          <input type="email" name="contact_email" required>
+        </div>
+        <div class="field">
+          <label>Contact Phone</label>
+          <input type="text" name="contact_phone">
+        </div>
+      </div>
+    </div>
+
+    <div class="cx8-section">
+      <h2>2. Business Category</h2>
+      <p class="hint">Select all that apply. <span class="req">*</span></p>
+      <div class="checklist">
+        <label class="check-item"><input type="checkbox" name="biz_cat" value="Manufacturer"> Manufacturer</label>
+        <label class="check-item"><input type="checkbox" name="biz_cat" value="Distributor"> Distributor</label>
+        <label class="check-item"><input type="checkbox" name="biz_cat" value="System Assembler / Integrator"> System Assembler / Integrator</label>
+        <label class="check-item"><input type="checkbox" name="biz_cat" value="EPC Contractor"> EPC Contractor</label>
+        <label class="check-item"><input type="checkbox" name="biz_cat" value="All of the above"> All of the above</label>
+      </div>
+      <div class="other-input"><input type="text" name="biz_cat_other" placeholder="Other — please specify"></div>
+    </div>
+
+    <div class="cx8-section">
+      <h2>3. Product Categories Offered</h2>
+      <p class="hint">Check all categories and subcategories you supply. <span class="req">*</span></p>
+
+      <div class="subcat-group">
+        <div class="subcat-label">Valves</div>
+        <div class="checklist">
+          <label class="check-item"><input type="checkbox" name="valves" value="Ball Valves"> Ball Valves</label>
+          <label class="check-item"><input type="checkbox" name="valves" value="Butterfly Valves"> Butterfly Valves</label>
+          <label class="check-item"><input type="checkbox" name="valves" value="Gate Valves"> Gate Valves</label>
+          <label class="check-item"><input type="checkbox" name="valves" value="Globe Valves"> Globe Valves</label>
+          <label class="check-item"><input type="checkbox" name="valves" value="Diaphragm Valves"> Diaphragm Valves</label>
+          <label class="check-item"><input type="checkbox" name="valves" value="Check Valves"> Check Valves</label>
+        </div>
+        <div class="other-input"><input type="text" name="valves_other" placeholder="Other valve type"></div>
+      </div>
+
+      <div class="subcat-group">
+        <div class="subcat-label">Actuators</div>
+        <div class="checklist">
+          <label class="check-item"><input type="checkbox" name="actuators" value="Pneumatic Rotary (Rack & Pinion)"> Pneumatic Rotary (Rack &amp; Pinion)</label>
+          <label class="check-item"><input type="checkbox" name="actuators" value="Pneumatic Rotary (Scotch Yoke)"> Pneumatic Rotary (Scotch Yoke)</label>
+          <label class="check-item"><input type="checkbox" name="actuators" value="Pneumatic Linear"> Pneumatic Linear</label>
+          <label class="check-item"><input type="checkbox" name="actuators" value="Electric Rotary"> Electric Rotary</label>
+          <label class="check-item"><input type="checkbox" name="actuators" value="Electric Linear"> Electric Linear</label>
+          <label class="check-item"><input type="checkbox" name="actuators" value="Hydraulic"> Hydraulic</label>
+        </div>
+        <div class="other-input"><input type="text" name="actuators_other" placeholder="Other actuator type"></div>
+      </div>
+
+      <div class="subcat-group">
+        <div class="subcat-label">Compressors</div>
+        <div class="checklist">
+          <label class="check-item"><input type="checkbox" name="compressors" value="Oil-Lubricated (Screw)"> Oil-Lubricated (Screw)</label>
+          <label class="check-item"><input type="checkbox" name="compressors" value="Oil-Free (Screw)"> Oil-Free (Screw)</label>
+          <label class="check-item"><input type="checkbox" name="compressors" value="Piston / Reciprocating"> Piston / Reciprocating</label>
+          <label class="check-item"><input type="checkbox" name="compressors" value="Rotary Vane"> Rotary Vane</label>
+          <label class="check-item"><input type="checkbox" name="compressors" value="Scroll"> Scroll</label>
+        </div>
+        <div class="other-input"><input type="text" name="compressors_other" placeholder="Other compressor type"></div>
+      </div>
+
+      <div class="subcat-group">
+        <div class="subcat-label">Pumps</div>
+        <div class="checklist">
+          <label class="check-item"><input type="checkbox" name="pumps" value="Centrifugal"> Centrifugal</label>
+          <label class="check-item"><input type="checkbox" name="pumps" value="Diaphragm"> Diaphragm</label>
+          <label class="check-item"><input type="checkbox" name="pumps" value="Gear"> Gear</label>
+          <label class="check-item"><input type="checkbox" name="pumps" value="Peristaltic"> Peristaltic</label>
+          <label class="check-item"><input type="checkbox" name="pumps" value="Vacuum"> Vacuum</label>
+        </div>
+        <div class="other-input"><input type="text" name="pumps_other" placeholder="Other pump type"></div>
+      </div>
+    </div>
+
+    <div class="cx8-section">
+      <h2>4. Certifications</h2>
+      <p class="hint">Check all that currently apply.</p>
+      <div class="checklist">
+        <label class="check-item"><input type="checkbox" name="certs" value="ISO 9001"> ISO 9001</label>
+        <label class="check-item"><input type="checkbox" name="certs" value="ISO 14001"> ISO 14001</label>
+        <label class="check-item"><input type="checkbox" name="certs" value="ATEX"> ATEX</label>
+        <label class="check-item"><input type="checkbox" name="certs" value="CE"> CE</label>
+        <label class="check-item"><input type="checkbox" name="certs" value="PED"> PED (Pressure Equipment Directive)</label>
+        <label class="check-item"><input type="checkbox" name="certs" value="SIL 2/3"> SIL 2 / SIL 3</label>
+        <label class="check-item"><input type="checkbox" name="certs" value="FDA"> FDA</label>
+      </div>
+      <div class="grid2" style="margin-top:10px;">
+        <div class="field">
+          <label>API Standard (if applicable)</label>
+          <input type="text" name="api_standard">
+        </div>
+        <div class="field">
+          <label>Other Certification</label>
+          <input type="text" name="certs_other">
+        </div>
+      </div>
+    </div>
+
+    <div class="cx8-section">
+      <h2>5. Media &amp; Listing Permissions</h2>
+      <p class="hint">To build your full profile we may display your product images and link to your technical resources.</p>
+      <div class="check-item" style="margin-bottom:8px;">
+        <input type="checkbox" name="perm_images" value="yes" id="perm_images">
+        <label for="perm_images" style="font-family:'DM Sans',sans-serif;text-transform:none;font-size:13.5px;letter-spacing:0;">I give CX8 Technologies permission to use our product images for our directory listing.</label>
+      </div>
+      <div class="check-item" style="margin-bottom:16px;">
+        <input type="checkbox" name="perm_datasheets" value="yes" id="perm_datasheets">
+        <label for="perm_datasheets" style="font-family:'DM Sans',sans-serif;text-transform:none;font-size:13.5px;letter-spacing:0;">I give CX8 Technologies permission to link to our product datasheets / downloads page.</label>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>Product Catalogue / Datasheets URL</label>
+          <input type="url" name="catalogue_url" placeholder="https://">
+        </div>
+        <div class="field">
+          <label>Logo (please email separately as PNG/SVG)</label>
+          <input type="text" name="logo_note" placeholder="Will be sent via email" disabled>
+        </div>
+      </div>
+    </div>
+
+    <div class="cx8-section">
+      <h2>6. Featured Listing (Optional)</h2>
+      <p class="hint">Featured suppliers get priority placement inside our Valve Torque, Actuator-Valve Match, and Compressor Sizing tools — seen directly by engineers actively specifying equipment.</p>
+      <div class="check-item">
+        <input type="checkbox" name="featured_interest" value="yes" id="featured_interest">
+        <label for="featured_interest" style="font-family:'DM Sans',sans-serif;text-transform:none;font-size:13.5px;letter-spacing:0;">I'm interested in a paid Featured Listing — please send pricing and next steps.</label>
+      </div>
+    </div>
+
+    <div class="cx8-footer">
+      <button type="submit" class="submit-btn" id="submit-btn">Submit Listing</button>
+      <p class="footnote">By submitting, you confirm the information provided is accurate. We'll review and confirm your listing is live within 5 business days.</p>
+      <div id="cx8-error">Something went wrong — please try again or email us at contact@cx8technologies.com.</div>
+    </div>
+  </form>
+
+  <div id="cx8-success">
+    <h3>Thanks — your listing request is in.</h3>
+    <p>We'll review your submission and confirm once your profile is live on the CX8 Supplier Directory.</p>
+  </div>
+
+</div>
+
+<script>
+  var SUPABASE_URL = 'https://igminvvwphfwzbsgvyxb.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlnbWludnZ3cGhmd3pic2d2eXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTIwMDIsImV4cCI6MjA5ODIyODAwMn0.Aeptliu2ygGNEw11sGnZK4Z622VSuTKEoa1K2IdZvj4';
+
+  document.getElementById('cx8-supplier-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('submit-btn');
+    var errBox = document.getElementById('cx8-error');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+    errBox.style.display = 'none';
+
+    var data = new FormData(e.target);
+    var payload = {};
+    for (var pair of data.entries()) {
+      var key = pair[0], val = pair[1];
+      if (payload[key]) {
+        payload[key] = Array.isArray(payload[key]) ? [...payload[key], val] : [payload[key], val];
+      } else {
+        payload[key] = val;
+      }
+    }
+
+    try {
+      var res = await fetch(SUPABASE_URL + '/rest/v1/supplier_submissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          company_name: payload.company_name || null,
+          contact_email: payload.contact_email || null,
+          data: payload
+        })
+      });
+
+      if (res.ok || res.status === 201) {
+        document.getElementById('cx8-supplier-form').style.display = 'none';
+        document.getElementById('cx8-success').style.display = 'block';
+      } else {
+        throw new Error('HTTP ' + res.status);
+      }
+    } catch (err) {
+      errBox.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Submit Listing';
+    }
+  });
+</script>
+
+</body>
+</html>
