@@ -92,9 +92,9 @@ export default function Footer() {
           <div>
             <div className="footer-col-title">Legal</div>
             <ul className="footer-links">
-              <li><Link to="/legal/impressum">Impressum</Link></li>
-              <li><Link to="/legal/datenschutz">Data Protection (Datenschutz)</Link></li>
-              <li><Link to="/legal/cookies">Cookies Settings</Link></li>
+              <li><Link to="/impressum">Impressum</Link></li>
+              <li><Link to="/datenschutz">Datenschutzerklärung</Link></li>
+              <li><button className="footer-cookie-settings-btn" onClick={() => window.klaro?.show()}>Cookie-Einstellungen</button></li>
             </ul>
           </div>
 
@@ -102,8 +102,8 @@ export default function Footer() {
             <div className="footer-col-title">Support</div>
             <ul className="footer-links">
               <li><Link to="/help">Help Center</Link></li>
-              <li><Link to="/legal/terms">Terms of Use</Link></li>
-              <li><Link to="/legal/privacy">Privacy Policy</Link></li>
+              <li><Link to="/impressum">Terms of Use</Link></li>
+              <li><Link to="/datenschutz">Privacy Policy</Link></li>
             </ul>
           </div>
 
@@ -126,7 +126,14 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <span className="footer-copy">© 2025 CX8 Technologies. All rights reserved.</span>
+          <div className="footer-legal-bar">
+            <Link to="/impressum" className="footer-legal-link">Impressum</Link>
+            <span className="footer-legal-sep">|</span>
+            <Link to="/datenschutz" className="footer-legal-link">Datenschutzerklärung</Link>
+            <span className="footer-legal-sep">|</span>
+            <button className="footer-cookie-settings-btn" onClick={() => window.klaro?.show()}>Cookie-Einstellungen</button>
+          </div>
+          <span className="footer-copy">© 2026 CX8 Technologies. All rights reserved.</span>
         </div>
       </div>
     </footer>

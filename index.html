@@ -8,6 +8,75 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+
+    <!-- Klaro Cookie Consent — must be defined before klaro.js loads -->
+    <script>
+      var klaroConfig = {
+        version: 1,
+        elementID: 'klaro',
+        storageMethod: 'cookie',
+        storageName: 'cx8_consent',
+        cookieExpiresAfterDays: 365,
+        privacyPolicy: '/datenschutz',
+        default: false,
+        mustConsent: false,
+        acceptAll: true,
+        hideDeclineAll: false,
+        lang: 'de',
+        translations: {
+          de: {
+            consentNotice: {
+              description: 'Wir verwenden Cookies, um unsere Website zu verbessern. Analyse-Cookies werden nur mit Ihrer Zustimmung geladen. Weitere Informationen finden Sie in unserer <a href="/datenschutz">Datenschutzerklärung</a>.',
+            },
+            consentModal: {
+              title: 'Cookie-Einstellungen',
+              description: 'Hier können Sie einstellen, welche Cookies Sie erlauben möchten.',
+            },
+            acceptAll: 'Alle akzeptieren',
+            declineAll: 'Nur notwendige',
+            acceptSelected: 'Auswahl akzeptieren',
+            close: 'Schließen',
+            purposes: {
+              analytics: { title: 'Analyse' },
+              essential: { title: 'Notwendig' },
+            },
+            service: {
+              disableAll: { title: 'Alle deaktivieren', description: 'Alle optionalen Dienste deaktivieren.' },
+              optOut: { title: '(Opt-out)', description: 'Dieser Dienst ist standardmäßig aktiviert.' },
+              required: { title: '(Immer aktiv)', description: 'Dieser Dienst ist für den Betrieb der Website erforderlich.' },
+            },
+            poweredBy: 'Cookie-Einwilligung von Klaro',
+          }
+        },
+        services: [
+          {
+            name: 'google-analytics',
+            title: 'Google Analytics 4',
+            purposes: ['analytics'],
+            default: false,
+            required: false,
+            cookies: [/^_ga/, /^_ga_/],
+            onAccept: `
+              if (!window._cx8GaLoaded) {
+                window._cx8GaLoaded = true;
+                var s = document.createElement('script');
+                s.async = true;
+                s.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+                document.head.appendChild(s);
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                window.gtag = gtag;
+                gtag('js', new Date());
+                gtag('config', 'G-XXXXXXXXXX', { anonymize_ip: true });
+              }
+            `,
+            onDecline: ``
+          }
+        ]
+      };
+    </script>
+    <link rel="stylesheet" href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css" />
+    <script defer src="https://cdn.kiprotect.com/klaro/v0.7/klaro.js"></script>
   </head>
   <body>
     <div id="root"></div>
