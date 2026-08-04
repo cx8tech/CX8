@@ -20,25 +20,40 @@ const IconPlay = () => (
   </svg>
 )
 
-function GateModal({ onClose, toolPath }) {
+function GateModal({ onClose, toolPath, user, isPaid }) {
   const navigate = useNavigate()
+  const variantId = import.meta.env.VITE_LEMONSQUEEZY_VARIANT_ID
+  const checkoutUrl = user
+    ? `https://cx8technologies.lemonsqueezy.com/checkout/buy/${variantId}?checkout[email]=${encodeURIComponent(user.email)}&checkout[custom][user_id]=${user.id}`
+    : null
+
   return (
     <div className="gate-overlay" onClick={onClose}>
       <div className="gate-modal" onClick={e => e.stopPropagation()}>
         <div className="gate-icon"><IconLock /></div>
-        <h2 className="gate-title">Subscription Required</h2>
-        <p className="gate-sub">Login with an active CX8 Pro subscription to view cross-reference results.</p>
-        <div className="gate-actions">
-          <Link to={`/login?redirect=${encodeURIComponent(toolPath)}`} className="gate-btn-primary">Login to Get Results</Link>
-          <a
-            href="https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="gate-btn-secondary"
-          >
-            <IconPlay /> See How It Works
-          </a>
-        </div>
+        {!user ? (
+          <>
+            <h2 className="gate-title">Login Required</h2>
+            <p className="gate-sub">Log in to access cross-reference results.</p>
+            <div className="gate-actions">
+              <Link to={`/login?redirect=${encodeURIComponent(toolPath)}`} className="gate-btn-primary">Log In</Link>
+              <a href="https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg" target="_blank" rel="noopener noreferrer" className="gate-btn-secondary">
+                <IconPlay /> See How It Works
+              </a>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="gate-title">CX8 Pro Required</h2>
+            <p className="gate-sub">Upgrade to CX8 Pro to unlock the full cross-reference database.</p>
+            <div className="gate-actions">
+              <a href={checkoutUrl} className="gate-btn-primary">Upgrade to Pro — €9.99/mo</a>
+              <a href="https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg" target="_blank" rel="noopener noreferrer" className="gate-btn-secondary">
+                <IconPlay /> See How It Works
+              </a>
+            </div>
+          </>
+        )}
         <button className="gate-btn-home" onClick={() => navigate('/')}>← Back to Home</button>
       </div>
     </div>
@@ -59,6 +74,7 @@ export default function ToolViewer() {
   const iframeReadyRef          = useRef(false)  // true once iframe fires onLoad
 
   const isDataTool = toolId === DATA_TOOL_ID
+  const [isPaid, setIsPaid] = useState(false)
 
   // ── Track auth state ──
   useEffect(() => {
@@ -71,11 +87,21 @@ export default function ToolViewer() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // ── Fetch dataset when user is authenticated and this is tool5 ──
+  // ── Check paid status ──
   useEffect(() => {
-    if (!isDataTool || !user) return
+    if (!user || !isDataTool) return
+    supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => setIsPaid(data?.plan === 'pro'))
+  }, [user, isDataTool])
+
+  // ── Fetch dataset when user is authenticated and paid ──
+  useEffect(() => {
+    if (!isDataTool || !user || !isPaid) return
     if (dbCacheRef.current) {
-      // Already fetched — just push to iframe if it's ready
       pushDataToIframe()
       return
     }
@@ -88,7 +114,7 @@ export default function ToolViewer() {
         dbCacheRef.current = data.map(r => r.record)
         pushDataToIframe()
       })
-  }, [user, isDataTool])
+  }, [user, isDataTool, isPaid])
 
   // Send cached data into the iframe (no-op if either isn't ready)
   function pushDataToIframe() {
@@ -101,8 +127,17 @@ export default function ToolViewer() {
 
   // ── Listen for messages from the tool iframe ──
   useEffect(() => {
-    const handler = (e) => {
-      if (e.data?.type === 'cx8-gate') setShowGate(true)
+    const handler = async (e) => {
+      if (e.data?.type !== 'cx8-gate') return
+      // Re-fetch session so user is always fresh when the gate opens
+      const { data: { session } } = await supabase.auth.getSession()
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      if (currentUser) {
+        const { data } = await supabase.from('profiles').select('plan').eq('id', currentUser.id).single()
+        setIsPaid(data?.plan === 'pro')
+      }
+      setShowGate(true)
     }
     window.addEventListener('message', handler)
     return () => window.removeEventListener('message', handler)
@@ -121,7 +156,7 @@ export default function ToolViewer() {
 
   return (
     <div className="tool-viewer">
-      {showGate && <GateModal onClose={() => setShowGate(false)} toolPath={location.pathname} />}
+      {showGate && <GateModal onClose={() => setShowGate(false)} toolPath={location.pathname} user={user} isPaid={isPaid} />}
       <div className="tool-viewer-bar">
         <Link to="/tools" className="tool-back-btn">
           <IconBack /> Back to Tools
