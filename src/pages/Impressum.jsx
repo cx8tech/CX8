@@ -19,8 +19,8 @@ export default function Impressum() {
               <tr><td>Unternehmen</td><td>CX8 Technologies</td></tr>
               <tr><td>Adresse</td><td>Anselmstraße 12, 73760 Ostfildern, Deutschland</td></tr>
               <tr><td>Telefon</td><td>017637897016</td></tr>
-              <tr><td>E-Mail</td><td><a href="mailto:info@cx8technologies.com">info@cx8technologies.com</a></td></tr>
-              <tr><td>Website</td><td>www.cx8technologies.com</td></tr>
+              <tr><td>E-Mail</td><td><a href="mailto:cx8tech@gmail.com">cx8tech@gmail.com</a></td></tr>
+              <tr><td>Website</td><td>www.cx8motion.com</td></tr>
             </tbody>
           </table>
         </section>
@@ -75,7 +75,7 @@ export default function Impressum() {
               <tr><td>Business</td><td>CX8 Technologies</td></tr>
               <tr><td>Address</td><td>Anselmstraße 12, 73760 Ostfildern, Germany</td></tr>
               <tr><td>Phone</td><td>017637897016</td></tr>
-              <tr><td>Email</td><td><a href="mailto:info@cx8technologies.com">info@cx8technologies.com</a></td></tr>
+              <tr><td>Email</td><td><a href="mailto:cx8tech@gmail.com">cx8tech@gmail.com</a></td></tr>
             </tbody>
           </table>
           <p>CX8 Technologies provides engineering calculation tools for guidance purposes only. All results must be verified by qualified engineers before implementation. CX8 Technologies accepts no liability for decisions made on the basis of these tools.</p>

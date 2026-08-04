@@ -19,8 +19,8 @@ export default function Datenschutz() {
               <tr><td>Name</td><td>Deepthi Jayaprakash, CX8 Technologies</td></tr>
               <tr><td>Adresse</td><td>Anselmstraße 12, 73760 Ostfildern, Deutschland</td></tr>
               <tr><td>Telefon</td><td>017637897016</td></tr>
-              <tr><td>E-Mail</td><td><a href="mailto:info@cx8technologies.com">info@cx8technologies.com</a></td></tr>
-              <tr><td>Website</td><td>www.cx8technologies.com</td></tr>
+              <tr><td>E-Mail</td><td><a href="mailto:cx8tech@gmail.com">cx8tech@gmail.com</a></td></tr>
+              <tr><td>Website</td><td>www.cx8motion.com</td></tr>
             </tbody>
           </table>
         </section>
@@ -144,10 +144,10 @@ export default function Datenschutz() {
                 <tr><th>Recht / Right</th><th>Grundlage / Basis</th><th>Wie geltend machen / How to exercise</th></tr>
               </thead>
               <tbody>
-                <tr><td>Auskunft / Access</td><td>Art. 15 DSGVO</td><td><a href="mailto:info@cx8technologies.com">info@cx8technologies.com</a></td></tr>
+                <tr><td>Auskunft / Access</td><td>Art. 15 DSGVO</td><td><a href="mailto:cx8tech@gmail.com">cx8tech@gmail.com</a></td></tr>
                 <tr><td>Berichtigung / Rectification</td><td>Art. 16 DSGVO</td><td>E-Mail oder Kontoeinstellungen</td></tr>
                 <tr><td>Löschung / Erasure</td><td>Art. 17 DSGVO</td><td>Konto löschen oder E-Mail senden</td></tr>
-                <tr><td>Einschränkung / Restriction</td><td>Art. 18 DSGVO</td><td><a href="mailto:info@cx8technologies.com">info@cx8technologies.com</a></td></tr>
+                <tr><td>Einschränkung / Restriction</td><td>Art. 18 DSGVO</td><td><a href="mailto:cx8tech@gmail.com">cx8tech@gmail.com</a></td></tr>
                 <tr><td>Datenübertragbarkeit / Portability</td><td>Art. 20 DSGVO</td><td>E-Mail — Daten als JSON-Export</td></tr>
                 <tr><td>Widerspruch / Object</td><td>Art. 21 DSGVO</td><td>Jederzeit für berechtigte Interessen</td></tr>
                 <tr><td>Widerruf der Einwilligung / Withdraw consent</td><td>Art. 7 Abs. 3 DSGVO</td><td>Cookie-Banner oder E-Mail</td></tr>

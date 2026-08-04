@@ -134,8 +134,8 @@ export default function About() {
             <div className="about-cta-icon"><IconMail /></div>
             <h2 className="about-cta-title">Get in touch</h2>
             <p className="about-cta-body">Have a tool suggestion, a data correction, or a partnership idea? We'd love to hear from you.</p>
-            <a href="mailto:info@cx8technologies.com" className="about-cta-btn">
-              info@cx8technologies.com <IconArrow />
+            <a href="mailto:cx8tech@gmail.com" className="about-cta-btn">
+              cx8tech@gmail.com <IconArrow />
             </a>
           </div>
         </section>
