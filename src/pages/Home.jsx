@@ -183,7 +183,7 @@ function ToolsSection() {
   )
 }
 
-const HM_PREVIEW = 6
+const HM_PREVIEW = 8
 
 function SupplierPreview() {
   const [catFilter, setCatFilter] = useState(ALL)
@@ -244,9 +244,6 @@ function SupplierPreview() {
       <div className="supplier-grid">
         {visible.length > 0 ? visible.map(s => (
           <a key={s.name} href={s.website} target="_blank" rel="noopener noreferrer" className="supplier-item supplier-item-link">
-            <div className="hm-sup-logo" style={{ background: regionColors[s.region] + '22' }}>
-              <span style={{ color: regionColors[s.region], fontSize: 13, fontWeight: 800, letterSpacing: -.3 }}>{getInitials(s.name)}</span>
-            </div>
             <div className="hm-sup-name">{s.name}</div>
             <div className="hm-sup-country">{s.country}</div>
             <span className="hm-sup-badge hm-sup-cat">{s.category}</span>
@@ -258,7 +255,7 @@ function SupplierPreview() {
 
       {filtered.length > HM_PREVIEW && (
         <div className="supplier-note">
-          Showing {HM_PREVIEW} of {filtered.length} — <Link to={viewAllUrl} className="view-all-link">view all</Link>
+          Showing {HM_PREVIEW} of {filtered.length}
         </div>
       )}
       {filtered.length <= HM_PREVIEW && filtered.length > 0 && (
