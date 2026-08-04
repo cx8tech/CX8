@@ -736,9 +736,9 @@ img { max-width: 100%; display: block; }
   .res-grid { grid-template-columns: repeat(2, 1fr); }
   .res-section-head { flex-direction: column; align-items: flex-start; gap: 4px; }
 
-  /* Tools & layout — stack quotation card below, all 5 tools in one row */
+  /* Tools & layout — stack quotation card below, 3 tools per row on tablet */
   .tools-layout { grid-template-columns: 1fr; }
-  .tools-grid { grid-template-columns: repeat(5, 1fr); }
+  .tools-grid { grid-template-columns: repeat(3, 1fr); }
   .quotation-card { margin-top: 0; }
   .bottom-grid { grid-template-columns: 1fr 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr 1fr; gap: 28px; }
@@ -756,6 +756,8 @@ img { max-width: 100%; display: block; }
 
   /* Gate modal */
   .gate-modal { padding: 28px 20px; border-radius: 12px; }
+  /* Community form modal */
+  .comm-modal-form { padding: 20px 16px 24px; }
 
   /* Sections */
   .section { padding: 28px 16px; }
@@ -816,4 +818,8 @@ img { max-width: 100%; display: block; }
   .res-header { padding: 32px 16px 24px; }
   .res-body { padding: 20px 16px 40px; }
   .res-grid { grid-template-columns: 1fr; }
+  /* Auth card */
+  .auth-card { padding: 28px 20px; }
+  /* Gate modal */
+  .gate-modal { padding: 24px 16px; }
 }
