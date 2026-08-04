@@ -814,7 +814,8 @@ img { max-width: 100%; display: block; }
   .ct-post-time { margin-left: 0; }
   .crs-header { padding: 32px 16px 24px; }
   .crs-body { padding: 20px 16px 40px; }
-  .crs-grid { grid-template-columns: repeat(2, 1fr); }
+  .crs-grid { grid-template-columns: 1fr; }
+  .tool-viewer-bar { padding: 10px 12px; }
   .res-header { padding: 32px 16px 24px; }
   .res-body { padding: 20px 16px 40px; }
   .res-grid { grid-template-columns: 1fr; }
