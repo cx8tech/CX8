@@ -106,14 +106,18 @@ export default function ToolViewer() {
       return
     }
 
-    supabase
-      .from('actuator_data')
-      .select('record')
-      .then(({ data, error }) => {
-        if (error || !data?.length) return
-        dbCacheRef.current = data.map(r => r.record)
-        pushDataToIframe()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return
+      fetch('/api/tool5-data', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
       })
+        .then(r => r.json())
+        .then(({ data }) => {
+          if (!data?.length) return
+          dbCacheRef.current = data
+          pushDataToIframe()
+        })
+    })
   }, [user, isDataTool, isPaid])
 
   // Send cached data into the iframe (no-op if either isn't ready)
