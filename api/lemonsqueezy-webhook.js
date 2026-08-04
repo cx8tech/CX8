@@ -29,7 +29,10 @@ export default async function handler(req, res) {
   if (!secret || !signature) return res.status(401).json({ error: 'Missing signature or secret' })
 
   const hash = crypto.createHmac('sha256', secret).update(rawBody).digest('hex')
-  if (hash !== signature) return res.status(401).json({ error: 'Invalid signature' })
+  const hashBuf = Buffer.from(hash)
+  const sigBuf  = Buffer.from(signature)
+  const valid   = hashBuf.length === sigBuf.length && crypto.timingSafeEqual(hashBuf, sigBuf)
+  if (!valid) return res.status(401).json({ error: 'Invalid signature' })
 
   const event = JSON.parse(rawBody)
   const eventName = event.meta?.event_name
