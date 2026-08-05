@@ -823,4 +823,80 @@ img { max-width: 100%; display: block; }
   .auth-card { padding: 28px 20px; }
   /* Gate modal */
   .gate-modal { padding: 24px 16px; }
+  /* Contact */
+  .contact-grid { grid-template-columns: 1fr; }
+  .contact-form-two { flex-direction: column; }
+  /* Careers */
+  .careers-values-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Contact page ── */
+.contact-page { background: var(--bg); min-height: 60vh; }
+.contact-hero { background: linear-gradient(135deg, var(--navy) 0%, #0d2147 100%); padding: 52px 20px 48px; }
+.contact-hero-inner { max-width: 680px; margin: 0 auto; }
+.contact-hero-title { font-family: var(--display); font-size: clamp(26px, 4vw, 38px); font-weight: 700; color: #fff; margin: 10px 0 14px; }
+.contact-hero-sub { font-size: 15px; color: rgba(255,255,255,.65); line-height: 1.7; }
+.contact-body { padding: 52px 20px 80px; }
+.contact-inner { max-width: 1000px; margin: 0 auto; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 48px; align-items: start; }
+.contact-info-title { font-family: var(--display); font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.contact-info-sub { font-size: 14px; color: var(--text2); line-height: 1.65; margin-bottom: 28px; }
+.contact-info-items { display: flex; flex-direction: column; gap: 20px; }
+.contact-info-item { display: flex; align-items: flex-start; gap: 14px; }
+.contact-info-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--teal-bg); color: var(--teal2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.contact-info-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); margin-bottom: 3px; }
+.contact-info-value { font-size: 14px; color: var(--text); font-weight: 500; text-decoration: none; }
+.contact-info-value:hover { color: var(--teal2); }
+.contact-form-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+.contact-form { display: flex; flex-direction: column; gap: 4px; }
+.contact-form-two { display: flex; gap: 14px; }
+.contact-submit { background: var(--teal2); color: #fff; border: none; border-radius: var(--radius-sm); padding: 12px 28px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s; margin-top: 8px; align-self: flex-start; font-family: inherit; }
+.contact-submit:hover { background: #0a7569; }
+.contact-sent { text-align: center; padding: 32px 0; }
+.contact-sent-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.contact-sent-sub { font-size: 13.5px; color: var(--text2); }
+.contact-sent-sub a { color: var(--teal2); }
+
+/* ── Careers page ── */
+.careers-page { background: var(--bg); min-height: 60vh; }
+.careers-hero { background: linear-gradient(135deg, var(--navy) 0%, #0d2147 100%); padding: 52px 20px 48px; }
+.careers-hero-inner { max-width: 680px; margin: 0 auto; }
+.careers-hero-title { font-family: var(--display); font-size: clamp(26px, 4vw, 38px); font-weight: 700; color: #fff; margin: 10px 0 14px; }
+.careers-hero-sub { font-size: 15px; color: rgba(255,255,255,.65); line-height: 1.7; }
+.careers-body { padding: 52px 20px 80px; }
+.careers-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+.careers-section-title { font-family: var(--display); font-size: 22px; font-weight: 700; color: var(--navy); margin-bottom: 24px; }
+.careers-values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.careers-value-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+.careers-value-icon { width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--teal-bg); color: var(--teal2); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.careers-value-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.careers-value-body { font-size: 13.5px; color: var(--text2); line-height: 1.65; }
+.careers-no-roles { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 48px 32px; text-align: center; }
+.careers-no-roles-icon { font-size: 36px; margin-bottom: 16px; }
+.careers-no-roles-title { font-family: var(--display); font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.careers-no-roles-sub { font-size: 14px; color: var(--text2); line-height: 1.7; max-width: 520px; margin: 0 auto 24px; }
+.careers-apply-btn { display: inline-flex; background: var(--teal2); color: #fff; text-decoration: none; padding: 12px 28px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; transition: background .15s; }
+.careers-apply-btn:hover { background: #0a7569; }
+
+/* ── Help page ── */
+.help-page { background: var(--bg); min-height: 60vh; }
+.help-hero { background: linear-gradient(135deg, var(--navy) 0%, #0d2147 100%); padding: 52px 20px 48px; }
+.help-hero-inner { max-width: 680px; margin: 0 auto; }
+.help-hero-title { font-family: var(--display); font-size: clamp(26px, 4vw, 38px); font-weight: 700; color: #fff; margin: 10px 0 14px; }
+.help-hero-sub { font-size: 15px; color: rgba(255,255,255,.65); line-height: 1.7; }
+.help-body { padding: 52px 20px 80px; }
+.help-inner { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
+.help-section-title { font-family: var(--display); font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+.help-faq-list { display: flex; flex-direction: column; gap: 2px; }
+.help-faq-item { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface); }
+.help-faq-item + .help-faq-item { margin-top: 6px; }
+.help-faq-q { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; background: none; border: none; text-align: left; font-size: 14px; font-weight: 600; color: var(--text); cursor: pointer; font-family: inherit; }
+.help-faq-q:hover { color: var(--teal2); }
+.help-faq-chevron { width: 16px; height: 16px; flex-shrink: 0; transition: transform .2s; color: var(--text3); }
+.help-faq-item.open .help-faq-chevron { transform: rotate(180deg); }
+.help-faq-a { padding: 0 18px 16px; font-size: 13.5px; color: var(--text2); line-height: 1.7; }
+.help-cta { background: var(--navy); border-radius: var(--radius); padding: 40px 32px; text-align: center; }
+.help-cta-title { font-family: var(--display); font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+.help-cta-sub { font-size: 14px; color: rgba(255,255,255,.6); line-height: 1.65; margin-bottom: 20px; }
+.help-cta-btn { display: inline-flex; background: var(--teal2); color: #fff; text-decoration: none; padding: 12px 28px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; transition: background .15s; }
+.help-cta-btn:hover { background: #0a7569; }

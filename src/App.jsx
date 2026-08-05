@@ -14,6 +14,9 @@ import Resources from './pages/Resources'
 import Impressum from './pages/Impressum'
 import Datenschutz from './pages/Datenschutz'
 import About from './pages/About'
+import Contact from './pages/Contact'
+import Careers from './pages/Careers'
+import Help from './pages/Help'
 import ScrollToTop from './components/ScrollToTop'
 
 function AppLayout() {
@@ -38,6 +41,9 @@ function AppLayout() {
           <Route path="/impressum" element={<Impressum />} />
           <Route path="/datenschutz" element={<Datenschutz />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/help" element={<Help />} />
         </Routes>
       </main>
       <ScrollToTop />
