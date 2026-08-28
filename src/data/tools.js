@@ -1,3 +1,10 @@
+import tool1Logo from '../../assets/images/tool 1 logo.png'
+import tool2Logo from '../../assets/images/tool 2 logo.png'
+import tool3Logo from '../../assets/images/tool 3 logo.png'
+import tool4Logo from '../../assets/images/tool 4 logo.png'
+import tool5Logo from '../../assets/images/tool 5 logo.png'
+import tool6Logo from '../../assets/images/tool 6 logo (pro tool).png'
+
 export const allTools = [
   {
     id: 'unit-conversion',
@@ -6,7 +13,7 @@ export const allTools = [
     file: '/tools/tool1.html',
     badge: 'free',
     icon: 'unit',
-    logo: '/tool-logos/tool1.jpeg',
+    logo: tool1Logo,
   },
   {
     id: 'flow-rate',
@@ -15,7 +22,7 @@ export const allTools = [
     file: '/tools/tool2.html',
     badge: 'free',
     icon: 'flow',
-    logo: '/tool-logos/tool2.jpeg',
+    logo: tool2Logo,
   },
   {
     id: 'valve-torque',
@@ -24,7 +31,7 @@ export const allTools = [
     file: '/tools/tool3.html',
     badge: 'free',
     icon: 'valve',
-    logo: '/tool-logos/tool3.jpeg',
+    logo: tool3Logo,
   },
   {
     id: 'actuator-sizing',
@@ -33,7 +40,7 @@ export const allTools = [
     file: '/tools/tool4.html',
     badge: 'free',
     icon: 'actuator',
-    logo: '/tool-logos/tool4.jpeg',
+    logo: tool6Logo,
   },
   {
     id: 'actuator-cross-reference',
@@ -42,7 +49,7 @@ export const allTools = [
     file: '/tools/tool5.html',
     badge: 'paid',
     icon: 'actuator',
-    logo: '/tool-logos/tool6.jpeg',
+    logo: tool4Logo,
   },
   {
     id: 'compressor-sizing',
@@ -51,6 +58,6 @@ export const allTools = [
     file: '/tools/tool6.html',
     badge: 'free',
     icon: 'compressor',
-    logo: '/tool-logos/tool5.jpeg',
+    logo: tool5Logo,
   },
 ]
