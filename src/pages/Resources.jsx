@@ -262,7 +262,7 @@ export default function Resources() {
                     {r.comingSoon ? (
                       <>
                         <span className="res-size res-soon-text">Notify me when available</span>
-                        <a href="mailto:cx8tech@gmail.com?subject=Notify me: resources" className="res-notify-btn">
+                        <a href="mailto:sales@cx8motion.com?subject=Notify me: resources" className="res-notify-btn">
                           <IconBell /> Notify Me
                         </a>
                       </>
@@ -284,7 +284,7 @@ export default function Resources() {
         )}
 
         <div className="res-coming-soon-note">
-          More resources are added regularly. <a href="mailto:cx8tech@gmail.com">Suggest a resource →</a>
+          More resources are added regularly. <a href="mailto:sales@cx8motion.com">Suggest a resource →</a>
         </div>
       </div>
     </div>

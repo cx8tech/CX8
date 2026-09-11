@@ -14,7 +14,7 @@ const faqs = [
     category: 'Subscription & Billing',
     items: [
       { q: 'What does a Pro subscription include?', a: 'Pro gives you access to Tool 5 — the Actuator Cross Reference database — which lets you cross-reference actuator models across manufacturers and find compatible replacements.' },
-      { q: 'How do I cancel my subscription?', a: 'You can cancel anytime by emailing us at cx8tech@gmail.com. Your access remains active until the end of your billing period.' },
+      { q: 'How do I cancel my subscription?', a: 'You can cancel anytime by emailing us at sales@cx8motion.com. Your access remains active until the end of your billing period.' },
       { q: 'Do you offer refunds?', a: 'If you are unsatisfied within 7 days of subscribing, contact us and we will issue a full refund, no questions asked.' },
       { q: 'Which payment methods do you accept?', a: 'We accept all major credit and debit cards via LemonSqueezy, our payment provider.' },
     ],
@@ -23,14 +23,14 @@ const faqs = [
     category: 'Community',
     items: [
       { q: 'Do I need an account to read community posts?', a: 'No — anyone can read discussions. You need a free account to post or reply.' },
-      { q: 'How do I report inappropriate content?', a: 'Email us at cx8tech@gmail.com with a link to the post and we will review it promptly.' },
+      { q: 'How do I report inappropriate content?', a: 'Email us at sales@cx8motion.com with a link to the post and we will review it promptly.' },
     ],
   },
   {
     category: 'Account',
     items: [
-      { q: 'How do I change my password?', a: 'Currently, contact us at cx8tech@gmail.com and we will help you reset it.' },
-      { q: 'How do I delete my account?', a: 'Email cx8tech@gmail.com with your request and we will permanently delete your account and all associated data within 30 days, in line with GDPR.' },
+      { q: 'How do I change my password?', a: 'Currently, contact us at sales@cx8motion.com and we will help you reset it.' },
+      { q: 'How do I delete my account?', a: 'Email sales@cx8motion.com with your request and we will permanently delete your account and all associated data within 30 days, in line with GDPR.' },
     ],
   },
 ]
@@ -75,7 +75,7 @@ export default function Help() {
           <div className="help-cta">
             <h3 className="help-cta-title">Didn't find your answer?</h3>
             <p className="help-cta-sub">We're happy to help. Reach out and we'll get back to you within 1–2 business days.</p>
-            <a href="mailto:cx8tech@gmail.com" className="help-cta-btn">Email Us</a>
+            <a href="mailto:sales@cx8motion.com" className="help-cta-btn">Email Us</a>
           </div>
         </div>
       </div>

@@ -54,7 +54,7 @@ export default function Careers() {
               <div className="careers-no-roles-icon">🌱</div>
               <h3 className="careers-no-roles-title">No open roles right now</h3>
               <p className="careers-no-roles-sub">We're not actively hiring, but we're always interested in hearing from talented people. If you're passionate about engineering tools and want to build something meaningful, send us a note.</p>
-              <a href="mailto:cx8tech@gmail.com?subject=Speculative Application — CX8" className="careers-apply-btn">Send a Speculative Application</a>
+              <a href="mailto:sales@cx8motion.com?subject=Speculative Application — CX8" className="careers-apply-btn">Send a Speculative Application</a>
             </div>
           </div>
 

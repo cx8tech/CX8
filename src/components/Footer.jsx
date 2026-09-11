@@ -112,7 +112,7 @@ export default function Footer() {
             <div className="footer-socials">
               <a href="https://www.linkedin.com/company/cx8-technologies/" target="_blank" rel="noopener noreferrer" className="social-btn" aria-label="LinkedIn"><IconLinkedIn /></a>
               <a href="https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg" target="_blank" rel="noopener noreferrer" className="social-btn" aria-label="YouTube"><IconYouTube /></a>
-              <a href="mailto:cx8tech@gmail.com" className="social-btn" aria-label="Email"><IconMail /></a>
+              <a href="mailto:sales@cx8motion.com" className="social-btn" aria-label="Email"><IconMail /></a>
             </div>
           </div>
         </div>

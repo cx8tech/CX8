@@ -26,7 +26,7 @@ export default function Contact() {
   const submit = e => {
     e.preventDefault()
     const body = `Name: ${form.name}\nEmail: ${form.email}\nSubject: ${form.subject}\n\n${form.message}`
-    window.location.href = `mailto:cx8tech@gmail.com?subject=${encodeURIComponent(form.subject || 'CX8 Enquiry')}&body=${encodeURIComponent(body)}`
+    window.location.href = `mailto:sales@cx8motion.com?subject=${encodeURIComponent(form.subject || 'CX8 Enquiry')}&body=${encodeURIComponent(body)}`
     setSent(true)
   }
 
@@ -53,7 +53,7 @@ export default function Contact() {
                   <div className="contact-info-icon"><IconMail /></div>
                   <div>
                     <div className="contact-info-label">Email</div>
-                    <a href="mailto:cx8tech@gmail.com" className="contact-info-value">cx8tech@gmail.com</a>
+                    <a href="mailto:sales@cx8motion.com" className="contact-info-value">sales@cx8motion.com</a>
                   </div>
                 </div>
                 <div className="contact-info-item">
@@ -78,7 +78,7 @@ export default function Contact() {
                 <div className="contact-sent">
                   <div className="auth-check">✓</div>
                   <h3 className="contact-sent-title">Your email client should have opened.</h3>
-                  <p className="contact-sent-sub">If it didn't, email us directly at <a href="mailto:cx8tech@gmail.com">cx8tech@gmail.com</a></p>
+                  <p className="contact-sent-sub">If it didn't, email us directly at <a href="mailto:sales@cx8motion.com">sales@cx8motion.com</a></p>
                 </div>
               ) : (
                 <form className="contact-form" onSubmit={submit}>
