@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { allTools } from '../data/tools'
 import { threads as communityThreads } from '../data/communityThreads'
 import { suppliers as allSuppliers, regionColors, getInitials, ALL, REGIONS, CATEGORIES } from '../data/suppliers'
+import communityDiscussionsLogo from '../../assets/images/Community Discussions Icon.jpg'
 
 // ── SVG Icons ────────────────────────────────────────────
 const IconArrow = () => (
@@ -35,11 +36,6 @@ const IconConnect = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-  </svg>
-)
-const IconDiscussion = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
   </svg>
 )
 const IconCap = () => (
@@ -272,10 +268,7 @@ function BottomSection() {
         <div className="bottom-grid">
           {/* Community */}
           <div className="community-card">
-            <div className="section-eyebrow" style={{ marginBottom: 14 }}>
-              <IconDiscussion style={{ width: 14, height: 14, color: 'var(--text2)' }} />
-              <span className="section-eyebrow-text">Community Discussions</span>
-            </div>
+            <img className="community-discussions-logo" src={communityDiscussionsLogo} alt="Community Discussions" />
             <div className="thread-list">
               {threads.map(t => (
                 <Link key={t.id} to={`/community/${t.id}`} className="thread-item thread-item-link">

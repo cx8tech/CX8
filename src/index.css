@@ -163,6 +163,7 @@ img { max-width: 100%; display: block; }
 
 /* Community */
 .community-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.community-discussions-logo { display: block; width: 100%; height: auto; max-height: 82px; object-fit: contain; object-position: center; border-radius: var(--radius-sm); margin-bottom: 14px; }
 .thread-list { display: flex; flex-direction: column; gap: 1px; margin-bottom: 16px; }
 .thread-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .thread-item:last-child { border-bottom: none; }
