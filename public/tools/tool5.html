@@ -528,6 +528,7 @@ function init(){
 window.addEventListener('message',e=>{
   if(e.data?.type==='cx8-data'&&Array.isArray(e.data.db)) loadDatabase(e.data.db);
   if(e.data?.type==='cx8-index'&&Array.isArray(e.data.db)) loadDatabase(e.data.db);
+  if(e.data?.type==='cx8-run-results') runMultiCompare();
   if(e.data?.type==='cx8-clear-data'){
     DB=[];
     entries=[];
@@ -1111,8 +1112,6 @@ function onPressure(el){
    currently in entries[], against whichever manufacturers/pressure are set. ── */
 function findEquivalents(){
   window.parent.postMessage({type:'cx8-gate'},'*');
-  if(!entries.length) return;
-  runMultiCompare();
 }
 
 init();

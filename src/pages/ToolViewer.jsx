@@ -73,6 +73,7 @@ export default function ToolViewer() {
   const indexCacheRef           = useRef(null)
   const dbCacheRef              = useRef(null)   // holds fetched actuator data
   const iframeReadyRef          = useRef(false)  // true once iframe fires onLoad
+  const pendingResultsRef        = useRef(false)
 
   const isDataTool = toolId === DATA_TOOL_ID
   const [isPaid, setIsPaid] = useState(false)
@@ -153,6 +154,10 @@ export default function ToolViewer() {
       { type: 'cx8-data', db: dbCacheRef.current },
       '*'
     )
+    if (pendingResultsRef.current) {
+      pendingResultsRef.current = false
+      iframeRef.current.contentWindow.postMessage({ type: 'cx8-run-results' }, '*')
+    }
   }
 
   function pushIndexToIframe() {
@@ -177,6 +182,8 @@ export default function ToolViewer() {
         setIsPaid(paid)
         if (paid) {
           setShowGate(false)
+          pendingResultsRef.current = true
+          if (dbCacheRef.current) pushDataToIframe()
           return
         }
       }
