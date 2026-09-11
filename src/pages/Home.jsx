@@ -311,7 +311,6 @@ function BottomSection() {
                 </a>
               ))}
             </div>
-            <div className="courses-note">We may earn a commission from Udemy (affiliate).</div>
           </div>
         </div>
       </div>

@@ -10,7 +10,6 @@ import Suppliers from './pages/Suppliers'
 import Community from './pages/Community'
 import CommunityThread from './pages/CommunityThread'
 import Courses from './pages/Courses'
-import Resources from './pages/Resources'
 import Impressum from './pages/Impressum'
 import Datenschutz from './pages/Datenschutz'
 import About from './pages/About'
@@ -37,7 +36,6 @@ function AppLayout() {
           <Route path="/community" element={<Community />} />
           <Route path="/community/:threadId" element={<CommunityThread />} />
           <Route path="/courses" element={<Courses />} />
-          <Route path="/resources" element={<Resources />} />
           <Route path="/impressum" element={<Impressum />} />
           <Route path="/datenschutz" element={<Datenschutz />} />
           <Route path="/about" element={<About />} />
