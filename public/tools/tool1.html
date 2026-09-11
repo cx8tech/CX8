@@ -22,32 +22,8 @@
 html{font-size:14px;-webkit-font-smoothing:antialiased;}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;min-height:100vh;}
 
-/* ── Header ── */
-.hdr{background:var(--navy);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.3);}
-.hdr-left{display:flex;align-items:center;gap:14px;}
-.cx8-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--teal2),var(--navy3));display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
-.hdr-brand{display:flex;flex-direction:column;gap:1px;}
-.hdr-name{font-family:var(--display);font-size:15px;font-weight:600;color:#fff;letter-spacing:-.01em;line-height:1.1;}
-.hdr-sub{font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.38);letter-spacing:.1em;text-transform:uppercase;margin-top:1px;}
-.hdr-pills{display:flex;gap:10px;}
-.hdr-pill{color:rgba(255,255,255,.55);font-size:11px;padding:3px 10px;border:1px solid rgba(255,255,255,.15);border-radius:20px;}
-.hdr-accent{height:2px;background:linear-gradient(90deg,var(--teal2),var(--navy3),transparent);}
-
-/* ── Hero / title strip ── */
-.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,#1a3860 100%);padding:28px 32px 26px;}
-.hero-eyebrow{color:var(--teal2);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
-.hero-title{color:#fff;font-family:var(--display);font-size:22px;font-weight:700;line-height:1.2;letter-spacing:-.4px;margin-bottom:8px;}
-.hero-title em{color:var(--teal2);font-style:normal;}
-.hero-sub{color:rgba(255,255,255,.5);font-size:12.5px;line-height:1.65;max-width:600px;}
-.hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;}
-.search-wrap{align-self:center;min-width:280px;position:relative;flex-shrink:0;}
-.search-wrap input{padding-left:32px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:var(--radius-sm);font-family:var(--sans);font-size:13px;padding:9px 10px 9px 32px;outline:none;width:100%;transition:border-color .15s;}
-.search-wrap input::placeholder{color:rgba(255,255,255,.4);}
-.search-wrap input:focus{border-color:var(--teal2);background:rgba(255,255,255,.12);}
-.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:rgba(255,255,255,.45);}
-
 /* ── Layout ── */
-.main{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 130px);}
+.main{display:grid;grid-template-columns:320px 1fr;min-height:100vh;}
 .panel-left{background:var(--surface);border-right:1px solid var(--border);padding:20px;overflow-y:auto;}
 .panel-right{padding:20px;overflow-y:auto;}
 
@@ -121,47 +97,12 @@ tbody tr:hover td{background:var(--surface2);}
 @media(max-width:900px){
   .main{grid-template-columns:1fr;}
   .panel-left{border-right:none;border-bottom:1px solid var(--border);}
-  .hero-row{flex-direction:column;}
-  .search-wrap{width:100%;}
   .convert-grid{grid-template-columns:1fr;}
   .mid-btn{margin:auto;}
-  .hdr-pills{display:none;}
 }
 </style>
 </head>
 <body>
-
-<div class="hdr">
-  <div class="hdr-left">
-    <div class="cx8-mark">CX8</div>
-    <div class="hdr-brand">
-      <div class="hdr-name">Engineering Unit Converter</div>
-      <div class="hdr-sub">CX8 Technologies · Tools Made for Engineers</div>
-    </div>
-  </div>
-  <div style="display:flex;align-items:center;gap:12px;">
-    <div class="hdr-pills">
-      <div class="hdr-pill">Metric · Imperial</div>
-      <div class="hdr-pill">Valve &amp; Actuator</div>
-      <div class="hdr-pill">Process Engineering</div>
-    </div>
-  </div>
-</div>
-<div class="hdr-accent"></div>
-
-<div class="hero">
-  <div class="hero-row">
-    <div>
-      <div class="hero-eyebrow">Engineering Reference</div>
-      <div class="hero-title">Precision unit conversion <em>for engineers</em></div>
-      <div class="hero-sub">Convert pipe sizes, DN/NPS, Kv/Cv, pressure, flow, torque, temperature, length, area, volume, mass and velocity — across metric and imperial systems.</div>
-    </div>
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input type="text" id="search" placeholder="Search units: DN, Kv, psi, Nm, m³/min..." oninput="filterUnits()">
-    </div>
-  </div>
-</div>
 
 <div class="main">
   <div class="panel-left">
@@ -190,8 +131,12 @@ tbody tr:hover td{background:var(--surface2);}
       <div class="card-title">Convert units</div>
       <div class="convert-grid">
         <div>
-          <div class="field"><label>From value</label><input type="number" id="fromValue" value="1" step="any" oninput="convert()"></div>
-          <div class="field"><label>From unit</label><select id="fromUnit" onchange="convert()"></select></div>
+          <div class="field">
+            <label>From value</label>
+            <select id="fromValueDN" style="display:none" onchange="dnSelectChange()"></select>
+            <input type="number" id="fromValue" value="1" step="any" oninput="convert()">
+          </div>
+          <div class="field"><label>From unit</label><select id="fromUnit" onchange="onFromUnitChange()"></select></div>
         </div>
         <button class="mid-btn" title="Swap units" onclick="swapUnits()">⇄</button>
         <div>
@@ -246,11 +191,13 @@ const DN_TABLE=[
   {dn:6,nps:'1/8"',inch:0.125,note:'Nominal'},{dn:8,nps:'1/4"',inch:0.25,note:'Nominal'},{dn:10,nps:'3/8"',inch:0.375,note:'Nominal'},
   {dn:15,nps:'1/2"',inch:0.5,note:'Common instrumentation'},{dn:20,nps:'3/4"',inch:0.75,note:'Common'},{dn:25,nps:'1"',inch:1,note:'Common'},
   {dn:32,nps:'1¼"',inch:1.25,note:'Nominal'},{dn:40,nps:'1½"',inch:1.5,note:'Common'},{dn:50,nps:'2"',inch:2,note:'Common valve size'},
-  {dn:65,nps:'2½"',inch:2.5,note:'Nominal'},{dn:80,nps:'3"',inch:3,note:'Common'},{dn:100,nps:'4"',inch:4,note:'Common'},
-  {dn:125,nps:'5"',inch:5,note:'Nominal'},{dn:150,nps:'6"',inch:6,note:'Common'},{dn:200,nps:'8"',inch:8,note:'Common'},
-  {dn:250,nps:'10"',inch:10,note:'Common'},{dn:300,nps:'12"',inch:12,note:'Common'},{dn:350,nps:'14"',inch:14,note:'Large bore'},
-  {dn:400,nps:'16"',inch:16,note:'Large bore'},{dn:450,nps:'18"',inch:18,note:'Large bore'},{dn:500,nps:'20"',inch:20,note:'Large bore'},
-  {dn:600,nps:'24"',inch:24,note:'Large bore'}
+  {dn:65,nps:'2½"',inch:2.5,note:'Nominal'},{dn:80,nps:'3"',inch:3,note:'Common'},{dn:90,nps:'3½"',inch:3.5,note:'Nominal'},
+  {dn:100,nps:'4"',inch:4,note:'Common'},{dn:125,nps:'5"',inch:5,note:'Nominal'},{dn:150,nps:'6"',inch:6,note:'Common'},
+  {dn:200,nps:'8"',inch:8,note:'Common'},{dn:250,nps:'10"',inch:10,note:'Common'},{dn:300,nps:'12"',inch:12,note:'Common'},
+  {dn:350,nps:'14"',inch:14,note:'Large bore'},{dn:400,nps:'16"',inch:16,note:'Large bore'},{dn:450,nps:'18"',inch:18,note:'Large bore'},
+  {dn:500,nps:'20"',inch:20,note:'Large bore'},{dn:550,nps:'22"',inch:22,note:'Large bore'},{dn:600,nps:'24"',inch:24,note:'Large bore'},
+  {dn:650,nps:'26"',inch:26,note:'Large bore'},{dn:700,nps:'28"',inch:28,note:'Large bore'},{dn:750,nps:'30"',inch:30,note:'Large bore'},
+  {dn:800,nps:'32"',inch:32,note:'Large bore'},{dn:850,nps:'34"',inch:34,note:'Large bore'},{dn:900,nps:'36"',inch:36,note:'Large bore'}
 ];
 
 let currentCat='valve';
@@ -278,15 +225,55 @@ function setCategory(cat){
     from.innerHTML='<option value="DN">DN</option><option value="NPS">NPS / inch</option>';
     to.innerHTML='<option value="NPS">NPS / inch</option><option value="DN">DN</option>';
     setValue('fromValue',50);
+    $('fromValueDN').style.display='block';
+    populateDNDropdown(true);
   }else if(c.special==='temperature'){
+    $('fromValueDN').style.display='none';
+    $('fromValue').style.display='block';
     from.innerHTML='<option value="C">Celsius [°C]</option><option value="F">Fahrenheit [°F]</option><option value="K">Kelvin [K]</option>';
     to.innerHTML='<option value="F">Fahrenheit [°F]</option><option value="C">Celsius [°C]</option><option value="K">Kelvin [K]</option>';
     setValue('fromValue',20);
   }else{
+    $('fromValueDN').style.display='none';
+    $('fromValue').style.display='block';
     from.innerHTML=Object.entries(c.units).map(([u,v])=>`<option value="${u}">${v.name}</option>`).join('');
     to.innerHTML=Object.entries(c.units).map(([u,v])=>`<option value="${u}">${v.name}</option>`).join('');
     const keys=Object.keys(c.units);to.value=keys[1]||keys[0];setValue('fromValue',1);
   }
+  convert();
+}
+
+function populateDNDropdown(selectMatch){
+  const selDN=$('fromValueDN');const mode=$('fromUnit').value;
+  const opts=DN_TABLE.map(r=>{
+    const val=mode==='DN'?r.dn:r.inch;
+    const label=mode==='DN'?`DN ${r.dn}  —  ${r.nps} NPS`:`${r.nps}  —  DN ${r.dn}`;
+    return `<option value="${val}">${label}</option>`;
+  }).join('');
+  selDN.innerHTML=opts+'<option value="__custom__">Custom (above 36" / other)…</option>';
+  if(selectMatch){
+    const cur=parseFloat($('fromValue').value);
+    const match=DN_TABLE.find(r=>Math.abs((mode==='DN'?r.dn:r.inch)-cur)<1e-6);
+    if(match){selDN.value=String(mode==='DN'?match.dn:match.inch);$('fromValue').style.display='none';}
+    else{selDN.value='__custom__';$('fromValue').style.display='block';}
+  }
+}
+
+function dnSelectChange(){
+  const selDN=$('fromValueDN');
+  if(selDN.value==='__custom__'){
+    $('fromValue').style.display='block';
+    $('fromValue').focus();
+    convert();
+  }else{
+    $('fromValue').style.display='none';
+    setValue('fromValue',selDN.value);
+    convert();
+  }
+}
+
+function onFromUnitChange(){
+  if(CATEGORIES[currentCat].special==='dn'){populateDNDropdown(true);}
   convert();
 }
 
@@ -327,6 +314,16 @@ function convert(){
   setText('resultSub',`${fmt(value)} ${unitLabel(currentCat,from)} = ${fmt(result)} ${unitLabel(currentCat,to)}`);
 }
 
+function syncDNDropdownToValue(){
+  const c=CATEGORIES[currentCat];
+  if(c.special!=='dn')return;
+  const selDN=$('fromValueDN');const mode=$('fromUnit').value;
+  const cur=parseFloat($('fromValue').value);
+  const match=DN_TABLE.find(r=>Math.abs((mode==='DN'?r.dn:r.inch)-cur)<1e-6);
+  if(match){selDN.value=String(mode==='DN'?match.dn:match.inch);$('fromValue').style.display='none';}
+  else{selDN.value='__custom__';$('fromValue').style.display='block';}
+}
+
 function reverseConvert(){
   if(reverseLock)return;
   const toValue=parseFloat($('toValue').value)||0;
@@ -334,6 +331,7 @@ function reverseConvert(){
   const source=convertValue(toValue,to,from,currentCat);
   reverseLock=true;setValue('fromValue',Number.isFinite(source)?parseFloat(source.toFixed(2)):'');reverseLock=false;
   convert();
+  syncDNDropdownToValue();
 }
 
 function tempConvert(v,from,to){
@@ -351,7 +349,9 @@ function shortUnit(u){
 }
 
 function swapUnits(){
-  const f=$('fromUnit'),t=$('toUnit');const tmp=f.value;f.value=t.value;t.value=tmp;convert();
+  const f=$('fromUnit'),t=$('toUnit');const tmp=f.value;f.value=t.value;t.value=tmp;
+  if(CATEGORIES[currentCat].special==='dn'){populateDNDropdown(true);}
+  convert();
 }
 
 function quick(type){
@@ -365,7 +365,9 @@ function quick(type){
     mmIn:['length','mm','in',25.4],
     nLbf:['force','N','lbf',1]
   };
-  const q=map[type];setCategory(q[0]);$('fromUnit').value=q[1];$('toUnit').value=q[2];setValue('fromValue',q[3]);convert();
+  const q=map[type];setCategory(q[0]);$('fromUnit').value=q[1];$('toUnit').value=q[2];setValue('fromValue',q[3]);
+  if(CATEGORIES[q[0]].special==='dn'){populateDNDropdown(true);}
+  convert();
 }
 
 function resetTool(){setCategory('valve');}
@@ -373,15 +375,6 @@ function resetTool(){setCategory('valve');}
 function copyResult(){
   const txt=$('resultSub')?.textContent||'';
   if(navigator.clipboard)navigator.clipboard.writeText(txt);
-}
-
-function filterUnits(){
-  const q=$('search').value.toLowerCase();
-  document.querySelectorAll('.cat-btn').forEach(btn=>{
-    const key=btn.dataset.cat;const c=CATEGORIES[key];
-    const unitText=c.units?Object.values(c.units).map(u=>u.name).join(' ').toLowerCase():c.label.toLowerCase();
-    btn.style.display=(c.label.toLowerCase().includes(q)||unitText.includes(q)||key.includes(q))?'flex':'none';
-  });
 }
 
 function approx(actual,expected,tol=1e-6){return Math.abs(actual-expected)<=tol;}

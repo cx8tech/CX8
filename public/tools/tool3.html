@@ -48,60 +48,45 @@
 html { font-size: 14px; }
 body { background: var(--bg); color: var(--text); font-family: var(--sans); font-weight: 300; min-height: 100vh; }
 
-/* ── Header ── */
-.header {
-  background: var(--navy);
-  padding: 0 32px;
-  height: 62px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 16px rgba(0,0,0,.22);
-  flex-shrink: 0;
+/* ── Stepper bar (replaces old header + hero) ── */
+.stepbar {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 14px 28px; display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow);
 }
-.hdr-left { display: flex; align-items: center; gap: 14px; }
-.cx8-mark {
-  width: 36px; height: 36px; border-radius: 8px;
-  background: linear-gradient(135deg, #0d8a7b, #243d70);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--display); font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+.steps { display: flex; align-items: center; gap: 0; flex: 1; max-width: 620px; }
+.step { display: flex; align-items: center; gap: 9px; }
+.step-num {
+  width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 600; background: var(--surface2); color: var(--text3);
+  border: 1.5px solid var(--border2); flex-shrink: 0; transition: all .15s;
 }
-.hdr-brand { display: flex; flex-direction: column; gap: 1px; }
-.hdr-name { font-family: var(--display); font-size: 15px; font-weight: 600; color: #fff; letter-spacing: -.01em; line-height: 1.1; }
-.hdr-sub  { font-family: var(--mono); font-size: 8px; color: rgba(255,255,255,.38); letter-spacing: .1em; text-transform: uppercase; }
-.hdr-right { display: flex; align-items: center; gap: 16px; }
-.hdr-tags { display: flex; gap: 6px; }
-.hdr-tag  { font-family: var(--mono); font-size: 9px; font-weight: 500; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.45); letter-spacing: .06em; }
+.step.active .step-num { background: var(--navy); border-color: var(--navy); color: #fff; }
+.step.done .step-num { background: var(--teal); border-color: var(--teal); color: #fff; }
+.step-label { font-family: var(--sans); font-size: 12.5px; font-weight: 600; color: var(--text3); white-space: nowrap; }
+.step.active .step-label { color: var(--navy); }
+.step.done .step-label { color: var(--teal); }
+.step-line { flex: 1; height: 1.5px; background: var(--border2); margin: 0 10px; min-width: 20px; }
+.step.done + .step-line { background: var(--teal); }
 
-/* ── Page wrap — defined in main layout section ── */
-
-/* ── Tool hero ── */
-.intro-banner {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
-  border-radius: 0;
-  padding: 24px 28px 20px;
-  margin-bottom: 0;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-}
-.intro-banner h1 { font-family: var(--display); font-size: 21px; font-weight: 600; color: #fff; margin-bottom: 6px; letter-spacing: -.02em; }
-.intro-banner p  { font-size: 12.5px; color: rgba(255,255,255,.5); line-height: 1.75; max-width: 860px; }
-.intro-banner p strong { color: rgba(255,255,255,.8); font-weight: 600; }
-.hero-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.hero-chip  { font-family: var(--mono); font-size: 9px; font-weight: 500; padding: 3px 9px; border-radius: 12px; border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.45); letter-spacing: .06em; }
-
-/* ── Main layout ── */
-.wrap { max-width: 1400px; margin: 0 auto; padding: 22px 24px 60px; }
-.main-grid {
-  display: grid;
-  grid-template-columns: 420px 1fr;
-  gap: 22px;
-  align-items: start;
-}
-.left-col {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+/* ── Main wizard wrap ── */
+.wrap { max-width: 1400px; margin: 0 auto; padding: 26px 24px 60px; }
+.wiz-wrap { max-width: 760px; margin: 0 auto; }
+.wiz-wrap.wide { max-width: 1160px; }
+.wiz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.wiz-head { padding: 22px 26px 4px; }
+.wiz-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--teal); margin-bottom: 6px; }
+.wiz-title { font-family: var(--display); font-size: 19px; font-weight: 600; color: var(--navy); margin-bottom: 6px; letter-spacing: -.01em; }
+.wiz-desc { font-size: 12px; color: var(--text2); line-height: 1.65; max-width: 640px; margin-bottom: 8px; }
+.wiz-body { padding: 6px 26px 8px; }
+.wiz-foot { padding: 18px 26px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.btn { padding: 11px 20px; border-radius: 7px; border: 1.5px solid var(--border2); background: var(--surface2);
+  color: var(--text2); font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: var(--sans); transition: all .12s; }
+.btn:hover { border-color: var(--navy); color: var(--navy); }
+.btn.primary { background: var(--navy); border-color: var(--navy); color: #fff; box-shadow: 0 2px 8px rgba(30,45,74,.28); }
+.btn.primary:hover { background: var(--navy2); transform: translateY(-1px); }
+.wscreen { display: none; }
+.wscreen.active { display: block; }
 
 /* ── Panel ── */
 .panel {
@@ -200,61 +185,59 @@ input[type=range]::-moz-range-thumb {
 .bto-result-val { font-family: var(--serif); font-size: 36px; font-weight: 600; color: #fff; line-height: 1; }
 .bto-result-sub { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 5px; font-family: var(--mono); }
 
-/* ── Calculate button ── */
-.btn-calc {
-  width: 100%; padding: 13px; background: var(--navy); color: #fff;
-  font-family: var(--sans); font-size: 13px; font-weight: 500; letter-spacing: .03em;
-  border: none; border-radius: 7px; cursor: pointer; transition: all .15s; margin-top: 6px;
-  box-shadow: 0 2px 8px rgba(30,45,74,.28);
+/* ── Results column ── */
+.results-col { display: flex; flex-direction: column; gap: 16px; }
+.results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 860px) {
+  .results-grid { grid-template-columns: 1fr; }
 }
-.btn-calc:hover { background: var(--navy2); transform: translateY(-1px); }
-
-/* ── RIGHT side ── */
-.right-col {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  position: sticky;
-  top: 20px;
-  max-height: calc(100vh - 44px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border2) transparent;
-}
-.right-col::-webkit-scrollbar { width: 4px; }
-.right-col::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
 /* valve SVG panel */
 .valve-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-.valve-panel-hdr { background: var(--navy); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; }
+.valve-panel-hdr { background: var(--navy); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
 .valve-panel-title { font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; color: rgba(255,255,255,.55); text-transform: uppercase; }
 .valve-panel-badges { display: flex; gap: 8px; align-items: center; }
 .vbadge { font-family: var(--mono); font-size: 10px; padding: 3px 9px; border-radius: 12px; background: rgba(255,255,255,.1); color: rgba(255,255,255,.7); }
 .vbadge.angle { background: var(--teal); color: #fff; }
 
-.valve-viz { display: grid; grid-template-columns: 200px 1fr; gap: 0; }
-.svg-wrap { background: #f8f6f2; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; border-right: 1px solid var(--border); }
-#vsvg { width: 170px; height: auto; }
+/* ── Torque clock ── */
+.clock-stage { display: flex; flex-direction: column; align-items: center; padding: 20px 16px 18px; background: #f8f6f2; }
+.clock-svg-wrap { width: 100%; max-width: 300px; }
+#clockSvg { width: 100%; height: auto; display: block; }
+.clk-label-box { font-family: var(--sans); }
+.clk-pos-code { font-family: var(--mono); font-weight: 700; }
+.clock-legend { display: flex; flex-wrap: wrap; gap: 7px 14px; justify-content: center; padding: 10px 16px 10px; font-size: 10px; color: var(--text3); }
+.clock-legend span { display: inline-flex; align-items: center; gap: 4px; font-family: var(--mono); }
+.clock-legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.clock-legend .tip { width: 12px; height: 12px; font-size: 7.5px; margin-left: 1px; }
 
-.angle-scrub { padding: 10px 14px; border-top: 1px solid var(--border); }
-.scrub-labels { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9px; color: var(--text3); margin-bottom: 6px; }
+/* Instruction line so users know the control below is draggable */
+.scrub-instruction {
+  display: flex; align-items: center; gap: 5px; justify-content: center;
+  font-size: 10.5px; color: var(--text2); font-weight: 500; margin: 2px 0 10px;
+}
+.scrub-instruction svg { flex-shrink: 0; }
+
+/* Circular scrub control — sits below the clock face with clear separation */
+.scrub-circle {
+  width: 168px; height: 168px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 10px 22px; margin-top: 0; position: relative; z-index: 2;
+}
+.scrub-readout { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--navy); text-align: center; line-height: 1.2; }
+.scrub-circle .scrub-labels { display: flex; justify-content: space-between; width: 116px; font-family: var(--mono); font-size: 8px; color: var(--text3); margin-top: 2px; }
 input#aslider {
-  display: block; width: 100%; height: 5px;
+  display: block; width: 116px; height: 5px;
   -webkit-appearance: none; appearance: none;
   background: var(--border2); border-radius: 3px; outline: none; cursor: pointer;
 }
 input#aslider::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
-  width: 22px; height: 22px; border-radius: 50%;
+  width: 18px; height: 18px; border-radius: 50%;
   background: var(--navy); border: 3px solid var(--surface); cursor: pointer;
   box-shadow: 0 2px 8px rgba(30,45,74,.4);
 }
-
-/* chart area */
-.chart-wrap { padding: 14px 16px; flex: 1; }
-.chart-title { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: .13em; color: var(--text3); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-.chart-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-#cc { display: block; width: 100%; height: 220px; }
 
 /* ── Torque cards ── */
 .torque-cards { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; }
@@ -288,6 +271,7 @@ input#aslider::-webkit-slider-thumb {
 .summary-title { font-family: var(--mono); font-size: 9.5px; font-weight: 500; letter-spacing: .13em; color: var(--text3); text-transform: uppercase; }
 .btn-export { padding: 7px 16px; background: var(--teal); color: #fff; border: none; border-radius: 6px; font-size: 11.5px; font-weight: 500; cursor: pointer; font-family: var(--sans); transition: all .15s; }
 .btn-export:hover { opacity: .88; transform: translateY(-1px); }
+.btn-export.pdf { background: var(--navy); }
 
 .sum-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .sum-table th { background: var(--surface2); padding: 9px 14px; text-align: left; font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: .1em; color: var(--text3); text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
@@ -310,72 +294,73 @@ input#aslider::-webkit-slider-thumb {
 .lang-btn.active { background: rgba(255,255,255,.18); color: #fff; border-color: rgba(255,255,255,.35); }
 
 /* ── Hidden ── */
-.placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; gap: 10px; color: var(--text3); text-align: center; padding: 40px; }
-.ph-icon { font-size: 32px; opacity: .2; }
-.ph-title { font-family: var(--serif); font-size: 16px; color: var(--text3); }
-.ph-sub { font-size: 12px; color: var(--text3); max-width: 240px; line-height: 1.65; }
-
 .hidden { display: none !important; }
+
+/* ═══ CX8 REPORT EMAIL GATE (shared across tools) ═══ */
+.cx8-gate-overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,.55);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.cx8-gate-overlay.open{display:flex;}
+.cx8-gate-modal{background:var(--surface);border-radius:var(--radius);max-width:380px;width:100%;padding:28px 26px 22px;box-shadow:var(--shadow);position:relative;text-align:center;}
+.cx8-gate-close{position:absolute;top:10px;right:12px;background:none;border:none;font-size:20px;line-height:1;color:var(--text3);cursor:pointer;}
+.cx8-gate-icon{font-size:26px;margin-bottom:8px;}
+.cx8-gate-title{font-family:var(--display);font-size:18px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.cx8-gate-sub{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:18px;}
+.cx8-gate-input{width:100%;padding:11px 14px;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:var(--sans);font-size:14px;margin-bottom:6px;}
+.cx8-gate-input:focus{outline:none;border-color:var(--teal);}
+.cx8-gate-err{display:none;color:var(--red);font-size:12px;text-align:left;margin-bottom:10px;}
+.cx8-gate-err.show{display:block;}
+.cx8-gate-btn{width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--display);font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;}
+.cx8-gate-btn:hover{background:var(--navy2);}
+.cx8-gate-btn:disabled{opacity:.6;cursor:default;}
+.cx8-gate-note{font-size:10.5px;color:var(--text3);margin-top:12px;line-height:1.5;}
+
+/* ── RESPONSIVE / MOBILE ── */
+html,body{max-width:100%;overflow-x:hidden;}
+@media (max-width:760px){
+  .wrap{padding:14px 12px 40px;}
+  .wiz-head{padding:16px 16px 4px;}
+  .wiz-body{padding:6px 16px 8px;}
+  .wiz-foot{padding:14px 16px;}
+  .row3{grid-template-columns:1fr 1fr;}
+  .torque-cards{grid-template-columns:repeat(3,1fr);}
+}
+@media (max-width:640px){
+  .stepbar{padding:10px 12px;gap:10px;}
+  .steps{gap:0;max-width:none;min-width:0;}
+  .step-label{display:none;}
+  .step{gap:0;}
+  .step-line{margin:0 4px;min-width:8px;}
+  .row2,.row3{grid-template-columns:1fr;}
+  .torque-cards{grid-template-columns:repeat(2,1fr);}
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="hdr-left">
-    <div class="cx8-mark">CX8</div>
-    <div class="hdr-brand">
-      <div class="hdr-name">Valve Torque Profile Visualizer</div>
-      <div class="hdr-sub">CX8 Technologies · Tools Made for Engineers</div>
-    </div>
-  </div>
-  <div class="hdr-right">
-    <div class="lang-switch">
-      <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
-      <button class="lang-btn" onclick="setLang('de',this)">DE</button>
-      <button class="lang-btn" onclick="setLang('tr',this)">TR</button>
-    </div>
-    <div class="hdr-tags">
-      <div class="hdr-tag">ISO 5211</div>
-      <div class="hdr-tag">IEC 60534</div>
-    </div>
-  </div>
-</div>
-
-<div class="intro-banner">
-  <div style="max-width:1400px;margin:0 auto;padding:0 4px">
-    <h1 data-t="intro_title">Visualize the Torque Profile of Your Valve</h1>
-    <p data-t="intro_body">
-      This tool derives the <strong>full torque profile</strong> of your valve — BTO, RTO, ETO, BTC, RTC and ETC —
-      from the <strong>base torque stated in your valve manufacturer's datasheet</strong>.
-      It does not guess or look up values — you provide the base torque and Kv from your specific valve's catalogue page,
-      and the tool applies industry-standard ratios plus your chosen safety factors to build the complete profile
-      your actuator engineer needs.
-    </p>
-    <div class="hero-chips">
-      <span class="hero-chip">Ball &amp; Butterfly Valves</span>
-      <span class="hero-chip">BTO · RTO · ETO · BTC · RTC · ETC</span>
-      <span class="hero-chip">Safety Factor Correction</span>
-      <span class="hero-chip">Manual Override</span>
-      <span class="hero-chip">Excel Export</span>
-      <span class="hero-chip">EN · DE · TR</span>
-    </div>
+<div class="stepbar">
+  <div class="steps" id="steps-row"></div>
+  <div class="lang-switch">
+    <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+    <button class="lang-btn" onclick="setLang('de',this)">DE</button>
+    <button class="lang-btn" onclick="setLang('tr',this)">TR</button>
   </div>
 </div>
 
 <div class="wrap">
 
-  <div class="main-grid">
-
-    <!-- ═══ LEFT PANEL ═══ -->
-    <div class="left-col">
-
-      <!-- Step 1: Valve specs from datasheet -->
-      <div class="panel">
-        <div class="panel-hdr">
-          <div class="panel-hdr-num">1</div>
-          <div class="panel-hdr-title" data-t="step1_title">Valve specifications — from manufacturer datasheet</div>
+  <!-- ═══ SCREEN 1: Valve specs ═══ -->
+  <div class="wiz-wrap wscreen active" id="screen-1">
+    <div class="wiz-card">
+      <div class="wiz-head">
+        <div class="wiz-eyebrow" data-t="wiz1_eyebrow">Step 1 of 3</div>
+        <div class="wiz-title" data-t="step1_title">Valve specifications — from manufacturer datasheet</div>
+        <div class="wiz-desc" data-t="intro_body">
+          This tool derives the <strong>full torque profile</strong> of your valve — BTO, RTO, ETO, BTC, RTC and ETC —
+          from the <strong>base torque stated in your valve manufacturer's datasheet</strong>. You provide the base
+          torque and Kv from your valve's catalogue page, and the tool applies industry-standard ratios plus your
+          chosen safety factors to build the complete profile your actuator engineer needs.
         </div>
-        <div class="panel-body">
+      </div>
+      <div class="wiz-body">
           <div class="sec" data-t="sec_valvetype">Valve type</div>
           <div class="vtype-group">
             <button class="vtype-btn on" id="btn-ball" onclick="setValveType('ball',this)" data-t="btn_ball">Ball Valve</button>
@@ -406,7 +391,33 @@ input#aslider::-webkit-slider-thumb {
             </div>
             <div class="field">
               <label><span data-t="lbl_dn">DN / NPS</span></label>
-              <input type="text" id="dn-input" value="" placeholder="e.g. 50 or 2&quot;">
+              <input type="hidden" id="dn-input">
+              <select id="dn-select" onchange="onDNSelectChange()">
+                <option value="">— Select —</option>
+                <option value="15">DN15 / ½"</option>
+                <option value="20">DN20 / ¾"</option>
+                <option value="25">DN25 / 1"</option>
+                <option value="32">DN32 / 1¼"</option>
+                <option value="40">DN40 / 1½"</option>
+                <option value="50">DN50 / 2"</option>
+                <option value="65">DN65 / 2½"</option>
+                <option value="80">DN80 / 3"</option>
+                <option value="100">DN100 / 4"</option>
+                <option value="125">DN125 / 5"</option>
+                <option value="150">DN150 / 6"</option>
+                <option value="200">DN200 / 8"</option>
+                <option value="250">DN250 / 10"</option>
+                <option value="300">DN300 / 12"</option>
+                <option value="350">DN350 / 14"</option>
+                <option value="400">DN400 / 16"</option>
+                <option value="450">DN450 / 18"</option>
+                <option value="500">DN500 / 20"</option>
+                <option value="600">DN600 / 24"</option>
+                <option value="Custom">Custom / Other…</option>
+              </select>
+              <div class="field" id="dn-custom-wrap" style="display:none;margin-top:8px;margin-bottom:0">
+                <input type="text" id="dn-custom-input" placeholder="e.g. 50 or 2&quot;" oninput="onDNSelectChange()">
+              </div>
               <div class="hint" data-t="hint_dn">Optional — for summary</div>
             </div>
           </div>
@@ -417,8 +428,29 @@ input#aslider::-webkit-slider-thumb {
               <label><span data-t="lbl_pn">Pressure class</span>
                 <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="PN%20rating%20or%20ASME%20class.%20E.g.%20PN16%2C%20PN40%2C%20Class%20150.%20Optional%20%E2%80%94%20used%20in%20summary%20only.">i</span>
               </label>
-              <input type="text" id="pn-input" value="" placeholder="e.g. PN40">
-              <div class="hint">Optional — for summary</div>
+              <input type="hidden" id="pn-input">
+              <select id="pn-select" onchange="onPNSelectChange()">
+                <option value="">— Select —</option>
+                <option value="PN6">PN6</option>
+                <option value="PN10">PN10</option>
+                <option value="PN16">PN16</option>
+                <option value="PN25">PN25</option>
+                <option value="PN40">PN40</option>
+                <option value="PN64">PN64</option>
+                <option value="PN100">PN100</option>
+                <option value="PN160">PN160</option>
+                <option value="Class 150">Class 150</option>
+                <option value="Class 300">Class 300</option>
+                <option value="Class 600">Class 600</option>
+                <option value="Class 900">Class 900</option>
+                <option value="Class 1500">Class 1500</option>
+                <option value="Class 2500">Class 2500</option>
+                <option value="Custom">Custom / Other…</option>
+              </select>
+              <div class="field" id="pn-custom-wrap" style="display:none;margin-top:8px;margin-bottom:0">
+                <input type="text" id="pn-custom-input" placeholder="e.g. PN40" oninput="onPNSelectChange()">
+              </div>
+              <div class="hint" style="margin-top:3px">Optional — for summary</div>
             </div>
             <div class="field">
               <label><span data-t="lbl_dp">ΔP at rated torque</span>
@@ -465,15 +497,21 @@ input#aslider::-webkit-slider-thumb {
           </div>
 
         </div>
+      <div class="wiz-foot">
+        <div></div>
+        <button class="btn primary" onclick="goStep(2)" data-t="btn_next1">Continue to Safety Factor →</button>
       </div>
+    </div>
+  </div>
 
-      <!-- Step 2: Safety factors -->
-      <div class="panel">
-        <div class="panel-hdr">
-          <div class="panel-hdr-num">2</div>
-          <div class="panel-hdr-title" data-t="step2_title">Safety factor — corrections to base torque</div>
-        </div>
-        <div class="panel-body">
+  <!-- ═══ SCREEN 2: Safety factor ═══ -->
+  <div class="wiz-wrap wscreen" id="screen-2">
+    <div class="wiz-card">
+      <div class="wiz-head">
+        <div class="wiz-eyebrow" data-t="wiz2_eyebrow">Step 2 of 3</div>
+        <div class="wiz-title" data-t="step2_title">Safety factor — corrections to base torque</div>
+      </div>
+      <div class="wiz-body">
           <p style="font-size:11.5px;color:var(--text2);line-height:1.7;margin-bottom:14px" data-t="step2_body">
             The base torque from the datasheet is a catalogue value under standard conditions.
             Real-world factors increase the torque demand on the actuator.
@@ -512,29 +550,27 @@ input#aslider::-webkit-slider-thumb {
             <div class="bto-result-val" id="corrected-bto-val">— Nm</div>
             <div class="bto-result-sub" id="corrected-bto-sub" data-t="corrected_bto_sub">Enter base torque above to calculate</div>
           </div>
-          <button class="btn-calc" onclick="calculate()" data-t="btn_calculate">Generate torque profile →</button>
-
-        </div>
       </div>
-
-    </div><!-- end left-col -->
-
-    <!-- ═══ RIGHT COLUMN ═══ -->
-    <div class="right-col">
-
-      <!-- Placeholder -->
-      <div class="panel" id="placeholder-panel">
-        <div class="placeholder">
-          <div class="ph-icon">⟳</div>
-          <div class="ph-title">No profile yet</div>
-          <div class="ph-sub">Fill in your valve datasheet values and press Generate to see the full torque profile.</div>
-        </div>
+      <div class="wiz-foot">
+        <button class="btn" onclick="goStep(1)" data-t="btn_back">← Back</button>
+        <button class="btn primary" onclick="goResults()" data-t="btn_calculate">Generate torque profile →</button>
       </div>
+    </div>
+  </div>
 
-      <!-- Results (hidden until calculated) -->
-      <div id="results-area" class="hidden">
+  <!-- ═══ SCREEN 3: Results ═══ -->
+  <div class="wiz-wrap wide wscreen" id="screen-3">
+    <div class="wiz-card">
+      <div class="wiz-head">
+        <div class="wiz-eyebrow" data-t="wiz3_eyebrow">Step 3 of 3</div>
+        <div class="wiz-title" data-t="wiz3_title">Torque profile results</div>
+        <div class="wiz-desc" data-t="wiz3_desc">The clock below shows the torque required at each stage of the valve's stroke — opening on the right half, closing on the left half. Click any value in the cards to override it with a manufacturer-supplied figure.</div>
+      </div>
+      <div class="wiz-body">
+      <div class="results-col">
+      <div class="results-grid">
 
-        <!-- Valve SVG + chart -->
+        <!-- Valve SVG + torque clock -->
         <div class="valve-panel">
           <div class="valve-panel-hdr">
             <div class="valve-panel-title" id="vp-title">Ball valve torque profile</div>
@@ -546,79 +582,114 @@ input#aslider::-webkit-slider-thumb {
             </div>
           </div>
 
-          <div class="valve-viz">
-            <!-- SVG -->
-            <div class="svg-wrap">
-              <svg id="vsvg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+          <div class="clock-stage">
+            <div class="clock-svg-wrap">
+              <svg id="clockSvg" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <defs>
-                  <radialGradient id="ballGrad" cx="40%" cy="35%" r="65%">
-                    <stop offset="0%" stop-color="#c8d8f0"/>
-                    <stop offset="100%" stop-color="#8eaad0"/>
+                  <radialGradient id="ballGrad" cx="35%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#eaf2ff"/>
+                    <stop offset="45%" stop-color="#a8c2e8"/>
+                    <stop offset="100%" stop-color="#5c7cab"/>
                   </radialGradient>
                   <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/>
                     <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
                   </filter>
                 </defs>
-                <!-- Pipe left -->
-                <rect x="0" y="82" width="36" height="36" fill="#ddd8cf" stroke="#c8c1b4" stroke-width="1"/>
-                <rect x="0" y="88" width="36" height="24" fill="#e8e4de"/>
-                <!-- Pipe right -->
-                <rect x="164" y="82" width="36" height="36" fill="#ddd8cf" stroke="#c8c1b4" stroke-width="1"/>
-                <rect x="164" y="88" width="36" height="24" fill="#e8e4de"/>
-                <!-- Flow arrows -->
-                <g id="flow-grp" opacity="0">
-                  <line x1="4" y1="100" x2="26" y2="100" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 3"/>
-                  <polygon points="26,96 33,100 26,104" fill="var(--teal)"/>
+
+                <!-- Clock dial ring -->
+                <circle cx="180" cy="180" r="132" fill="none" stroke="var(--border2)" stroke-width="1.5"/>
+                <circle cx="180" cy="180" r="108" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <g id="clock-ticks"></g>
+                <line x1="180" y1="60" x2="180" y2="300" stroke="var(--border)" stroke-width="1" stroke-dasharray="2 4"/>
+                <text x="180" y="50" text-anchor="middle" fill="var(--text3)" font-family="monospace" font-size="9" letter-spacing="1">CLOSED</text>
+                <text x="180" y="316" text-anchor="middle" fill="var(--text3)" font-family="monospace" font-size="9" letter-spacing="1">CLOSED</text>
+                <text x="300" y="184" text-anchor="middle" fill="var(--text3)" font-family="monospace" font-size="9" letter-spacing="1">OPEN</text>
+                <text x="90" y="145" text-anchor="middle" fill="var(--bto)" font-family="monospace" font-size="8" font-weight="700" letter-spacing="1">↻ OPENING</text>
+                <text x="90" y="220" text-anchor="middle" fill="var(--btc)" font-family="monospace" font-size="8" font-weight="700" letter-spacing="1">↺ CLOSING</text>
+
+                <!-- Needle -->
+                <g id="clock-needle">
+                  <line id="needle-line" x1="180" y1="180" x2="180" y2="72" stroke="var(--navy)" stroke-width="2.5" stroke-linecap="round"/>
+                  <circle cx="180" cy="180" r="6" fill="var(--navy)"/>
+                  <circle id="needle-tip" cx="180" cy="72" r="6" fill="var(--navy)"/>
                 </g>
-                <!-- Body -->
-                <circle cx="100" cy="100" r="56" fill="#e8e4de" stroke="#c8c1b4" stroke-width="2"/>
-                <circle cx="100" cy="100" r="44" fill="#f0ede8" stroke="#ddd8cf" stroke-width="1.5"/>
-                <!-- Port adapters -->
-                <rect x="36" y="88" width="12" height="24" fill="#e8e4de" stroke="#c8c1b4" stroke-width="1"/>
-                <rect x="152" y="88" width="12" height="24" fill="#e8e4de" stroke="#c8c1b4" stroke-width="1"/>
-                <!-- BALL -->
-                <g id="ball-g" transform="rotate(0,100,100)">
-                  <circle cx="100" cy="100" r="34" fill="url(#ballGrad)" stroke="#8eaad0" stroke-width="1.5"/>
-                  <clipPath id="bclip"><circle cx="100" cy="100" r="34"/></clipPath>
-                  <g clip-path="url(#bclip)">
-                    <rect x="68" y="88" width="64" height="24" rx="12" fill="rgba(30,45,74,.12)"/>
+
+                <!-- "Opening cycle" / "Closing cycle" curved ring labels (rendered by JS) -->
+                <g id="clock-cycle-labels"></g>
+
+                <!-- Station dots + leader lines + labels (rendered by JS) -->
+                <g id="clock-stations"></g>
+
+                <!-- Nested valve icon at centre -->
+                <svg x="95" y="87" width="170" height="187" viewBox="0 0 200 220">
+                  <!-- Pipe left -->
+                  <rect x="0" y="82" width="36" height="36" fill="#ddd8cf" stroke="#c8c1b4" stroke-width="1"/>
+                  <rect x="0" y="88" width="36" height="24" fill="#e8e4de"/>
+                  <!-- Pipe right -->
+                  <rect x="164" y="82" width="36" height="36" fill="#ddd8cf" stroke="#c8c1b4" stroke-width="1"/>
+                  <rect x="164" y="88" width="36" height="24" fill="#e8e4de"/>
+                  <!-- Flow arrows -->
+                  <g id="flow-grp" opacity="0">
+                    <line x1="4" y1="100" x2="26" y2="100" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 3"/>
+                    <polygon points="26,96 33,100 26,104" fill="var(--teal)"/>
                   </g>
-                  <!-- Stem nib -->
-                  <rect x="97" y="66" width="6" height="18" rx="2" fill="#8eaad0"/>
-                  <circle cx="100" cy="62" r="4" fill="var(--navy)" filter="url(#glow)"/>
-                </g>
-                <!-- Seats -->
-                <ellipse cx="48" cy="100" rx="4" ry="13" fill="#c8c1b4" stroke="#b8b0a4" stroke-width="1"/>
-                <ellipse cx="152" cy="100" rx="4" ry="13" fill="#c8c1b4" stroke="#b8b0a4" stroke-width="1"/>
-                <!-- Stem -->
-                <rect x="97" y="22" width="6" height="40" rx="2.5" fill="#c8c1b4" stroke="#b8b0a4" stroke-width=".8"/>
-                <rect x="91" y="18" width="18" height="9" rx="2.5" fill="#ddd8cf" stroke="#c8c1b4" stroke-width=".8"/>
-                <!-- Torque arc -->
-                <path id="t-arc" d="" fill="none" stroke-width="3" stroke-linecap="round" opacity=".85"/>
-                <!-- Labels -->
-                <text x="3" y="79" fill="var(--text3)" font-size="7" font-family="monospace">INLET</text>
-                <text x="157" y="79" fill="var(--text3)" font-size="7" font-family="monospace">OUTLET</text>
-                <text x="100" y="14" fill="var(--text3)" font-size="7" font-family="monospace" text-anchor="middle">STEM</text>
+                  <!-- Body -->
+                  <circle cx="100" cy="100" r="56" fill="#e8e4de" stroke="#c8c1b4" stroke-width="2"/>
+                  <circle cx="100" cy="100" r="44" fill="#f0ede8" stroke="#ddd8cf" stroke-width="1.5"/>
+                  <!-- Port adapters -->
+                  <rect x="36" y="88" width="12" height="24" fill="#e8e4de" stroke="#c8c1b4" stroke-width="1"/>
+                  <rect x="152" y="88" width="12" height="24" fill="#e8e4de" stroke="#c8c1b4" stroke-width="1"/>
+                  <!-- BALL -->
+                  <g id="ball-g" transform="rotate(0,100,100)">
+                    <circle cx="100" cy="100" r="34" fill="url(#ballGrad)" stroke="#4a6a99" stroke-width="1.5"/>
+                    <!-- Bore hole through the ball — widens as it aligns with the ports -->
+                    <ellipse id="ball-bore" cx="100" cy="100" rx="30" ry="12" fill="#16233d"/>
+                    <ellipse id="ball-bore-inner" cx="100" cy="100" rx="22" ry="7" fill="#0a1220" opacity=".8"/>
+                    <ellipse id="ball-bore-shine" cx="94" cy="96" rx="9" ry="3" fill="rgba(255,255,255,.35)"/>
+                    <!-- Stem nib -->
+                    <rect x="97" y="66" width="6" height="18" rx="2" fill="#8eaad0"/>
+                    <circle cx="100" cy="62" r="4" fill="var(--navy)" filter="url(#glow)"/>
+                  </g>
+                  <!-- Seats -->
+                  <ellipse cx="48" cy="100" rx="4" ry="13" fill="#c8c1b4" stroke="#b8b0a4" stroke-width="1"/>
+                  <ellipse cx="152" cy="100" rx="4" ry="13" fill="#c8c1b4" stroke="#b8b0a4" stroke-width="1"/>
+                  <!-- Stem -->
+                  <rect x="97" y="22" width="6" height="40" rx="2.5" fill="#c8c1b4" stroke="#b8b0a4" stroke-width=".8"/>
+                  <rect x="91" y="18" width="18" height="9" rx="2.5" fill="#ddd8cf" stroke="#c8c1b4" stroke-width=".8"/>
+                  <!-- Torque arc -->
+                  <path id="t-arc" d="" fill="none" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+                  <!-- Labels -->
+                  <text x="3" y="79" fill="var(--text3)" font-size="7" font-family="monospace">INLET</text>
+                  <text x="157" y="79" fill="var(--text3)" font-size="7" font-family="monospace">OUTLET</text>
+                  <text x="100" y="14" fill="var(--text3)" font-size="7" font-family="monospace" text-anchor="middle">STEM</text>
 
-                <!-- Butterfly disc (hidden by default) -->
-                <g id="butterfly-g" style="display:none">
-                  <ellipse id="bf-disc" cx="100" cy="100" rx="6" ry="38" fill="var(--navy2)" opacity=".85"/>
-                  <line x1="100" y1="18" x2="100" y2="62" stroke="#c8c1b4" stroke-width="5" stroke-linecap="round"/>
-                  <circle cx="100" cy="62" r="4" fill="var(--navy)" filter="url(#glow)"/>
-                </g>
+                  <!-- Butterfly disc (hidden by default) -->
+                  <g id="butterfly-g" style="display:none">
+                    <ellipse id="bf-disc" cx="100" cy="100" rx="6" ry="38" fill="var(--navy2)" opacity=".85"/>
+                    <line x1="100" y1="18" x2="100" y2="62" stroke="#c8c1b4" stroke-width="5" stroke-linecap="round"/>
+                    <circle cx="100" cy="62" r="4" fill="var(--navy)" filter="url(#glow)"/>
+                  </g>
+                </svg>
               </svg>
-              <div class="angle-scrub">
-                <div class="scrub-labels">
-                  <span>0° closed</span><span id="scrub-mid">90° open</span><span>0° closed</span>
-                </div>
-                <input type="range" id="aslider" min="0" max="180" value="0" step="1">
-              </div>
             </div>
-
-            <!-- Chart -->
-            <div class="chart-wrap">
-              <div class="chart-title">Full stroke torque curve</div>
-              <canvas id="cc"></canvas>
+            <div class="clock-legend">
+              <span><i style="background:var(--bto)"></i>BTO<span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Valve%20is%20fully%20closed%20-%20no%20media%20flow%20yet.%20This%20is%20the%20breakaway%20torque%20needed%20to%20overcome%20seat%20friction%20and%20start%20moving%20the%20ball%20off%20its%20seat.%20The%20instant%20this%20torque%20is%20reached%2C%20the%20valve%20starts%20to%20open%20and%20media%20begins%20flowing%20through%20the%20pipe.">i</span></span>
+              <span><i style="background:var(--rto)"></i>RTO<span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Valve%20is%20roughly%20at%2045%20degrees%2C%20mid-way%20through%20the%20opening%20stroke.%20The%20seal%20has%20already%20broken%20free%2C%20so%20torque%20drops%20well%20below%20BTO.%20Media%20is%20flowing%2C%20but%20still%20partly%20throttled%20as%20the%20bore%20is%20only%20partially%20aligned%20with%20the%20ports.">i</span></span>
+              <span><i style="background:var(--eto)"></i>ETO<span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Valve%20reaches%20the%20fully%20open%2090%20degree%20position.%20Torque%20rises%20again%20slightly%20as%20the%20ball%20seats%20into%20the%20open-end%20stop.%20Media%20now%20flows%20at%20full%2C%20unrestricted%20capacity%20through%20the%20pipe.">i</span></span>
+              <span><i style="background:var(--btc)"></i>BTC<span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Valve%20is%20still%20physically%20at%2090%20degrees%20%28fully%20open%29%2C%20but%20the%20actuator%20now%20reverses%20direction%20to%20start%20closing.%20This%20is%20the%20breakaway%20torque%20needed%20to%20initiate%20closing%20motion.%20Media%20is%20still%20flowing%20fully%20at%20this%20instant%2C%20about%20to%20be%20throttled%20again.">i</span></span>
+              <span><i style="background:var(--rtc)"></i>RTC<span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Valve%20is%20roughly%20at%2045%20degrees%2C%20mid-way%20through%20the%20closing%20stroke.%20Media%20flow%20is%20being%20progressively%20restricted%20as%20the%20bore%20rotates%20out%20of%20alignment%20with%20the%20ports.">i</span></span>
+              <span><i style="background:var(--etc)"></i>ETC<span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Valve%20returns%20to%20the%20fully%20closed%200%20degree%20position.%20Torque%20rises%20to%20its%20highest%20value%20-%20the%20reseating%20torque%20-%20as%20the%20ball%20final-seats%20and%20compresses%20the%20seal.%20Media%20flow%20stops%20completely.">i</span></span>
+            </div>
+            <div class="scrub-instruction">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l-4 3 4 3"/><path d="M16 9l4 3-4 3"/><line x1="4.5" y1="12" x2="19.5" y2="12"/></svg>
+              <span>Slide the bar below to see the valve position &amp; torque at each stage</span>
+            </div>
+            <div class="scrub-circle">
+              <div class="scrub-readout" id="scrub-readout">0° · — Nm</div>
+              <input type="range" id="aslider" min="0" max="180" value="0" step="1">
+              <div class="scrub-labels">
+                <span>0°</span><span>90°</span><span>0°</span>
+              </div>
             </div>
           </div>
         </div>
@@ -698,11 +769,16 @@ input#aslider::-webkit-slider-thumb {
           </div>
         </div>
 
+      </div><!-- end results-grid -->
+
         <!-- Step 4: Summary table -->
         <div class="summary-panel">
           <div class="summary-hdr">
             <div class="summary-title" data-t="summary_title">Summary — valve torque specification</div>
-            <button class="btn-export" onclick="exportExcel()" data-t="btn_export">↓ Download Excel</button>
+            <div style="display:flex;gap:8px">
+              <button class="btn-export" onclick="exportExcel()" data-t="btn_export">↓ Download Excel</button>
+              <button class="btn-export pdf" onclick="cx8OpenGate(exportPDF)" data-t="btn_export_pdf">↓ Download PDF</button>
+            </div>
           </div>
           <table class="sum-table" id="sum-table">
             <thead>
@@ -718,12 +794,32 @@ input#aslider::-webkit-slider-thumb {
           </table>
         </div>
 
-      </div><!-- end results-area -->
-    </div><!-- end right-col -->
-  </div><!-- end main-grid -->
+      </div><!-- end results-col -->
+      </div><!-- end wiz-body -->
+      <div class="wiz-foot">
+        <button class="btn" onclick="goStep(2)" data-t="btn_back">← Back</button>
+        <div></div>
+      </div>
+    </div>
+  </div>
 </div><!-- end wrap -->
 
 <div id="tip-float"></div>
+
+<!-- ═══ CX8 REPORT EMAIL GATE (shared across tools) ═══ -->
+<div class="cx8-gate-overlay" id="cx8GateOverlay" onclick="cx8CloseGate(event)">
+  <div class="cx8-gate-modal" onclick="event.stopPropagation()">
+    <button class="cx8-gate-close" onclick="cx8CloseGate()" aria-label="Close">&times;</button>
+    <div class="cx8-gate-icon">&#128231;</div>
+    <div class="cx8-gate-title">Get your PDF report</div>
+    <div class="cx8-gate-sub">Enter your email — we'll prepare your PDF and send a copy to your inbox so you can find it again later.</div>
+    <input type="email" id="cx8GateEmail" class="cx8-gate-input" placeholder="you@company.com" onkeydown="if(event.key==='Enter')cx8SubmitGate();">
+    <div class="cx8-gate-err" id="cx8GateErr">Please enter a valid email address.</div>
+    <button class="cx8-gate-btn" id="cx8GateBtn" onclick="cx8SubmitGate()">&#8595; Download PDF</button>
+    <div class="cx8-gate-note">Your email is only used to deliver this report and isn't shared with third parties.</div>
+  </div>
+</div>
+
 
 <script>
 // ── FLOATING TOOLTIP ──
@@ -767,6 +863,65 @@ var META = {
 };
 
 function g(id){ return document.getElementById(id); }
+
+// ── WIZARD STEP NAVIGATION ──
+var currentStep = 1;
+var STEP_LABELS_KEY = ['step_lbl_valve','step_lbl_safety','step_lbl_results'];
+var STEP_LABELS_FALLBACK = ['Valve Specs','Safety Factor','Results'];
+
+function renderSteps(cur){
+  currentStep = cur;
+  var row = g('steps-row');
+  if(!row) return;
+  var d = T[LANG] || {};
+  row.innerHTML = '';
+  STEP_LABELS_KEY.forEach(function(key, i){
+    var n = i+1;
+    var cls = n===cur ? 'active' : (n<cur ? 'done' : '');
+    var label = d[key] || STEP_LABELS_FALLBACK[i];
+    row.innerHTML += '<div class="step '+cls+'"><div class="step-num">'+(n<cur?'✓':n)+'</div><div class="step-label">'+label+'</div></div>'
+      + (n<STEP_LABELS_KEY.length ? '<div class="step-line"></div>' : '');
+  });
+}
+
+function goStep(n){
+  document.querySelectorAll('.wscreen').forEach(function(s){ s.classList.remove('active'); });
+  g('screen-'+n).classList.add('active');
+  renderSteps(n);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Validates + calculates before moving to the results step
+function goResults(){
+  var res = getCorrectedBTO();
+  if(!res.base || res.base <= 0){ alert(T[LANG].alert_bto); return; }
+  goStep(3);
+  calculate();
+}
+
+function onDNSelectChange(){
+  var sel = g('dn-select');
+  var wrap = g('dn-custom-wrap');
+  if(sel.value === 'Custom'){
+    wrap.style.display = 'block';
+    g('dn-input').value = g('dn-custom-input').value || '';
+  } else {
+    wrap.style.display = 'none';
+    g('dn-input').value = sel.value;
+  }
+}
+
+function onPNSelectChange(){
+  var sel = g('pn-select');
+  var wrap = g('pn-custom-wrap');
+  if(sel.value === 'Custom'){
+    wrap.style.display = 'block';
+    g('pn-input').value = g('pn-custom-input').value || '';
+  } else {
+    wrap.style.display = 'none';
+    g('pn-input').value = sel.value;
+  }
+}
 
 function setValveType(t, btn){
   valveType = t;
@@ -838,10 +993,6 @@ function calculate(){
 
   lastT = res.corrected;
 
-  // Show results area
-  g('placeholder-panel').classList.add('hidden');
-  g('results-area').classList.remove('hidden');
-
   // Update header badges — PN prefix logic
   var pnDisplay = '—';
   if (pn !== '—' && pn !== '') {
@@ -859,11 +1010,11 @@ function calculate(){
   // Update torque cards
   updateCards(lastT);
 
-  // Draw chart + SVG
+  // Draw clock + valve icon
   g('aslider').value = 0;
   sliderAngle = 0;
+  renderClockStations(getVals(lastT));
   updateSVG(0, lastT, getVals(lastT));
-  drawChart(0, lastT, getVals(lastT));
 
   // Build summary table
   buildSummary(res, kv, dn, pn, dp, media, tempStr);
@@ -942,6 +1093,8 @@ function updateSVG(s, T, vals){
 
   // Flow arrows opacity
   if(g('flow-grp')) g('flow-grp').style.opacity = a > 20 ? Math.min(1,(a-20)/40)*0.7 : 0;
+
+  updateNeedle(s, T, vals);
 }
 
 function torqueAtAngle(a, T, isClosing, vals){
@@ -972,128 +1125,122 @@ function torqueAtAngle(a, T, isClosing, vals){
   return Math.round(t*10)/10;
 }
 
-// ── CANVAS CHART ──
-function drawChart(sliderVal, T, vals){
-  var canvas = g('cc');
-  if(!canvas) return;
-  var W = canvas.clientWidth, H = canvas.clientHeight || 220;
-  if(!W || !H) return;
-  var dpr = window.devicePixelRatio||1;
-  canvas.width = W*dpr; canvas.height = H*dpr;
-  var ctx = canvas.getContext('2d');
-  ctx.scale(dpr,dpr);
-  ctx.clearRect(0,0,W,H);
+// ── TORQUE CLOCK — SVG dial with 6 stations at clock-hour positions ──
+// Opening stroke = right half of the dial (BTO→RTO→ETO)
+// Closing stroke = left half of the dial  (BTC→RTC→ETC)
+// Each stroke sweeps CLOCK_ARC_DEG of the circle; the two small remaining
+// arcs (ETO→BTC and ETC→BTO) are "dwell" gaps — the valve is holding fully
+// open or fully closed there, so no torque station sits inside them. They
+// are kept intentionally short (CLOCK_DWELL_DEG) rather than the wide
+// quarter-circle gaps used previously, so the needle sweeps almost the
+// full 360° and the dial reads as one continuous cycle.
+var CLOCK_CX = 180, CLOCK_CY = 180, CLOCK_R_DOT = 108, CLOCK_R_LABEL = 152;
+var CLOCK_ARC_DEG = 150, CLOCK_DWELL_DEG = 30; // 2*(150+30) = 360
 
-  var pl=46,pr=14,pt=18,pb=26;
-  var cW=W-pl-pr, cH=H-pt-pb;
+function clockXY(hourDeg, radius){
+  // hourDeg: 0 = 12 o'clock (top), increases clockwise
+  var rad = (hourDeg) * Math.PI/180;
+  var x = CLOCK_CX + radius*Math.sin(rad);
+  var y = CLOCK_CY - radius*Math.cos(rad);
+  return {x:x, y:y};
+}
 
-  var allV=[];
-  for(var a=0;a<=90;a++){allV.push(torqueAtAngle(a,T,false,vals));allV.push(torqueAtAngle(a,T,true,vals));}
-  var maxV=Math.max.apply(null,allV)*1.18;
+var CLOCK_HALF = CLOCK_ARC_DEG + CLOCK_DWELL_DEG; // 180 — arc + one dwell gap = half the dial
+var CLOCK_STATIONS = [
+  {k:'bto', hour:0,                                anchor:'middle', dy:-6},
+  {k:'rto', hour:CLOCK_ARC_DEG/2,                   anchor:'start',  dy:2},
+  {k:'eto', hour:CLOCK_ARC_DEG,                     anchor:'start',  dy:16},
+  {k:'btc', hour:CLOCK_HALF,                        anchor:'middle', dy:20},
+  {k:'rtc', hour:CLOCK_HALF+CLOCK_ARC_DEG/2,        anchor:'end',    dy:16},
+  {k:'etc', hour:CLOCK_HALF+CLOCK_ARC_DEG,          anchor:'end',    dy:2},
+];
 
-  function tx(step){ return pl+(step/180)*cW; }
-  function ty(v){ return pt+cH-(v/maxV)*cH; }
-  function va(step){ return step<=90?step:180-step; }
+// Curved "OPENING CYCLE" / "CLOSING CYCLE" labels, set in the ring gap
+// between the two dial circles (r 108–132), spanning BTO→ETO and BTC→ETC.
+var CLOCK_CYCLE_LABELS = [
+  {id:'arc-opening', from:14, to:CLOCK_ARC_DEG-14, text:'OPENING CYCLE', color:'var(--bto)'},
+  {id:'arc-closing', from:CLOCK_HALF+14, to:CLOCK_HALF+CLOCK_ARC_DEG-14, text:'CLOSING CYCLE', color:'var(--btc)'},
+];
 
-  // Grid
-  ctx.strokeStyle='rgba(28,24,20,0.06)'; ctx.lineWidth=1;
-  for(var i=0;i<=5;i++){
-    var y=pt+(i/5)*cH;
-    ctx.beginPath();ctx.moveTo(pl,y);ctx.lineTo(pl+cW,y);ctx.stroke();
-    ctx.fillStyle='rgba(90,82,74,.7)';ctx.font='9px monospace';ctx.textAlign='right';
-    ctx.fillText(Math.round(maxV*(1-i/5)),pl-4,y+3);
-  }
-  [0,30,60,90,120,150,180].forEach(function(step){
-    var x=tx(step), ang=va(step);
-    ctx.beginPath();ctx.moveTo(x,pt);ctx.lineTo(x,pt+cH);
-    ctx.strokeStyle='rgba(28,24,20,0.06)';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle='rgba(90,82,74,.7)';ctx.font='9px monospace';ctx.textAlign='center';
-    ctx.fillText(ang+'°',x,pt+cH+16);
+function renderClockCycleLabels(){
+  var g_ = g('clock-cycle-labels');
+  if(!g_) return;
+  var r = (CLOCK_R_DOT + 132)/2; // midway between the two dial rings
+  var html = '';
+  CLOCK_CYCLE_LABELS.forEach(function(lbl){
+    var p1 = clockXY(lbl.from, r), p2 = clockXY(lbl.to, r);
+    var large = (lbl.to - lbl.from) > 180 ? 1 : 0;
+    html += '<path id="'+lbl.id+'" d="M'+p1.x.toFixed(1)+','+p1.y.toFixed(1)+' A'+r+','+r+' 0 '+large+',1 '+p2.x.toFixed(1)+','+p2.y.toFixed(1)+'" fill="none" stroke="none"/>';
+    html += '<text font-family="monospace" font-size="7.5" font-weight="600" letter-spacing="2" fill="'+lbl.color+'" opacity="0.55">'+
+      '<textPath href="#'+lbl.id+'" xlink:href="#'+lbl.id+'" startOffset="50%" text-anchor="middle">'+lbl.text+'</textPath></text>';
   });
+  g_.innerHTML = html;
+}
 
-  // Centre divider
-  var midX=tx(90);
-  ctx.beginPath();ctx.moveTo(midX,pt);ctx.lineTo(midX,pt+cH);
-  ctx.strokeStyle='rgba(28,24,20,0.15)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle='rgba(28,24,20,0.3)';ctx.font='bold 8px monospace';ctx.textAlign='center';
-  ctx.fillText('90° OPEN',midX,pt-5);
-
-  // Zone labels
-  ctx.fillStyle='rgba(232,54,93,0.5)';ctx.font='8px monospace';ctx.textAlign='center';
-  ctx.fillText('↑ OPENING',pl+cW*0.25,pt+10);
-  ctx.fillStyle='rgba(14,168,110,0.5)';ctx.textAlign='center';
-  ctx.fillText('↓ CLOSING',pl+cW*0.75,pt+10);
-
-  // AIR opening curve
-  var airPts=[];
-  for(var s=0;s<=90;s++) airPts.push([tx(s), ty(torqueAtAngle(va(s),T,false,vals))]);
-
-  ctx.beginPath();ctx.moveTo(airPts[0][0],airPts[0][1]);
-  for(var i=1;i<airPts.length;i++) ctx.lineTo(airPts[i][0],airPts[i][1]);
-  ctx.lineTo(tx(90),pt+cH);ctx.lineTo(tx(0),pt+cH);ctx.closePath();
-  ctx.fillStyle='rgba(232,54,93,0.07)';ctx.fill();
-
-  for(var seg=0;seg<90;seg++){
-    var p=seg/90;
-    var rr=232,gg=Math.round(54+120*p),bb=Math.round(93*(1-p)+32*p);
-    ctx.beginPath();ctx.moveTo(airPts[seg][0],airPts[seg][1]);ctx.lineTo(airPts[seg+1][0],airPts[seg+1][1]);
-    ctx.strokeStyle='rgb('+rr+','+gg+','+bb+')';ctx.lineWidth=2.5;ctx.stroke();
-  }
-
-  // SPRING closing curve
-  var sprPts=[];
-  for(var s=90;s<=180;s++) sprPts.push([tx(s), ty(torqueAtAngle(va(s),T,true,vals))]);
-
-  ctx.beginPath();ctx.moveTo(sprPts[0][0],sprPts[0][1]);
-  for(var i=1;i<sprPts.length;i++) ctx.lineTo(sprPts[i][0],sprPts[i][1]);
-  ctx.lineTo(tx(180),pt+cH);ctx.lineTo(tx(90),pt+cH);ctx.closePath();
-  ctx.fillStyle='rgba(14,168,110,0.07)';ctx.fill();
-
-  for(var seg=0;seg<sprPts.length-1;seg++){
-    var p=seg/(sprPts.length-1);
-    var rr=Math.round(14+120*p),gg=Math.round(168-60*p),bb=Math.round(110+26*p);
-    ctx.beginPath();ctx.moveTo(sprPts[seg][0],sprPts[seg][1]);ctx.lineTo(sprPts[seg+1][0],sprPts[seg+1][1]);
-    ctx.strokeStyle='rgb('+rr+','+gg+','+bb+')';ctx.lineWidth=2.5;ctx.stroke();
-  }
-
-  // Key dots
-  var kpts=[
-    {s:0,  v:vals.bto, l:'BTO', c:COLORS.bto, ya:-10, xa:8,  ta:'left'},
-    {s:45, v:vals.rto, l:'RTO', c:COLORS.rto, ya:-10, xa:0,  ta:'center'},
-    {s:90, v:vals.eto, l:'ETO', c:COLORS.eto, ya:-10, xa:-6, ta:'right'},
-    {s:90, v:vals.btc, l:'BTC', c:COLORS.btc, ya:14,  xa:6,  ta:'left'},
-    {s:135,v:vals.rtc, l:'RTC', c:COLORS.rtc, ya:-10, xa:0,  ta:'center'},
-    {s:180,v:vals.etc, l:'ETC', c:COLORS.etc, ya:-10, xa:-6, ta:'right'},
-  ];
-  kpts.forEach(function(p){
-    var x=tx(p.s), y=ty(p.v);
-    ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.fillStyle=p.c;ctx.fill();
-    ctx.fillStyle=p.c;ctx.font='bold 9px monospace';ctx.textAlign=p.ta;
-    ctx.fillText(p.l,x+p.xa,y+p.ya);
+function renderClockStations(vals){
+  var g_ = g('clock-stations');
+  if(!g_) return;
+  var d = T[LANG];
+  var html = '';
+  CLOCK_STATIONS.forEach(function(st){
+    var dot = clockXY(st.hour, CLOCK_R_DOT);
+    var lbl = clockXY(st.hour, CLOCK_R_LABEL);
+    var col = COLORS[st.k];
+    var isOvr = OVERRIDES[st.k] !== undefined;
+    html += '<line x1="'+dot.x.toFixed(1)+'" y1="'+dot.y.toFixed(1)+'" x2="'+lbl.x.toFixed(1)+'" y2="'+lbl.y.toFixed(1)+
+      '" stroke="'+col+'" stroke-width="1" opacity="0.45"/>';
+    html += '<circle cx="'+dot.x.toFixed(1)+'" cy="'+dot.y.toFixed(1)+'" r="6" fill="'+col+'" stroke="#fff" stroke-width="1.5"/>';
+    html += '<text x="'+lbl.x.toFixed(1)+'" y="'+(lbl.y-4).toFixed(1)+'" text-anchor="'+st.anchor+'" font-family="monospace" font-weight="700" font-size="12" fill="'+col+'">'+st.k.toUpperCase()+(isOvr?' ✎':'')+'</text>';
+    html += '<text x="'+lbl.x.toFixed(1)+'" y="'+(lbl.y+11).toFixed(1)+'" text-anchor="'+st.anchor+'" font-family="monospace" font-size="11" fill="var(--text)">'+nf(vals[st.k],1)+' Nm</text>';
   });
+  g_.innerHTML = html;
 
-  // Tracker dot
+  renderClockCycleLabels();
+
+  // 12 subtle hour ticks
+  var ticks='';
+  for(var i=0;i<12;i++){
+    var a = i*30;
+    var p1 = clockXY(a, 132), p2 = clockXY(a, 124);
+    ticks += '<line x1="'+p1.x.toFixed(1)+'" y1="'+p1.y.toFixed(1)+'" x2="'+p2.x.toFixed(1)+'" y2="'+p2.y.toFixed(1)+'" stroke="var(--border2)" stroke-width="1"/>';
+  }
+  if(g('clock-ticks')) g('clock-ticks').innerHTML = ticks;
+}
+
+// Map slider (0-180, matching torqueAtAngle's convention) to a clock-hour degree.
+// Each half of the physical stroke (0-90) is stretched across CLOCK_ARC_DEG
+// of the dial, so the needle now sweeps the full 0°→(2*CLOCK_ARC_DEG+... )
+// range instead of stopping 120° short of a full circle as before.
+function sliderToClockHour(s){
+  if(s<=90) return (s/90)*CLOCK_ARC_DEG;                          // 0(BTO)→...→CLOCK_ARC_DEG(ETO)
+  return CLOCK_HALF + ((s-90)/90)*CLOCK_ARC_DEG;                  // CLOCK_HALF(BTC)→...→CLOCK_HALF+CLOCK_ARC_DEG(ETC)
+}
+
+function updateNeedle(sliderVal, T, vals){
+  var hour = sliderToClockHour(sliderVal);
+  var tip = clockXY(hour, 96);
   var isClosing = sliderVal > 90;
   var valveAngle = isClosing ? 180-sliderVal : sliderVal;
   var curT = isClosing ? torqueAtAngle(valveAngle,T,true,vals) : torqueAtAngle(valveAngle,T,false,vals);
-  var trackerX = tx(sliderVal);
-  var trackerY = ty(curT);
-  var trackerColor = isClosing ? COLORS.btc : COLORS.bto;
-
-  ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(trackerX,trackerY);ctx.lineTo(trackerX,pt+cH);
-  ctx.strokeStyle='rgba(28,24,20,0.2)';ctx.lineWidth=1;ctx.stroke();
-  ctx.setLineDash([]);
-
-  ctx.beginPath();ctx.arc(trackerX,trackerY,8,0,Math.PI*2);
-  ctx.fillStyle=trackerColor+'22';ctx.fill();
-  ctx.beginPath();ctx.arc(trackerX,trackerY,4,0,Math.PI*2);
-  ctx.fillStyle=trackerColor;ctx.fill();
-
-  ctx.fillStyle=trackerColor;ctx.font='bold 10px monospace';
-  ctx.textAlign = trackerX > pl+cW*0.8 ? 'right' : 'left';
-  ctx.fillText(nf(curT,1)+' Nm', trackerX+(trackerX>pl+cW*0.8?-10:10), trackerY-6);
+  var col = isClosing ? COLORS.btc : COLORS.bto;
+  if(!isClosing && valveAngle > 5 && valveAngle < 85) col = COLORS.rto;
+  if(!isClosing && valveAngle >= 85) col = COLORS.eto;
+  if(isClosing && valveAngle > 5 && valveAngle < 85) col = COLORS.rtc;
+  if(isClosing && valveAngle <= 5) col = COLORS.etc;
+  if(g('needle-line')){
+    g('needle-line').setAttribute('x2', tip.x.toFixed(1));
+    g('needle-line').setAttribute('y2', tip.y.toFixed(1));
+    g('needle-line').setAttribute('stroke', col);
+  }
+  if(g('needle-tip')){
+    g('needle-tip').setAttribute('cx', tip.x.toFixed(1));
+    g('needle-tip').setAttribute('cy', tip.y.toFixed(1));
+    g('needle-tip').setAttribute('fill', col);
+  }
+  if(g('scrub-readout')){
+    g('scrub-readout').textContent = valveAngle + '° · ' + nf(curT,1) + ' Nm';
+    g('scrub-readout').style.color = col;
+  }
 }
 
 // ── NUMBER FORMAT — comma decimal for DE ──────────────────────────
@@ -1147,8 +1294,8 @@ function refreshAll(){
   var T = lastT;
   var vals = getVals(T);
   updateCards(T);
+  renderClockStations(vals);
   updateSVG(sliderAngle, T, vals);
-  drawChart(sliderAngle, T, vals);
   buildSummary(getCorrectedBTO(),
     g('kv-input').value||'—', g('dn-input').value||'—', g('pn-input').value||'—',
     g('dp-input').value||'—', g('media-input').value||'—',
@@ -1161,7 +1308,6 @@ g('aslider').addEventListener('input', function(){
   var T = lastT;
   var vals = getVals(T);
   updateSVG(sliderAngle, T, vals);
-  drawChart(sliderAngle, T, vals);
 });
 
 // ── BUILD SUMMARY ──
@@ -1326,11 +1472,199 @@ function doExport(){
 
   XLSX.writeFile(wb, 'CX8_Valve_Torque_Profile.xlsx');
 }
+
+
+// ══ CX8 REPORT EMAIL GATE — shared login/delivery flow ═══════════════════════
+// Every "Download PDF" button on this tool routes through this gate. The user
+// enters their email (this doubles as the lightweight "login"), we hand off to
+// the CX8 backend so it can create/find that user's account and email them the
+// same PDF from CX8's mail system, and — in parallel — we generate the PDF
+// client-side so the download starts immediately without waiting on the network.
+var cx8PendingReportFn = null;
+
+function cx8OpenGate(reportFn){
+  cx8PendingReportFn = reportFn;
+  var err = document.getElementById('cx8GateErr'); if(err) err.classList.remove('show');
+  var overlay = document.getElementById('cx8GateOverlay'); if(overlay) overlay.classList.add('open');
+  setTimeout(function(){ var e=document.getElementById('cx8GateEmail'); if(e) e.focus(); },100);
+}
+function cx8CloseGate(e){
+  if(e && e.target !== e.currentTarget) return;
+  var overlay = document.getElementById('cx8GateOverlay'); if(overlay) overlay.classList.remove('open');
+}
+function cx8SubmitGate(){
+  var emailEl = document.getElementById('cx8GateEmail');
+  var email = emailEl ? emailEl.value.trim() : '';
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    var err = document.getElementById('cx8GateErr'); if(err) err.classList.add('show');
+    return;
+  }
+  var err2 = document.getElementById('cx8GateErr'); if(err2) err2.classList.remove('show');
+  var overlay = document.getElementById('cx8GateOverlay'); if(overlay) overlay.classList.remove('open');
+  if(cx8PendingReportFn) cx8PendingReportFn(email);
+}
+
+// ── Backend hook ─────────────────────────────────────────────────────────────
+// TODO(dev): point this at the real CX8 backend endpoint. It should:
+//   1. Create-or-find a CX8 account for `email` (this is the "login").
+//   2. Store/attach the generated PDF (pass `meta.pdfDataUri` or regenerate
+//      server-side from `meta.data`).
+//   3. Send the PDF to the user from CX8's backend mailer (not the browser).
+// Example:
+//   fetch('https://api.cx8motion.com/v1/reports/send', {
+//     method: 'POST',
+//     headers: {'Content-Type':'application/json'},
+//     body: JSON.stringify({ email: email, tool: meta.tool, filename: meta.filename,
+//                             pdfDataUri: meta.pdfDataUri, data: meta.data })
+//   });
+function cx8EmailReportToUser(email, meta){
+  console.log('[CX8 backend stub] would create/find account for', email,
+              'and email report:', meta && meta.tool, meta && meta.filename);
+}
+
+// ── PDF EXPORT — via jsPDF ──
+function exportPDF(email){
+  if(typeof window.jspdf === 'undefined'){
+    var script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = function(){ doExportPDF(email); };
+    document.head.appendChild(script);
+  } else {
+    doExportPDF(email);
+  }
+}
+
+function doExportPDF(email){
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF({unit:'pt', format:'a4'});
+  doc.setProperties({title:'Valve Torque Profile', subject:'Valve torque profile report'});
+  var vals = getVals(lastT);
+  var res  = getCorrectedBTO();
+  var dn   = g('dn-input').value  || '—';
+  var pn   = g('pn-input').value  || '—';
+  var kv   = g('kv-input').value  || '—';
+  var media = g('media-select') ? (g('media-select').value || '—') : '—';
+  var temp  = g('temp-input').value;
+  var tempU = g('temp-unit').value;
+  var tempStr = temp ? temp + ' °' + tempU : '—';
+  var pnDisplay = pn;
+  if (pn && pn !== '—' && !pn.toUpperCase().match(/^(PN|CLASS|CL)/)) pnDisplay = 'PN ' + pn;
+
+  var pageW = doc.internal.pageSize.getWidth();
+  var x = 48, y = 56;
+
+  // Header
+  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(30,45,74);
+  doc.text('Valve Torque Profile', x, y);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(120,120,120);
+  doc.text('Specification Summary — Generated ' + new Date().toLocaleDateString(), x, y+16);
+  doc.setDrawColor(220,220,220); doc.line(x, y+26, pageW-48, y+26);
+  y += 50;
+
+  // Valve spec block
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(30,45,74);
+  doc.text('Valve Specification', x, y); y += 18;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(40,40,40);
+  var specRows = [
+    ['Valve type', valveType === 'ball' ? 'Ball valve' : 'Butterfly valve'],
+    ['DN / NPS', dn !== '—' ? 'DN ' + dn : '—'],
+    ['Pressure class', pnDisplay],
+    ['Kv (fully open)', kv !== '—' ? kv + ' m³/h' : '—'],
+    ['Media / fluid', media],
+    ['Operating temperature', tempStr],
+    ['ΔP at rated torque', g('dp-input').value ? g('dp-input').value + ' bar' : '—'],
+  ];
+  specRows.forEach(function(r){
+    doc.text(r[0]+':', x, y);
+    doc.text(String(r[1]), x+160, y);
+    y += 15;
+  });
+  y += 8;
+
+  // Safety factor block
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(184,92,0);
+  doc.text('Safety Factor Correction', x, y); y += 18;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(40,40,40);
+  var sfRows = [
+    ['Base BTO (datasheet)', nf(res.base,1) + ' Nm'],
+    ['Temperature factor', nf(res.temp,2) + '×'],
+    ['Safety factor (other)', nf(res.other,2) + '×'],
+    ['Combined safety factor', nf(res.combined,2) + '×'],
+    ['Corrected BTO', nf(res.corrected,1) + ' Nm'],
+  ];
+  sfRows.forEach(function(r){
+    doc.text(r[0]+':', x, y);
+    doc.text(String(r[1]), x+160, y);
+    y += 15;
+  });
+  y += 10;
+
+  // Torque profile table
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(30,45,74);
+  doc.text('Torque Profile', x, y); y += 6;
+  y += 14;
+  var colW = [70, 110, 90, 90];
+  var head = ['Position', 'Description', 'Angle', 'Torque'];
+  doc.setFillColor(240,238,232);
+  doc.rect(x, y-11, colW[0]+colW[1]+colW[2]+colW[3], 16, 'F');
+  doc.setFontSize(9); doc.setTextColor(90,82,74);
+  var cx = x+4;
+  head.forEach(function(h,i){ doc.text(h, cx, y); cx += colW[i]; });
+  y += 16;
+
+  var rows = [
+    ['BTO', 'Break to Open',  '0°',  nf(vals.bto,1)+' Nm'],
+    ['RTO', 'Running (Open)', '45°', nf(vals.rto,1)+' Nm'],
+    ['ETO', 'End to Open',    '90°', nf(vals.eto,1)+' Nm'],
+    ['BTC', 'Break to Close', '90°', nf(vals.btc,1)+' Nm'],
+    ['RTC', 'Running (Close)','45°', nf(vals.rtc,1)+' Nm'],
+    ['ETC', 'End to Close',   '0°',  nf(vals.etc,1)+' Nm'],
+  ];
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(40,40,40);
+  rows.forEach(function(r,i){
+    if(i%2===0){ doc.setFillColor(250,249,247); doc.rect(x, y-11, colW[0]+colW[1]+colW[2]+colW[3], 16, 'F'); }
+    var cx2 = x+4;
+    r.forEach(function(v,ci){ doc.text(String(v), cx2, y); cx2 += colW[ci]; });
+    y += 16;
+  });
+
+  y += 16;
+  doc.setDrawColor(220,220,220); doc.line(x, y, pageW-48, y); y += 20;
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(150,150,150);
+  doc.text('Ratios are industry-standard estimates — always verify against the actuator manufacturer\'s own', x, y);
+  y += 12;
+  doc.text('torque profile before final sizing.', x, y);
+  y += 16;
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(160,160,160);
+  doc.text('Report generated with a free engineering tool by CX8 Technologies · www.cx8motion.com', x, y);
+
+  var filename = 'Valve_Torque_Profile_Report.pdf';
+  doc.save(filename);
+
+  cx8EmailReportToUser(email, {
+    tool: 'valve-torque-profile',
+    filename: filename,
+    pdfDataUri: doc.output('datauristring'),
+    data: { valveType: valveType, dn: dn, pn: pnDisplay, kv: kv, media: media, corrected: res.corrected }
+  });
+}
+
 // ══ TRANSLATIONS ═════════════════════════════════════════════════════
 var LANG = 'en';
 var T = {
   en: {
     title:              'Valve Torque Profile',
+    step_lbl_valve:      'Valve Specs',
+    step_lbl_safety:     'Safety Factor',
+    step_lbl_results:    'Results',
+    wiz1_eyebrow:        'Step 1 of 3',
+    wiz2_eyebrow:        'Step 2 of 3',
+    wiz3_eyebrow:        'Step 3 of 3',
+    wiz3_title:          'Torque profile results',
+    wiz3_desc:           'The clock below shows the torque required at each stage of the valve\'s stroke — opening on the right half, closing on the left half. Click any value in the cards to override it with a manufacturer-supplied figure.',
+    btn_next1:           'Continue to Safety Factor →',
+    btn_back:            '← Back',
+    btn_export_pdf:      '↓ Download PDF',
     intro_title:        'How to use this tool',
     intro_body:         'This tool derives the <strong>full torque profile</strong> of your valve — BTO, RTO, ETO, BTC, RTC and ETC — from the <strong>base torque stated in your valve manufacturer\'s datasheet</strong>. It does not guess or look up values — you provide the base torque and Kv from your specific valve\'s catalogue page, and the tool applies industry-standard ratios plus your chosen safety factors to build the complete profile your actuator engineer needs.<br><br><strong>Fields marked <span style="color:var(--red)">*</span> are required.</strong> Temperature and media details are collected for the summary report but do not affect calculations.',
     step1_title:        'Valve specifications — from manufacturer datasheet',
@@ -1394,6 +1728,17 @@ var T = {
   },
   de: {
     title:              'Ventil-Drehmomentprofil',
+    step_lbl_valve:      'Ventilspezifikation',
+    step_lbl_safety:     'Sicherheitsfaktor',
+    step_lbl_results:    'Ergebnisse',
+    wiz1_eyebrow:        'Schritt 1 von 3',
+    wiz2_eyebrow:        'Schritt 2 von 3',
+    wiz3_eyebrow:        'Schritt 3 von 3',
+    wiz3_title:          'Ergebnisse des Drehmomentprofils',
+    wiz3_desc:           'Die Uhr unten zeigt das erforderliche Drehmoment in jeder Phase des Ventilhubs — Öffnen auf der rechten, Schließen auf der linken Seite. Klicken Sie auf einen Wert in den Karten, um ihn mit einem Herstellerwert zu überschreiben.',
+    btn_next1:           'Weiter zum Sicherheitsfaktor →',
+    btn_back:            '← Zurück',
+    btn_export_pdf:      '↓ PDF herunterladen',
     intro_title:        'So verwenden Sie dieses Tool',
     intro_body:         'Dieses Tool berechnet das <strong>vollständige Drehmomentprofil</strong> Ihres Ventils — BTO, RTO, ETO, BTC, RTC und ETC — basierend auf dem <strong>Basisdrehmoment aus dem Datenblatt des Herstellers</strong>. Es rät keine Werte — Sie geben Basisdrehmoment und Kv von der Katalogeite Ihres Ventils ein, und das Tool wendet branchenübliche Verhältnisse plus Ihre Sicherheitsfaktoren an.<br><br><strong>Felder mit <span style="color:var(--red)">*</span> sind Pflichtfelder.</strong> Temperatur und Medium werden nur für den Bericht erfasst und haben keinen Einfluss auf die Berechnungen.',
     step1_title:        'Ventilspezifikationen — aus dem Hersteller-Datenblatt',
@@ -1455,6 +1800,17 @@ var T = {
   },
   tr: {
     title:              'Vana Tork Profili',
+    step_lbl_valve:      'Vana Özellikleri',
+    step_lbl_safety:     'Güvenlik Faktörü',
+    step_lbl_results:    'Sonuçlar',
+    wiz1_eyebrow:        'Adım 1 / 3',
+    wiz2_eyebrow:        'Adım 2 / 3',
+    wiz3_eyebrow:        'Adım 3 / 3',
+    wiz3_title:          'Tork profili sonuçları',
+    wiz3_desc:           'Aşağıdaki saat, vananın strokunun her aşamasında gereken torku gösterir — açma sağ yarıda, kapama sol yarıda. Üretici değeriyle geçersiz kılmak için kartlardaki herhangi bir değere tıklayın.',
+    btn_next1:           'Güvenlik Faktörüne devam et →',
+    btn_back:            '← Geri',
+    btn_export_pdf:      '↓ PDF indir',
     intro_title:        'Bu araç nasıl kullanılır',
     intro_body:         'Bu araç, vananızın <strong>tam tork profilini</strong> — BTO, RTO, ETO, BTC, RTC ve ETC — <strong>üretici teknik veri sayfasındaki baz tork değerinden</strong> hesaplar. Değerleri tahmin etmez — siz kendi vananızın katalog sayfasından baz tork ve Kv değerlerini girersiniz, araç sektörel standart oranları ve seçtiğiniz güvenlik faktörlerini uygulayarak aktuatör mühendisinin ihtiyaç duyduğu profili oluşturur.<br><br><strong><span style="color:var(--red)">*</span> ile işaretli alanlar zorunludur.</strong> Sıcaklık ve akışkan bilgileri yalnızca özet raporu için toplanır, hesaplamaları etkilemez.',
     step1_title:        'Vana özellikleri — üretici teknik veri sayfasından',
@@ -1536,16 +1892,9 @@ function setLang(lang, btn) {
   // Update page title only (logo is now fixed CX8 branding)
   document.title = d.title + ' — CX8 Technologies';
 
-  // Update SVG scrub labels
-  var scrubSpans = document.querySelectorAll('.scrub-labels span');
-  if(scrubSpans.length >= 3){
-    scrubSpans[0].textContent = d.closed_label;
-    scrubSpans[2].textContent = d.closed_label;
-    g('scrub-mid').textContent = d.open_label;
-  }
-
   // Re-run SF descriptions with current slider values
   onSFChange();
+  renderSteps(currentStep);
 }
 
 // patch onSFChange to use translated descriptions
@@ -1577,9 +1926,8 @@ calculate = function(){
   g('vp-title').textContent = valveType === 'ball' ? T[LANG].ball_profile : T[LANG].butterfly_profile;
 };
 
-window.addEventListener('resize', function(){
-  if(lastT) drawChart(sliderAngle, lastT, getVals(lastT));
-});
+// ── Init ──
+renderSteps(1);
 </script>
 </body>
 </html>
