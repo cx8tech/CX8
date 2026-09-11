@@ -67,9 +67,10 @@ export default function ToolViewer() {
   const { toolId } = useParams()
   const location = useLocation()
   const tool = allTools.find(t => t.id === toolId)
-  const [showGate, setShowGate] = useState(toolId === DATA_TOOL_ID)
+  const [showGate, setShowGate] = useState(false)
   const [user, setUser]         = useState(null)
   const iframeRef               = useRef(null)
+  const indexCacheRef           = useRef(null)
   const dbCacheRef              = useRef(null)   // holds fetched actuator data
   const iframeReadyRef          = useRef(false)  // true once iframe fires onLoad
 
@@ -80,13 +81,11 @@ export default function ToolViewer() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      if (!session && isDataTool) setShowGate(true)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null)
       if (!session && isDataTool) {
         dbCacheRef.current = null
-        setShowGate(true)
         iframeRef.current?.contentWindow.postMessage({ type: 'cx8-clear-data' }, '*')
       }
     })
@@ -98,7 +97,6 @@ export default function ToolViewer() {
     if (!isDataTool) return
     if (!user) {
       setIsPaid(false)
-      setShowGate(true)
       return
     }
     supabase
@@ -109,13 +107,26 @@ export default function ToolViewer() {
       .then(({ data }) => {
         const paid = data?.plan === 'pro'
         setIsPaid(paid)
-        setShowGate(!paid)
+        if (paid) setShowGate(false)
       })
   }, [user, isDataTool])
 
   // ── Fetch dataset when user is authenticated and paid ──
   useEffect(() => {
-    if (!isDataTool || !user || !isPaid) return
+    if (!isDataTool) return
+
+    if (!user || !isPaid) {
+      fetch('/api/tool5-data?index=1')
+        .then(r => r.json())
+        .then(({ data }) => {
+          if (Array.isArray(data)) {
+            indexCacheRef.current = data
+            pushIndexToIframe()
+          }
+        })
+      return
+    }
+
     if (dbCacheRef.current) {
       pushDataToIframe()
       return
@@ -140,6 +151,14 @@ export default function ToolViewer() {
     if (!dbCacheRef.current || !iframeReadyRef.current || !iframeRef.current) return
     iframeRef.current.contentWindow.postMessage(
       { type: 'cx8-data', db: dbCacheRef.current },
+      '*'
+    )
+  }
+
+  function pushIndexToIframe() {
+    if (!indexCacheRef.current || !iframeReadyRef.current || !iframeRef.current) return
+    iframeRef.current.contentWindow.postMessage(
+      { type: 'cx8-index', db: indexCacheRef.current },
       '*'
     )
   }
@@ -197,6 +216,7 @@ export default function ToolViewer() {
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         onLoad={() => {
           iframeReadyRef.current = true
+          pushIndexToIframe()
           pushDataToIframe()
         }}
       />

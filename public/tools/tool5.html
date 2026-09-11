@@ -501,6 +501,10 @@ function renderChips(){
 /* ── Init ── */
 function loadDatabase(records){
   DB=Array.isArray(records)?records:[];
+  entries=entries.map(entry=>{
+    const replacement=DB.find(r=>r.b===entry.rec?.b&&r.m===entry.rec?.m&&r.mode===entry.rec?.mode);
+    return replacement?{...entry,rec:replacement}:entry;
+  });
   const brands=[...new Set(DB.map(r=>r.b))].sort();
   ['flt-brand','pick-brand'].forEach(id=>{
     const select=g(id);
@@ -523,6 +527,7 @@ function init(){
 
 window.addEventListener('message',e=>{
   if(e.data?.type==='cx8-data'&&Array.isArray(e.data.db)) loadDatabase(e.data.db);
+  if(e.data?.type==='cx8-index'&&Array.isArray(e.data.db)) loadDatabase(e.data.db);
   if(e.data?.type==='cx8-clear-data'){
     DB=[];
     entries=[];
@@ -688,7 +693,7 @@ function syncEntries(){
   g('entries-count').textContent=n;
   g('entries-empty').classList.toggle('hidden', n>0);
   g('entries-clear-link').classList.toggle('show', n>0);
-  g('find-equiv-btn').disabled = n===0;
+  g('find-equiv-btn').disabled = false;
   if(n===0){
     g('multi-results-area').classList.add('hidden');
     g('multi-results-area').innerHTML='';
@@ -1105,12 +1110,12 @@ function onPressure(el){
 /* ── Single call to action: build the 1:1 cross-reference for everything
    currently in entries[], against whichever manufacturers/pressure are set. ── */
 function findEquivalents(){
+  window.parent.postMessage({type:'cx8-gate'},'*');
   if(!entries.length) return;
   runMultiCompare();
 }
 
 init();
-window.parent.postMessage({type:'cx8-gate'},'*');
 </script>
 </body>
 </html>

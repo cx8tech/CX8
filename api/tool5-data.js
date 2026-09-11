@@ -11,6 +11,20 @@ const WINDOW_MS  = 60 * 60 * 1000  // 1 hour
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end()
 
+  // The public index contains only names and actuator types so visitors can
+  // explore the controls. Torque and comparison data remains Pro-only below.
+  if (req.query?.index === '1') {
+    const { data, error } = await supabase
+      .from('actuator_data')
+      .select('brand, mode, record')
+
+    if (error) return res.status(500).json({ error: 'Failed to fetch index' })
+
+    return res.status(200).json({
+      data: data.map(row => ({ b: row.brand, m: row.record?.m, mode: row.mode })),
+    })
+  }
+
   // ── 1. Verify auth token ──
   const authHeader = req.headers.authorization
   if (!authHeader?.startsWith('Bearer ')) {
