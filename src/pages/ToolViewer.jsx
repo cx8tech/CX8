@@ -61,13 +61,13 @@ function GateModal({ onClose, toolPath, user, isPaid }) {
 }
 
 // Tool 5 is the only tool with a protected dataset
-const DATA_TOOL_ID = 'tool5'
+const DATA_TOOL_ID = 'actuator-cross-reference'
 
 export default function ToolViewer() {
   const { toolId } = useParams()
   const location = useLocation()
   const tool = allTools.find(t => t.id === toolId)
-  const [showGate, setShowGate] = useState(false)
+  const [showGate, setShowGate] = useState(toolId === DATA_TOOL_ID)
   const [user, setUser]         = useState(null)
   const iframeRef               = useRef(null)
   const dbCacheRef              = useRef(null)   // holds fetched actuator data
@@ -80,22 +80,37 @@ export default function ToolViewer() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      if (!session && isDataTool) setShowGate(true)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null)
+      if (!session && isDataTool) {
+        dbCacheRef.current = null
+        setShowGate(true)
+        iframeRef.current?.contentWindow.postMessage({ type: 'cx8-clear-data' }, '*')
+      }
     })
     return () => subscription.unsubscribe()
   }, [])
 
   // ── Check paid status ──
   useEffect(() => {
-    if (!user || !isDataTool) return
+    if (!isDataTool) return
+    if (!user) {
+      setIsPaid(false)
+      setShowGate(true)
+      return
+    }
     supabase
       .from('profiles')
       .select('plan')
       .eq('id', user.id)
       .single()
-      .then(({ data }) => setIsPaid(data?.plan === 'pro'))
+      .then(({ data }) => {
+        const paid = data?.plan === 'pro'
+        setIsPaid(paid)
+        setShowGate(!paid)
+      })
   }, [user, isDataTool])
 
   // ── Fetch dataset when user is authenticated and paid ──
@@ -139,7 +154,12 @@ export default function ToolViewer() {
       setUser(currentUser)
       if (currentUser) {
         const { data } = await supabase.from('profiles').select('plan').eq('id', currentUser.id).single()
-        setIsPaid(data?.plan === 'pro')
+        const paid = data?.plan === 'pro'
+        setIsPaid(paid)
+        if (paid) {
+          setShowGate(false)
+          return
+        }
       }
       setShowGate(true)
     }
