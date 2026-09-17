@@ -221,7 +221,7 @@ export default function ToolViewer() {
         className="tool-viewer-iframe"
         src={tool.file}
         title={tool.name}
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"
         onLoad={() => {
           iframeReadyRef.current = true
           pushIndexToIframe()
