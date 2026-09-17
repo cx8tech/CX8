@@ -23,8 +23,9 @@ const IconPlay = () => (
 function GateModal({ onClose, toolPath, user, isPaid }) {
   const navigate = useNavigate()
   const variantId = import.meta.env.VITE_LEMONSQUEEZY_VARIANT_ID
+  const checkoutBaseUrl = import.meta.env.VITE_LEMONSQUEEZY_CHECKOUT_URL || `https://cx8technologies.lemonsqueezy.com/checkout/buy/${variantId}`
   const checkoutUrl = user
-    ? `https://cx8technologies.lemonsqueezy.com/checkout/buy/${variantId}?checkout[email]=${encodeURIComponent(user.email)}&checkout[custom][user_id]=${user.id}`
+    ? `${checkoutBaseUrl}${checkoutBaseUrl.includes('?') ? '&' : '?'}checkout[email]=${encodeURIComponent(user.email)}&checkout[custom][user_id]=${user.id}`
     : null
 
   return (

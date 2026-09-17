@@ -77,6 +77,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .type-row-binary{display:flex;gap:6px;}
 .type-row-binary .tbtn{flex:1;text-align:center;}
 
+/* ── Selected variant spec preview (shown right after model + pressure pick) ── */
+.sel-preview{margin-top:12px;padding:12px 14px;background:var(--teal-bg);border:1px solid var(--teal-bg2);border-radius:var(--radius-sm);display:none;}
+.sel-preview.show{display:block;}
+.sel-preview-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.sel-preview-title{font-family:var(--display);font-size:12.5px;font-weight:700;color:var(--navy);}
+.sel-preview-mode{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--teal-bg2);color:var(--teal-dark);text-transform:uppercase;letter-spacing:.3px;}
+.sel-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;}
+.sel-preview-item{display:flex;flex-direction:column;gap:1px;}
+.sel-preview-item label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;font-weight:600;}
+.sel-preview-item span{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--text);}
+.sel-preview-note{font-size:10px;color:var(--text3);margin-top:8px;line-height:1.4;}
+
 /* ── Multi-model batch entry (left panel) ── */
 .multi-list{display:flex;flex-direction:column;gap:5px;margin-top:10px;}
 .multi-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:11.5px;}
@@ -86,6 +98,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .multi-item-resolved.unresolved{color:var(--amber);}
 .multi-item-remove{cursor:pointer;color:var(--text3);font-size:15px;line-height:1;flex-shrink:0;padding:0 2px;}
 .multi-item-remove:hover{color:#b0413e;}
+.multi-item-wrap{display:flex;flex-direction:column;gap:4px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+.multi-item-wrap .multi-item{padding:0;border:none;background:none;}
+.multi-item-spec{font-family:var(--mono);font-size:10.5px;color:var(--text2);padding-left:22px;line-height:1.5;}
+.multi-item-spec b{color:var(--navy);font-weight:600;}
 .multi-hint{font-size:10.5px;color:var(--text3);margin-top:6px;}
 
 /* ── Running "models to compare" list (fed by both entry panels) ── */
@@ -174,18 +190,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .td-link a{color:var(--teal-dark);font-size:11px;font-weight:500;text-decoration:none;}
 .td-link a:hover{text-decoration:underline;}
 .hidden{display:none!important;}
-
-/* ── RESPONSIVE / MOBILE ── */
-html,body{max-width:100%;overflow-x:hidden;}
-@media(max-width:700px){
-  .wrap,.tool-head{padding-left:12px;padding-right:12px;}
-  .filters{grid-template-columns:1fr;}
-  .compare-row{flex-wrap:wrap;}
-  .compare-controls{flex-wrap:wrap;}
-  .compare-controls select{max-width:none;flex:1 1 160px;}
-  .pressure-row{flex-wrap:wrap;}
-  .pressure-row label{min-width:0;}
-}
 </style>
 </head>
 <body>
@@ -243,6 +247,18 @@ html,body{max-width:100%;overflow-x:hidden;}
             </select>
           </div>
         </div>
+
+        <!-- Spec preview for the currently-picked model, at the current operating
+             pressure — updates live as either the model or the pressure changes. -->
+        <div class="sel-preview" id="sel-preview">
+          <div class="sel-preview-head">
+            <div class="sel-preview-title" id="sel-preview-title">—</div>
+            <span class="sel-preview-mode" id="sel-preview-mode">—</span>
+          </div>
+          <div class="sel-preview-grid" id="sel-preview-grid"></div>
+          <div class="sel-preview-note" id="sel-preview-note"></div>
+        </div>
+
         <button class="btn-go" id="guided-add-btn" style="margin-top:10px;width:100%;" onclick="addGuidedSelection()" disabled>+ Add to comparison list</button>
       </div>
       <div class="sc-divider-label">or</div>
@@ -296,6 +312,7 @@ html,body{max-width:100%;overflow-x:hidden;}
 
 <script>
 let DB=[];
+
 const URLS={
   'Rotork GT':'https://www.rotork.com','SMS Tork':'https://www.smstork.com',
   'Air Torque':'https://www.airtorque.com','Festo':'https://www.festo.com',
@@ -499,30 +516,22 @@ function renderChips(){
 }
 
 /* ── Init ── */
+
 function loadDatabase(records){
   DB=Array.isArray(records)?records:[];
-  entries=entries.map(entry=>{
-    const replacement=DB.find(r=>r.b===entry.rec?.b&&r.m===entry.rec?.m&&r.mode===entry.rec?.mode);
-    return replacement?{...entry,rec:replacement}:entry;
-  });
   const brands=[...new Set(DB.map(r=>r.b))].sort();
   ['flt-brand','pick-brand'].forEach(id=>{
     const select=g(id);
     while(select.options.length>1) select.remove(1);
     brands.forEach(b=>{
-      const o=document.createElement('option');
-      o.value=b; o.textContent=b;
-      select.appendChild(o);
+      const option=document.createElement('option');
+      option.value=b;
+      option.textContent=b;
+      select.appendChild(option);
     });
   });
-}
-
-function init(){
-  g('flt-brand').addEventListener('change',onBrandChange);
-  g('flt-model').addEventListener('change',onModelChange);
-  g('search-input').addEventListener('input',onSearchInput);
-  g('search-input').addEventListener('keydown',onSearchKey);
-  document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))closeSug();});
+  if(g('flt-brand').value) onBrandChange();
+  renderEntriesList();
 }
 
 window.addEventListener('message',e=>{
@@ -535,8 +544,24 @@ window.addEventListener('message',e=>{
     syncEntries();
     g('multi-results-area').innerHTML='';
     g('multi-results-area').classList.add('hidden');
+    loadDatabase([]);
   }
 });
+function init(){
+  const brands=[...new Set(DB.map(r=>r.b))].sort();
+  brands.forEach(b=>{
+    ['flt-brand','pick-brand'].forEach(id=>{
+      const o=document.createElement('option');
+      o.value=b; o.textContent=b;
+      g(id).appendChild(o);
+    });
+  });
+  g('flt-brand').addEventListener('change',onBrandChange);
+  g('flt-model').addEventListener('change',onModelChange);
+  g('search-input').addEventListener('input',onSearchInput);
+  g('search-input').addEventListener('keydown',onSearchKey);
+  document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))closeSug();});
+}
 
 // Quick Search and Guided Selection are both always active — either can be
 // used at any time, and both feed the same entries[] list below.
@@ -550,6 +575,7 @@ function clearAllEntries(){
   populateModels('');
   const addBtn=g('guided-add-btn');
   if(addBtn){addBtn.disabled=true;addBtn.textContent='+ Add to comparison list';}
+  renderSelectedPreview();
   g('multi-results-area').classList.add('hidden');
   g('multi-results-area').innerHTML='';
 }
@@ -672,16 +698,36 @@ function showEntriesNote(msg){
 function renderEntriesList(){
   const list=g('entries-list');
   list.innerHTML='';
+  const p=parseFloat(g('pressure').value);
   entries.forEach((entry,i)=>{
     const r=entry.rec;
-    const row=document.createElement('div');
-    row.className='multi-item';
-    row.innerHTML='<span class="multi-item-num">'+(i+1)+'.</span>'
-      +'<span class="multi-item-text">'+r.b+' <strong>'+r.m+'</strong></span>'
+    const t=getAllTorques(r,p);
+    const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const pStr=p.toFixed(1).replace('.',',');
+
+    let specParts;
+    if(r.mode==='DA'){
+      specParts=['<b>'+fmt(t.da)+'</b> @ '+pStr+' bar','Flange: '+esc(r.fp||'—'),'Shaft: '+esc(r.sw||'—')];
+    } else {
+      specParts=[
+        'Spring 0°/90°: <b>'+fmt(t.s0)+' / '+fmt(t.s90)+'</b>',
+        'Air 0°/90° @ '+pStr+' bar: <b>'+fmt(t.a0)+' / '+fmt(t.a90)+'</b>',
+        'Flange: '+esc(r.fp||'—'),
+        'Shaft: '+esc(r.sw||'—')
+      ];
+    }
+
+    const wrap=document.createElement('div');
+    wrap.className='multi-item-wrap';
+    wrap.innerHTML='<div class="multi-item">'
+      +'<span class="multi-item-num">'+(i+1)+'.</span>'
+      +'<span class="multi-item-text">'+esc(r.b)+' <strong>'+esc(r.m)+'</strong></span>'
       +'<span class="sug-mode '+r.mode+'" style="flex-shrink:0;">'+r.mode+'</span>'
-      +(entry.fuzzy?'<span class="multi-item-resolved">~ matched "'+entry.inputText.replace(/[<>&]/g,'')+'"</span>':'')
-      +'<span class="multi-item-remove" onclick="removeEntryAt('+i+')">×</span>';
-    list.appendChild(row);
+      +(entry.fuzzy?'<span class="multi-item-resolved">~ matched "'+esc(entry.inputText)+'"</span>':'<span style="flex:1;"></span>')
+      +'<span class="multi-item-remove" onclick="removeEntryAt('+i+')">×</span>'
+      +'</div>'
+      +'<div class="multi-item-spec">'+specParts.join('  ·  ')+'</div>';
+    list.appendChild(wrap);
   });
 }
 
@@ -694,7 +740,7 @@ function syncEntries(){
   g('entries-count').textContent=n;
   g('entries-empty').classList.toggle('hidden', n>0);
   g('entries-clear-link').classList.toggle('show', n>0);
-  g('find-equiv-btn').disabled = false;
+  g('find-equiv-btn').disabled = n===0;
   if(n===0){
     g('multi-results-area').classList.add('hidden');
     g('multi-results-area').innerHTML='';
@@ -719,6 +765,7 @@ function setType(t,btn){
       g('flt-model').value='';
       const addBtn=g('guided-add-btn');
       if(addBtn){addBtn.disabled=true;addBtn.textContent='+ Add to comparison list';}
+      renderSelectedPreview();
     }
   }
 }
@@ -731,6 +778,7 @@ function onBrandChange(){
   guidedSelectedRec=null;
   const addBtn=g('guided-add-btn');
   if(addBtn){addBtn.disabled=true;addBtn.textContent='+ Add to comparison list';}
+  renderSelectedPreview();
 }
 
 function populateModels(brand){
@@ -762,6 +810,7 @@ function onModelChange(){
   if(!val||!brand){
     guidedSelectedRec=null;
     if(addBtn){addBtn.disabled=true;addBtn.textContent='+ Add to comparison list';}
+    renderSelectedPreview();
     return;
   }
   const[model,mode]=val.split('|');
@@ -774,6 +823,51 @@ function onModelChange(){
     addBtn.disabled=true;
     addBtn.textContent='+ Add to comparison list';
   }
+  renderSelectedPreview();
+}
+
+/* ── Live spec preview for the model currently staged in Guided Selection.
+   Shows torque(s) at the current operating pressure plus flange/shaft data,
+   so the person sees the variant's full spec the moment they pick it —
+   before they even click "Add to comparison list". ── */
+function renderSelectedPreview(){
+  const box=g('sel-preview');
+  if(!guidedSelectedRec){
+    box.classList.remove('show');
+    return;
+  }
+  const rec=guidedSelectedRec;
+  const p=parseFloat(g('pressure').value);
+  const t=getAllTorques(rec,p);
+
+  g('sel-preview-title').textContent=rec.b+' '+rec.m;
+  g('sel-preview-mode').textContent=rec.mode==='DA'?'Double Acting':'Single Acting';
+
+  const items=[];
+  items.push(['Operating Pressure',p.toFixed(1).replace('.',',')+' bar']);
+  if(rec.mode==='DA'){
+    items.push(['Torque @ '+p.toFixed(1).replace('.',',')+' bar',fmt(t.da)]);
+  } else {
+    items.push(['Spring Config',t.msc||(t.hsc!=null?String(t.hsc):'—')]);
+    items.push(['Spring Torque @ 0°',fmt(t.s0)]);
+    items.push(['Spring Torque @ 90°',fmt(t.s90)]);
+    items.push(['Air Torque @ 0°',fmt(t.a0)]);
+    items.push(['Air Torque @ 90°',fmt(t.a90)]);
+  }
+  items.push(['ISO 5211 Flange',rec.fp||'—']);
+  items.push(['Shaft Width',rec.sw||'—']);
+
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  g('sel-preview-grid').innerHTML=items.map(([label,val])=>
+    '<div class="sel-preview-item"><label>'+esc(label)+'</label><span>'+esc(val)+'</span></div>'
+  ).join('');
+
+  const notes=[];
+  if(rec.fp_opt)notes.push('Optional flange: '+rec.fp_opt);
+  if(rec.sw_opt)notes.push('Optional shaft: '+rec.sw_opt);
+  g('sel-preview-note').textContent=notes.join(' · ');
+
+  box.classList.add('show');
 }
 
 // Guided Selection has no cap — every confirmed manufacturer/type/model pick
@@ -790,6 +884,7 @@ function addGuidedSelection(){
   guidedSelectedRec=null;
   const addBtn=g('guided-add-btn');
   if(addBtn){ addBtn.disabled=true; addBtn.textContent='+ Add to comparison list'; }
+  renderSelectedPreview();
 }
 
 /* ── Batch comparison (2+ entries) ── */
@@ -1105,12 +1200,15 @@ function exportMultiExcel(){
 
 function onPressure(el){
   g('pdisp').textContent=parseFloat(el.value).toFixed(1);
+  renderSelectedPreview();
+  renderEntriesList();
   refreshActiveResults();
 }
 
 /* ── Single call to action: build the 1:1 cross-reference for everything
    currently in entries[], against whichever manufacturers/pressure are set. ── */
 function findEquivalents(){
+  if(!entries.length) return;
   window.parent.postMessage({type:'cx8-gate'},'*');
 }
 
