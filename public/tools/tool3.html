@@ -777,7 +777,7 @@ html,body{max-width:100%;overflow-x:hidden;}
             <div class="summary-title" data-t="summary_title">Summary — valve torque specification</div>
             <div style="display:flex;gap:8px">
               <button class="btn-export" onclick="exportExcel()" data-t="btn_export">↓ Download Excel</button>
-              <button class="btn-export pdf" onclick="cx8OpenGate(exportPDF)" data-t="btn_export_pdf">↓ Download PDF</button>
+              <button class="btn-export pdf" onclick="exportPDF()" data-t="btn_export_pdf">↓ Download PDF</button>
             </div>
           </div>
           <table class="sum-table" id="sum-table">
@@ -805,21 +805,6 @@ html,body{max-width:100%;overflow-x:hidden;}
 </div><!-- end wrap -->
 
 <div id="tip-float"></div>
-
-<!-- ═══ CX8 REPORT EMAIL GATE (shared across tools) ═══ -->
-<div class="cx8-gate-overlay" id="cx8GateOverlay" onclick="cx8CloseGate(event)">
-  <div class="cx8-gate-modal" onclick="event.stopPropagation()">
-    <button class="cx8-gate-close" onclick="cx8CloseGate()" aria-label="Close">&times;</button>
-    <div class="cx8-gate-icon">&#128231;</div>
-    <div class="cx8-gate-title">Get your PDF report</div>
-    <div class="cx8-gate-sub">Enter your email — we'll prepare your PDF and send a copy to your inbox so you can find it again later.</div>
-    <input type="email" id="cx8GateEmail" class="cx8-gate-input" placeholder="you@company.com" onkeydown="if(event.key==='Enter')cx8SubmitGate();">
-    <div class="cx8-gate-err" id="cx8GateErr">Please enter a valid email address.</div>
-    <button class="cx8-gate-btn" id="cx8GateBtn" onclick="cx8SubmitGate()">&#8595; Download PDF</button>
-    <div class="cx8-gate-note">Your email is only used to deliver this report and isn't shared with third parties.</div>
-  </div>
-</div>
-
 
 <script>
 // ── FLOATING TOOLTIP ──
@@ -1474,67 +1459,43 @@ function doExport(){
 }
 
 
-// ══ CX8 REPORT EMAIL GATE — shared login/delivery flow ═══════════════════════
-// Every "Download PDF" button on this tool routes through this gate. The user
-// enters their email (this doubles as the lightweight "login"), we hand off to
-// the CX8 backend so it can create/find that user's account and email them the
-// same PDF from CX8's mail system, and — in parallel — we generate the PDF
-// client-side so the download starts immediately without waiting on the network.
-var cx8PendingReportFn = null;
+// ── PDF EXPORT — via jsPDF ──
+function exportPDF(){
+  if(typeof window.jspdf === 'undefined'){
+    loadJsPdf();
+  } else {
+    doExportPDF();
+  }
+}
 
-function cx8OpenGate(reportFn){
-  cx8PendingReportFn = reportFn;
-  var err = document.getElementById('cx8GateErr'); if(err) err.classList.remove('show');
-  var overlay = document.getElementById('cx8GateOverlay'); if(overlay) overlay.classList.add('open');
-  setTimeout(function(){ var e=document.getElementById('cx8GateEmail'); if(e) e.focus(); },100);
+function loadJsPdf(){
+  var sources = [
+    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+    'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js'
+  ];
+  var index = 0;
+  var tryNext = function(){
+    if(index >= sources.length){
+      alert('The PDF generator could not be loaded. Please check your internet connection or browser network blocking and try again.');
+      return;
+    }
+    var script = document.createElement('script');
+    script.src = sources[index++];
+    script.onload = function(){
+      if(typeof window.jspdf === 'undefined') tryNext();
+      else doExportPDF();
+    };
+    script.onerror = tryNext;
+    document.head.appendChild(script);
+  };
+  tryNext();
 }
-function cx8CloseGate(e){
-  if(e && e.target !== e.currentTarget) return;
-  var overlay = document.getElementById('cx8GateOverlay'); if(overlay) overlay.classList.remove('open');
-}
-function cx8SubmitGate(){
-  var emailEl = document.getElementById('cx8GateEmail');
-  var email = emailEl ? emailEl.value.trim() : '';
-  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-    var err = document.getElementById('cx8GateErr'); if(err) err.classList.add('show');
+
+function doExportPDF(){
+  if(!window.jspdf || !window.jspdf.jsPDF){
+    alert('The PDF generator is unavailable. Please try again.');
     return;
   }
-  var err2 = document.getElementById('cx8GateErr'); if(err2) err2.classList.remove('show');
-  var overlay = document.getElementById('cx8GateOverlay'); if(overlay) overlay.classList.remove('open');
-  if(cx8PendingReportFn) cx8PendingReportFn(email);
-}
-
-// ── Backend hook ─────────────────────────────────────────────────────────────
-// TODO(dev): point this at the real CX8 backend endpoint. It should:
-//   1. Create-or-find a CX8 account for `email` (this is the "login").
-//   2. Store/attach the generated PDF (pass `meta.pdfDataUri` or regenerate
-//      server-side from `meta.data`).
-//   3. Send the PDF to the user from CX8's backend mailer (not the browser).
-// Example:
-//   fetch('https://api.cx8motion.com/v1/reports/send', {
-//     method: 'POST',
-//     headers: {'Content-Type':'application/json'},
-//     body: JSON.stringify({ email: email, tool: meta.tool, filename: meta.filename,
-//                             pdfDataUri: meta.pdfDataUri, data: meta.data })
-//   });
-function cx8EmailReportToUser(email, meta){
-  console.log('[CX8 backend stub] would create/find account for', email,
-              'and email report:', meta && meta.tool, meta && meta.filename);
-}
-
-// ── PDF EXPORT — via jsPDF ──
-function exportPDF(email){
-  if(typeof window.jspdf === 'undefined'){
-    var script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    script.onload = function(){ doExportPDF(email); };
-    document.head.appendChild(script);
-  } else {
-    doExportPDF(email);
-  }
-}
-
-function doExportPDF(email){
   var jsPDF = window.jspdf.jsPDF;
   var doc = new jsPDF({unit:'pt', format:'a4'});
   doc.setProperties({title:'Valve Torque Profile', subject:'Valve torque profile report'});
@@ -1641,12 +1602,6 @@ function doExportPDF(email){
   var filename = 'Valve_Torque_Profile_Report.pdf';
   doc.save(filename);
 
-  cx8EmailReportToUser(email, {
-    tool: 'valve-torque-profile',
-    filename: filename,
-    pdfDataUri: doc.output('datauristring'),
-    data: { valveType: valveType, dn: dn, pn: pnDisplay, kv: kv, media: media, corrected: res.corrected }
-  });
 }
 
 // ══ TRANSLATIONS ═════════════════════════════════════════════════════
