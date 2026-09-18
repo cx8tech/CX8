@@ -21,7 +21,13 @@ export default async function handler(req, res) {
     if (error) return res.status(500).json({ error: 'Failed to fetch index' })
 
     return res.status(200).json({
-      data: data.map(row => ({ b: row.brand, m: row.record?.m, mode: row.mode })),
+      data: data.map(row => ({
+        b: row.brand,
+        m: row.record?.m,
+        mode: row.mode,
+        fp: row.record?.fp,
+        sw: row.record?.sw,
+      })),
     })
   }
 
