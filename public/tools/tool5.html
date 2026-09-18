@@ -518,7 +518,18 @@ function renderChips(){
 /* ── Init ── */
 
 function loadDatabase(records){
-  DB=Array.isArray(records)?records:[];
+  const nextDb=Array.isArray(records)?records:[];
+  const hasTorqueData=nextDb.some(r=>Array.isArray(r.da)||Array.isArray(r.springs));
+  const currentHasTorqueData=DB.some(r=>Array.isArray(r.da)||Array.isArray(r.springs));
+  if(!hasTorqueData&&currentHasTorqueData) return;
+  DB=nextDb;
+  entries=entries.map(entry=>{
+    const replacement=DB.find(r=>r.b===entry.rec?.b&&r.m===entry.rec?.m&&r.mode===entry.rec?.mode);
+    return replacement?{...entry,rec:replacement}:entry;
+  });
+  if(guidedSelectedRec){
+    guidedSelectedRec=DB.find(r=>r.b===guidedSelectedRec.b&&r.m===guidedSelectedRec.m&&r.mode===guidedSelectedRec.mode)||guidedSelectedRec;
+  }
   const brands=[...new Set(DB.map(r=>r.b))].sort();
   ['flt-brand','pick-brand'].forEach(id=>{
     const select=g(id);
