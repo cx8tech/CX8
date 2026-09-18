@@ -857,13 +857,13 @@ function renderSelectedPreview(){
   const items=[];
   items.push(['Operating Pressure',p.toFixed(1).replace('.',',')+' bar']);
   if(rec.mode==='DA'){
-    items.push(['Torque @ '+p.toFixed(1).replace('.',',')+' bar',t.da!=null?fmt(t.da):'Pro only']);
+    items.push(['Torque @ '+p.toFixed(1).replace('.',',')+' bar',fmt(t.da)]);
   } else {
     items.push(['Spring Config',t.msc||(t.hsc!=null?String(t.hsc):'—')]);
-    items.push(['Spring Torque @ 0°',t.s0!=null?fmt(t.s0):'Pro only']);
-    items.push(['Spring Torque @ 90°',t.s90!=null?fmt(t.s90):'Pro only']);
-    items.push(['Air Torque @ 0°',t.a0!=null?fmt(t.a0):'Pro only']);
-    items.push(['Air Torque @ 90°',t.a90!=null?fmt(t.a90):'Pro only']);
+    items.push(['Spring Torque @ 0°',fmt(t.s0)]);
+    items.push(['Spring Torque @ 90°',fmt(t.s90)]);
+    items.push(['Air Torque @ 0°',fmt(t.a0)]);
+    items.push(['Air Torque @ 90°',fmt(t.a90)]);
   }
   items.push(['ISO 5211 Flange',rec.fp||'—']);
   items.push(['Shaft Width',rec.sw||'—']);

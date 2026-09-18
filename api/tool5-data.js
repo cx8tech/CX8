@@ -11,8 +11,8 @@ const WINDOW_MS  = 60 * 60 * 1000  // 1 hour
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end()
 
-  // The public index contains only names and actuator types so visitors can
-  // explore the controls. Torque and comparison data remains Pro-only below.
+  // The public index contains the fields needed for model selection and the
+  // selected-model preview. Equivalent-result generation remains Pro-gated.
   if (req.query?.index === '1') {
     const { data, error } = await supabase
       .from('actuator_data')
@@ -27,6 +27,8 @@ export default async function handler(req, res) {
         mode: row.mode,
         fp: row.record?.fp,
         sw: row.record?.sw,
+        da: row.record?.da,
+        springs: row.record?.springs,
       })),
     })
   }
