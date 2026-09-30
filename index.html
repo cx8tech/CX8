@@ -56,7 +56,8 @@
             default: false,
             required: false,
             cookies: [/^_ga/, /^_ga_/],
-            onAccept: `
+            // A function (not a string) so Klaro doesn't need eval under the CSP
+            onAccept: function () {
               if (!window._cx8GaLoaded) {
                 window._cx8GaLoaded = true;
                 var s = document.createElement('script');
@@ -69,8 +70,7 @@
                 gtag('js', new Date());
                 gtag('config', 'G-XXXXXXXXXX', { anonymize_ip: true });
               }
-            `,
-            onDecline: ``
+            }
           }
         ]
       };

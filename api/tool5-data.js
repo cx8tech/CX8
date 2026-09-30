@@ -57,6 +57,10 @@ export default async function handler(req, res) {
       return res.status(429).json({ error: 'Preview limit reached. Please try again later.' })
     }
     await supabase.from('preview_rate_limits').insert({ visitor })
+    // Rows are only needed for the current window; prune now and then
+    if (Math.random() < 0.05) {
+      await supabase.from('preview_rate_limits').delete().lt('requested_at', windowStart)
+    }
 
     const { data, error } = await supabase
       .from('actuator_data')
