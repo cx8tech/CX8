@@ -91,8 +91,7 @@ img { max-width: 100%; display: block; }
 .auth-btn:hover:not(:disabled) { background: #0a7569; }
 .auth-btn:disabled { opacity: .6; cursor: not-allowed; }
 .auth-switch { font-size: 13px; color: var(--text2); text-align: center; }
-.auth-switch a { color: var(--teal2); font-weight: 500; }
-.auth-check { width: 52px; height: 52px; border-radius: 50%; background: var(--teal-bg); color: var(--teal2); font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+.auth-switch a { color: var(--teal2); font-weight: 500; }.auth-check { width: 52px; height: 52px; border-radius: 50%; background: var(--teal-bg); color: var(--teal2); font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
 .auth-back { display: block; text-align: center; margin-top: 20px; font-size: 13px; color: var(--teal2); font-weight: 500; }
 
 /* ── Hero ── */
@@ -716,6 +715,11 @@ img { max-width: 100%; display: block; }
 /* Two-button reply CTA */
 .ct-reply-cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .ct-reply-cta-btn-sec { background: transparent; border: 1.5px solid var(--teal2); color: var(--teal2); }
+
+/* ── Responsive: small laptop — make room for the account buttons ── */
+@media (max-width: 1200px) {
+  .hdr-user-email { display: none; }
+}
 
 /* ── Responsive: Tablet (≤1024px) ── */
 @media (max-width: 1024px) {

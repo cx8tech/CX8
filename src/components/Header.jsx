@@ -56,6 +56,8 @@ const IconX = () => (
   </svg>
 )
 
+const BILLING_PORTAL_URL = import.meta.env.VITE_LEMONSQUEEZY_PORTAL_URL || 'https://cx8technologies.lemonsqueezy.com/billing'
+
 const navItems = [
   { path: '/',           label: 'Home',      Icon: IconHome },
   { path: '/tools',      label: 'Tools',     Icon: IconTools },
@@ -69,12 +71,20 @@ export default function Header() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const [user, setUser] = useState(null)
+  const [isPro, setIsPro] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null))
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null))
     return () => subscription.unsubscribe()
   }, [])
+
+  // Pro users get a link to the LemonSqueezy customer portal (cancel, card, invoices)
+  useEffect(() => {
+    if (!user) { setIsPro(false); return }
+    supabase.from('profiles').select('plan').eq('id', user.id).single()
+      .then(({ data }) => setIsPro(data?.plan === 'pro'))
+  }, [user])
 
   const logout = async () => {
     await supabase.auth.signOut()
@@ -113,6 +123,7 @@ export default function Header() {
           {user ? (
             <>
               <span className="hdr-user-email">{user.email}</span>
+              {isPro && <a href={BILLING_PORTAL_URL} target="_blank" rel="noopener noreferrer" className="btn-login">Manage Subscription</a>}
               <button className="btn-login" onClick={logout}>Logout</button>
             </>
           ) : (
@@ -143,7 +154,10 @@ export default function Header() {
           ))}
           <div className="mobile-nav-auth">
             {user ? (
-              <button className="btn-login" style={{ flex: 1, textAlign: 'center' }} onClick={() => { logout(); close() }}>Logout</button>
+              <>
+                {isPro && <a href={BILLING_PORTAL_URL} target="_blank" rel="noopener noreferrer" className="btn-login" style={{ flex: 1, textAlign: 'center' }} onClick={close}>Manage Subscription</a>}
+                <button className="btn-login" style={{ flex: 1, textAlign: 'center' }} onClick={() => { logout(); close() }}>Logout</button>
+              </>
             ) : (
               <>
                 <Link to="/login" className="btn-login" onClick={close}>Login</Link>
