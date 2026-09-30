@@ -20,24 +20,34 @@ const IconPlay = () => (
   </svg>
 )
 
-function GateModal({ onClose, toolPath, user, isPaid }) {
+function GateModal({ onClose, toolPath, user, isPaid, reason }) {
   const navigate = useNavigate()
   const variantId = import.meta.env.VITE_LEMONSQUEEZY_VARIANT_ID
   const checkoutBaseUrl = import.meta.env.VITE_LEMONSQUEEZY_CHECKOUT_URL || `https://cx8technologies.lemonsqueezy.com/checkout/buy/${variantId}`
   const checkoutUrl = user
     ? `${checkoutBaseUrl}${checkoutBaseUrl.includes('?') ? '&' : '?'}checkout[email]=${encodeURIComponent(user.email)}&checkout[custom][user_id]=${user.id}`
     : null
+  const redirect = encodeURIComponent(toolPath)
 
   return (
     <div className="gate-overlay" onClick={onClose}>
       <div className="gate-modal" onClick={e => e.stopPropagation()}>
         <div className="gate-icon"><IconLock /></div>
-        {!user ? (
+        {reason === 'pdf' ? (
+          <>
+            <h2 className="gate-title">Log In to Download</h2>
+            <p className="gate-sub">Log in or create a free CX8 account to download your results as a PDF.</p>
+            <div className="gate-actions">
+              <Link to={`/login?redirect=${redirect}`} className="gate-btn-primary">Log In</Link>
+              <Link to={`/register?redirect=${redirect}`} className="gate-btn-secondary">Register for Free</Link>
+            </div>
+          </>
+        ) : !user ? (
           <>
             <h2 className="gate-title">Login Required</h2>
             <p className="gate-sub">Log in to access cross-reference results.</p>
             <div className="gate-actions">
-              <Link to={`/login?redirect=${encodeURIComponent(toolPath)}`} className="gate-btn-primary">Log In</Link>
+              <Link to={`/login?redirect=${redirect}`} className="gate-btn-primary">Log In</Link>
               <a href="https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg" target="_blank" rel="noopener noreferrer" className="gate-btn-secondary">
                 <IconPlay /> See How It Works
               </a>
@@ -69,6 +79,7 @@ export default function ToolViewer() {
   const location = useLocation()
   const tool = allTools.find(t => t.id === toolId)
   const [showGate, setShowGate] = useState(false)
+  const [gateReason, setGateReason] = useState(null)   // 'pdf' | null (Tool 5 results)
   const [user, setUser]         = useState(null)
   const iframeRef               = useRef(null)
   const indexCacheRef           = useRef(null)
@@ -172,7 +183,23 @@ export default function ToolViewer() {
   // ── Listen for messages from the tool iframe ──
   useEffect(() => {
     const handler = async (e) => {
+      if (e.source !== iframeRef.current?.contentWindow) return
+
+      // PDF downloads (Tools 3, 4, 6) require a logged-in user
+      if (e.data?.type === 'cx8-pdf-request') {
+        const { data: { session } } = await supabase.auth.getSession()
+        setUser(session?.user ?? null)
+        if (session) {
+          e.source.postMessage({ type: 'cx8-pdf-allowed' }, window.location.origin)
+        } else {
+          setGateReason('pdf')
+          setShowGate(true)
+        }
+        return
+      }
+
       if (e.data?.type !== 'cx8-gate') return
+      setGateReason(null)
       // Re-fetch session so user is always fresh when the gate opens
       const { data: { session } } = await supabase.auth.getSession()
       const currentUser = session?.user ?? null
@@ -207,7 +234,7 @@ export default function ToolViewer() {
 
   return (
     <div className="tool-viewer">
-      {showGate && <GateModal onClose={() => setShowGate(false)} toolPath={location.pathname} user={user} isPaid={isPaid} />}
+      {showGate && <GateModal onClose={() => setShowGate(false)} toolPath={location.pathname} user={user} isPaid={isPaid} reason={gateReason} />}
       <div className="tool-viewer-bar">
         <Link to="/tools" className="tool-back-btn">
           <IconBack /> Back to Tools

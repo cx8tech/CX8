@@ -1740,8 +1740,20 @@ function finishProject(){
     alert('Add at least one valve assembly before downloading your project PDF.');
     return;
   }
-  generateProjectPDF();
+  cx8RequireLogin(generateProjectPDF);
 }
+
+// ══ PDF LOGIN GATE — the CX8 site checks the session before any download ═════
+var cx8PendingPdf = null;
+function cx8RequireLogin(fn){
+  if(window.parent === window){ window.location.href = '/login?redirect=' + encodeURIComponent('/tools/actuator-sizing'); return; }
+  cx8PendingPdf = fn;
+  window.parent.postMessage({type:'cx8-pdf-request'}, window.location.origin);
+}
+window.addEventListener('message', function(e){
+  if(e.source !== window.parent || !e.data || e.data.type !== 'cx8-pdf-allowed' || !cx8PendingPdf) return;
+  var fn = cx8PendingPdf; cx8PendingPdf = null; fn();
+});
 
 // ══ PDF EXPORT — via jsPDF (matches the other CX8 tools) ══════════════════════
 function generateProjectPDF(){

@@ -1,9 +1,12 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 export default function Register() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const redirect = new URLSearchParams(location.search).get('redirect')
+  const loginPath = redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login'
   const [form, setForm] = useState({ email: '', password: '', confirm: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -92,7 +95,7 @@ export default function Register() {
         </form>
 
         <p className="auth-switch">
-          Already have an account? <Link to="/login">Log in</Link>
+          Already have an account? <Link to={loginPath}>Log in</Link>
         </p>
       </div>
     </div>

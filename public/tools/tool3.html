@@ -776,7 +776,6 @@ html,body{max-width:100%;overflow-x:hidden;}
           <div class="summary-hdr">
             <div class="summary-title" data-t="summary_title">Summary — valve torque specification</div>
             <div style="display:flex;gap:8px">
-              <button class="btn-export" onclick="exportExcel()" data-t="btn_export">↓ Download Excel</button>
               <button class="btn-export pdf" onclick="exportPDF()" data-t="btn_export_pdf">↓ Download PDF</button>
             </div>
           </div>
@@ -1338,134 +1337,28 @@ function buildSummary(res, kv, dn, pn, dp, media, tempStr){
   }).join('');
 }
 
-// ── EXCEL EXPORT — proper .xlsx via SheetJS ──
-function exportExcel(){
-  // Load SheetJS if not already loaded
-  if(typeof XLSX === 'undefined'){
-    var script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-    script.onload = function(){ doExport(); };
-    document.head.appendChild(script);
-  } else {
-    doExport();
-  }
+
+// ── PDF LOGIN GATE — the CX8 site checks the session before any download ──
+var cx8PendingPdf = null;
+function cx8RequireLogin(fn){
+  if(window.parent === window){ window.location.href = '/login?redirect=' + encodeURIComponent('/tools/valve-torque'); return; }
+  cx8PendingPdf = fn;
+  window.parent.postMessage({type:'cx8-pdf-request'}, window.location.origin);
 }
-
-function doExport(){
-  var vals = getVals(lastT);
-  var res  = getCorrectedBTO();
-  var dn   = g('dn-input').value  || '';
-  var pn   = g('pn-input').value  || '';
-  var kv   = g('kv-input').value  || '';
-  var media = g('media-select') ? (g('media-select').value || '') : '';
-  var temp  = g('temp-input').value || '';
-  var tempU = g('temp-unit').value;
-
-  // PN prefix
-  var pnDisplay = pn;
-  if (pn && !pn.toUpperCase().match(/^(PN|CLASS|CL)/)) pnDisplay = 'PN ' + pn;
-
-  // Always export temp in °C
-  var tempC = temp ? (tempU === 'F' ? String(((parseFloat(temp)-32)*5/9).toFixed(1)) : temp) : '';
-
-  // Number formatter — comma decimal for German, dot for EN/TR
-  function ef1(v){ return parseFloat(parseFloat(v).toFixed(1)); } // return number so Excel formats it
-  function ef2(v){ return parseFloat(parseFloat(v).toFixed(2)); }
-
-  // ── Header row ──
-  var header = [
-    'Serial No.',
-    'Valve Size (DN/inch)',
-    'Kv (m3/h)',
-    'PN - Nominal Pressure (bar)',
-    'Operating Temperature (deg C)',
-    'Base Torque (Nm)',
-    'BTO, 0deg (Nm)',
-    'RTO, 45deg (Nm)',
-    'ETO, 90deg (Nm)',
-    'BTC, 90deg (Nm)',
-    'RTC, 45deg (Nm)',
-    'ETC, 0deg - Reseating Torque (Nm)',
-    'Media / Fluid',
-    'Valve Type',
-    'Factor of Safety',
-  ];
-
-  // ── Data row — numbers as numbers so Excel auto-formats ──
-  var dataRow = [
-    1,
-    dn ? 'DN ' + dn : '',
-    kv ? parseFloat(kv) : '',
-    pnDisplay || '',
-    tempC ? parseFloat(tempC) : '',
-    ef1(res.base),
-    ef1(vals.bto),
-    ef1(vals.rto),
-    ef1(vals.eto),
-    ef1(vals.btc),
-    ef1(vals.rtc),
-    ef1(vals.etc),
-    media || '',
-    valveType === 'ball' ? 'Ball Valve' : 'Butterfly Valve',
-    ef2(res.combined),
-  ];
-
-  // ── Notes row ──
-  var noteRow = [
-    '', '', '', '', '',
-    'Corrected BTO: ' + ef1(res.corrected) + ' Nm',
-    OVERRIDES.bto!==undefined?'* Overridden':'Ratio 1.00x',
-    OVERRIDES.rto!==undefined?'* Overridden':'Ratio 0.40x',
-    OVERRIDES.eto!==undefined?'* Overridden':'Ratio 0.60x',
-    OVERRIDES.btc!==undefined?'* Overridden':'Ratio 0.75x',
-    OVERRIDES.rtc!==undefined?'* Overridden':'Ratio 0.40x',
-    OVERRIDES.etc!==undefined?'* Overridden':'Ratio 0.80x',
-    '', '',
-    LANG==='de' ? 'Sicherheitsfaktor' : LANG==='tr' ? 'Guvenlik Faktoru' : 'Safety Factor',
-  ];
-
-  // Build worksheet data array
-  var wsData = [
-    ['CX8 Technologies - Valve Torque Profile'],
-    ['Generated: ' + new Date().toLocaleDateString()],
-    [],
-    header,
-    dataRow,
-  ];
-
-  var ws = XLSX.utils.aoa_to_sheet(wsData);
-
-  // Column widths
-  ws['!cols'] = [
-    {wch:10}, {wch:18}, {wch:10}, {wch:24}, {wch:22},
-    {wch:16}, {wch:14}, {wch:14}, {wch:14},
-    {wch:14}, {wch:14}, {wch:30},
-    {wch:16}, {wch:14}, {wch:16},
-  ];
-
-  // Bold the header row (row index 3 = row 4)
-  var range = XLSX.utils.decode_range(ws['!ref']);
-  for(var C = range.s.c; C <= range.e.c; C++){
-    var hdrCell = XLSX.utils.encode_cell({r:3, c:C});
-    if(ws[hdrCell]){
-      ws[hdrCell].s = { font: { bold: true } };
-    }
-  }
-
-  var wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Torque Profile');
-
-  XLSX.writeFile(wb, 'CX8_Valve_Torque_Profile.xlsx');
-}
-
+window.addEventListener('message', function(e){
+  if(e.source !== window.parent || !e.data || e.data.type !== 'cx8-pdf-allowed' || !cx8PendingPdf) return;
+  var fn = cx8PendingPdf; cx8PendingPdf = null; fn();
+});
 
 // ── PDF EXPORT — via jsPDF ──
 function exportPDF(){
-  if(typeof window.jspdf === 'undefined'){
-    loadJsPdf();
-  } else {
-    doExportPDF();
-  }
+  cx8RequireLogin(function(){
+    if(typeof window.jspdf === 'undefined'){
+      loadJsPdf();
+    } else {
+      doExportPDF();
+    }
+  });
 }
 
 function loadJsPdf(){
@@ -1670,7 +1563,6 @@ var T = {
     btn_reset:          'Reset to ratio',
     btn_close:          'Close',
     summary_title:      'Summary — valve torque specification',
-    btn_export:         '↓ Download Excel',
     // SF descriptions
     sf_temp_desc:       ['Ambient — no temperature correction needed','Slightly elevated — minor correction','High temp (100–180°C) — moderate correction','Very high temp (>180°C) — significant correction'],
     sf_other_desc:      ['Minimal — clean service, known media','Industry standard minimum safety factor','Conservative — abrasive / viscous media or long intervals','High — very uncertain or aggressive service conditions'],
@@ -1744,7 +1636,6 @@ var T = {
     btn_reset:          'Auf Verhältnis zurücksetzen',
     btn_close:          'Schließen',
     summary_title:      'Zusammenfassung — Ventil-Drehmomenspezifikation',
-    btn_export:         '↓ Excel herunterladen',
     sf_temp_desc:       ['Umgebung — keine Temperaturkorrektur','Leicht erhöht — geringfügige Korrektur','Hohe Temp (100–180°C) — moderate Korrektur','Sehr hohe Temp (>180°C) — erhebliche Korrektur'],
     sf_other_desc:      ['Minimal — sauberes Medium, bekanntes Fluid','Branchenüblicher Mindestsicherheitsfaktor','Konservativ — abrasives / viskoses Medium oder lange Intervalle','Hoch — sehr ungewisse oder aggressive Bedingungen'],
     sum_labels:         ['Ventiltyp','DN / NPS','Druckklasse','Kv (vollständig geöffnet)','Medium / Fluid','Betriebstemperatur','ΔP (Nenndrehmoment)','Basis-BTO (Datenblatt)','Temperaturfaktor','Sicherheitsfaktor (Andere)','Kombinierter Sicherheitsfaktor','Korrigiertes BTO','BTO — Öffnungsmoment (0°)','RTO — Laufmoment öffnen (45°)','ETO — Endmoment offen (90°)','BTC — Schließmoment (90°)','RTC — Laufmoment schließen (45°)','ETC — Endmoment geschlossen (0°)'],
@@ -1816,7 +1707,6 @@ var T = {
     btn_reset:          'Orana sıfırla',
     btn_close:          'Kapat',
     summary_title:      'Özet — vana tork spesifikasyonu',
-    btn_export:         '↓ Excel indir',
     sf_temp_desc:       ['Ortam — sıcaklık düzeltmesi gerekmez','Hafif yükselmiş — küçük düzeltme','Yüksek sıcaklık (100–180°C) — orta düzeltme','Çok yüksek sıcaklık (>180°C) — önemli düzeltme'],
     sf_other_desc:      ['Minimal — temiz servis, bilinen akışkan','Sektör standardı minimum güvenlik faktörü','Muhafazakâr — aşındırıcı / viskoz akışkan veya uzun aralıklar','Yüksek — çok belirsiz veya agresif servis koşulları'],
     sum_labels:         ['Vana tipi','DN / NPS','Basınç sınıfı','Kv (tam açık)','Akışkan / Medya','Çalışma sıcaklığı','ΔP (nominal tork)','Baz BTO (veri sayfası)','Sıcaklık faktörü','Güvenlik faktörü (diğer)','Birleşik güvenlik faktörü','Düzeltilmiş BTO','BTO — Açılış kırılma torku (0°)','RTO — Açılış çalışma torku (45°)','ETO — Açık son tork (90°)','BTC — Kapanış kırılma torku (90°)','RTC — Kapanış çalışma torku (45°)','ETC — Kapalı son tork (0°)'],

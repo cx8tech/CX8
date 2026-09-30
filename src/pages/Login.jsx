@@ -67,7 +67,7 @@ export default function Login() {
         </form>
 
         <p className="auth-switch">
-          Don't have an account? <Link to="/register">Sign up free</Link>
+          Don't have an account? <Link to={redirect === '/' ? '/register' : `/register?redirect=${encodeURIComponent(redirect)}`}>Sign up free</Link>
         </p>
       </div>
     </div>
