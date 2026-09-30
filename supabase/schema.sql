@@ -64,9 +64,13 @@ create policy "anon_insert"
   to anon
   with check (true);
 
--- Only authenticated users (admins) can view submissions
-create policy "auth_read"
-  on public.supplier_submissions
-  for select
-  to authenticated
-  using (true);
+-- No read policy: every registered user is "authenticated", so a read
+-- policy would expose all submissions. View them in the Supabase dashboard.
+drop policy if exists "auth_read" on public.supplier_submissions;
+
+-- ── Profiles (table created in the dashboard) ──
+-- Users may read their own row but never update it: `plan` is set only by
+-- /api/lemonsqueezy-webhook with the service-role key. An update policy
+-- would let anyone set their own plan to 'pro'.
+drop policy if exists "Users can update own profile" on public.profiles;
+drop policy if exists "users can update own profile" on public.profiles;
