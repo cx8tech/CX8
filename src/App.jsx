@@ -6,6 +6,7 @@ import Tools from './pages/Tools'
 import ToolViewer from './pages/ToolViewer'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ResetPassword from './pages/ResetPassword'
 import Suppliers from './pages/Suppliers'
 import Community from './pages/Community'
 import CommunityThread from './pages/CommunityThread'
@@ -32,6 +33,7 @@ function AppLayout() {
           <Route path="/tools/:toolId" element={<ToolViewer />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/suppliers" element={<Suppliers />} />
           <Route path="/community" element={<Community />} />
           <Route path="/community/:threadId" element={<CommunityThread />} />
