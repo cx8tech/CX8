@@ -18,20 +18,32 @@ create table if not exists public.actuator_data (
 create index if not exists actuator_data_brand_idx on public.actuator_data (brand);
 create index if not exists actuator_data_mode_idx  on public.actuator_data (mode);
 
--- Row Level Security: only authenticated users can read.
--- When payment is live, tighten to: auth.uid() in (
---   select id from profiles where is_paid = true
--- )
+-- Row Level Security with no policies: the table is unreadable with the
+-- public anon key, even for logged-in users. All access goes through
+-- /api/tool5-data, which uses the service-role key and enforces the
+-- Pro check and rate limits.
 alter table public.actuator_data enable row level security;
 
-create policy "authenticated_read"
-  on public.actuator_data
-  for select
-  to authenticated
-  using (true);
+drop policy if exists "authenticated_read" on public.actuator_data;
 
 -- No public inserts / updates / deletes — data is seeded
 -- only via the service-role key (scripts/seed-tool5.js).
+
+-- ── Tool 5 free-preview rate limiting ──
+-- One row per single-model lookup from /api/tool5-data. `visitor` is a
+-- keyed hash of the requester's IP (no raw IPs stored). RLS is enabled with
+-- no policies, so only the service-role API can read or write it.
+
+create table if not exists public.preview_rate_limits (
+  id            bigserial   primary key,
+  visitor       text        not null,
+  requested_at  timestamptz not null default now()
+);
+
+create index if not exists preview_rate_limits_visitor_idx
+  on public.preview_rate_limits (visitor, requested_at);
+
+alter table public.preview_rate_limits enable row level security;
 
 -- ── Supplier listing submissions (Get Listed form) ──
 

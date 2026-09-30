@@ -545,6 +545,28 @@ function loadDatabase(records){
   renderEntriesList();
 }
 
+/* ── Per-model detail for the free preview. The public index only has names;
+   torque/flange/shaft data is fetched one model at a time and merged into
+   the record in place (Pro users already have the full dataset). ── */
+const detailRequests={};
+function ensureDetail(rec){
+  if(!rec||Array.isArray(rec.da)||Array.isArray(rec.springs)) return;
+  const key=rec.b+'|'+rec.m+'|'+rec.mode;
+  if(detailRequests[key]) return;
+  detailRequests[key]=fetch('/api/tool5-data?'+new URLSearchParams({brand:rec.b,model:rec.m,mode:rec.mode}))
+    .then(r=>{
+      if(r.status===429) showEntriesNote('Preview limit reached. Please try again later.');
+      return r.ok?r.json():null;
+    })
+    .then(json=>{
+      if(!json?.data){ delete detailRequests[key]; return; }
+      Object.assign(rec,json.data);
+      renderSelectedPreview();
+      renderEntriesList();
+    })
+    .catch(()=>{ delete detailRequests[key]; });
+}
+
 window.addEventListener('message',e=>{
   if(e.data?.type==='cx8-data'&&Array.isArray(e.data.db)) loadDatabase(e.data.db);
   if(e.data?.type==='cx8-index'&&Array.isArray(e.data.db)) loadDatabase(e.data.db);
@@ -689,6 +711,7 @@ function confirmEntry(rec,rawText,fuzzy){
     return;
   }
   entries.push({inputText:rawText||(rec.b+' '+rec.m), rec, fuzzy:!!fuzzy});
+  ensureDetail(rec);
   g('search-input').value='';
   closeSug();
   syncEntries();
@@ -826,6 +849,7 @@ function onModelChange(){
   }
   const[model,mode]=val.split('|');
   guidedSelectedRec=DB.find(r=>r.b===brand&&r.m===model&&r.mode===mode);
+  ensureDetail(guidedSelectedRec);
   if(guidedSelectedRec&&addBtn){
     const already=entries.some(e=>e.rec&&e.rec.b===guidedSelectedRec.b&&e.rec.m===guidedSelectedRec.m&&e.rec.mode===guidedSelectedRec.mode);
     addBtn.textContent=already?'Already in list':'+ Add to comparison list';
