@@ -71,6 +71,31 @@ function GateModal({ onClose, toolPath, user, isPaid, reason }) {
   )
 }
 
+// Shown after returning from checkout while the payment webhook catches up
+function ConfirmPaymentModal({ timedOut }) {
+  return (
+    <div className="gate-overlay">
+      <div className="gate-modal">
+        <div className="gate-icon"><IconLock /></div>
+        {timedOut ? (
+          <>
+            <h2 className="gate-title">Payment Still Processing</h2>
+            <p className="gate-sub">Your payment is taking longer than usual to confirm. Please refresh this page in a minute. If Tool 5 is still locked, email us at sales@cx8motion.com.</p>
+            <div className="gate-actions">
+              <button className="gate-btn-primary" onClick={() => window.location.reload()}>Refresh Page</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="gate-title">Confirming Your Payment…</h2>
+            <p className="gate-sub">Thanks for upgrading! This usually takes under a minute. Your results will appear automatically.</p>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // Tool 5 is the only tool with a protected dataset
 const DATA_TOOL_ID = 'actuator-cross-reference'
 
@@ -86,9 +111,15 @@ export default function ToolViewer() {
   const dbCacheRef              = useRef(null)   // holds fetched actuator data
   const iframeReadyRef          = useRef(false)  // true once iframe fires onLoad
   const pendingResultsRef        = useRef(false)
+  const navigate                = useNavigate()
 
   const isDataTool = toolId === DATA_TOOL_ID
   const [isPaid, setIsPaid] = useState(false)
+
+  // LemonSqueezy's "back to tool" button links to ?paid=1. The webhook that
+  // upgrades the account can arrive after the user does, so wait for it.
+  const checkoutReturnRef = useRef(isDataTool && new URLSearchParams(location.search).has('paid'))
+  const [confirming, setConfirming] = useState(null)   // 'waiting' | 'timeout' | null
 
   // ── Track auth state ──
   useEffect(() => {
@@ -123,6 +154,34 @@ export default function ToolViewer() {
         if (paid) setShowGate(false)
       })
   }, [user, isDataTool])
+
+  // ── After checkout: poll until the webhook has upgraded the account ──
+  useEffect(() => {
+    if (!checkoutReturnRef.current || !user) return
+
+    const finish = () => {
+      checkoutReturnRef.current = false
+      setConfirming(null)
+      navigate(location.pathname, { replace: true })
+    }
+    if (isPaid) { finish(); return }
+
+    setConfirming('waiting')
+    let tries = 0
+    const timer = setInterval(async () => {
+      tries++
+      const { data } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
+      if (data?.plan === 'pro') {
+        clearInterval(timer)
+        pendingResultsRef.current = true
+        setIsPaid(true)
+      } else if (tries >= 40) {   // ~2 minutes
+        clearInterval(timer)
+        setConfirming('timeout')
+      }
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [user, isPaid])
 
   // ── Fetch dataset when user is authenticated and paid ──
   useEffect(() => {
@@ -214,6 +273,12 @@ export default function ToolViewer() {
           if (dbCacheRef.current) pushDataToIframe()
           return
         }
+        // Just paid but the upgrade hasn't landed yet: the confirmation
+        // poll will show the results instead of asking them to pay again
+        if (checkoutReturnRef.current) {
+          pendingResultsRef.current = true
+          return
+        }
       }
       setShowGate(true)
     }
@@ -234,6 +299,7 @@ export default function ToolViewer() {
 
   return (
     <div className="tool-viewer">
+      {confirming && <ConfirmPaymentModal timedOut={confirming === 'timeout'} />}
       {showGate && <GateModal onClose={() => setShowGate(false)} toolPath={location.pathname} user={user} isPaid={isPaid} reason={gateReason} />}
       <div className="tool-viewer-bar">
         <Link to="/tools" className="tool-back-btn">

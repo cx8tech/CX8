@@ -543,6 +543,7 @@ function loadDatabase(records){
   });
   if(g('flt-brand').value) onBrandChange();
   renderEntriesList();
+  restorePendingCompare();
 }
 
 /* ── Per-model detail for the free preview. The public index only has names;
@@ -570,7 +571,7 @@ function ensureDetail(rec){
 window.addEventListener('message',e=>{
   if(e.data?.type==='cx8-data'&&Array.isArray(e.data.db)) loadDatabase(e.data.db);
   if(e.data?.type==='cx8-index'&&Array.isArray(e.data.db)) loadDatabase(e.data.db);
-  if(e.data?.type==='cx8-run-results') runMultiCompare();
+  if(e.data?.type==='cx8-run-results'){ runMultiCompare(); clearPendingCompare(); }
   if(e.data?.type==='cx8-clear-data'){
     DB=[];
     entries=[];
@@ -1242,6 +1243,49 @@ function onPressure(el){
    currently in entries[], against whichever manufacturers/pressure are set. ── */
 function findEquivalents(){
   if(!entries.length) return;
+  savePendingCompare();
+  window.parent.postMessage({type:'cx8-gate'},'*');
+}
+
+/* ── Keep the comparison across the login / checkout round-trip. Saved when
+   "Find Equivalents" is clicked, restored once the database loads, and
+   cleared once results have been shown. ── */
+const PENDING_KEY='cx8-tool5-pending';
+const PENDING_MAX_AGE=60*60*1000; // 1 hour
+let pendingChecked=false;
+
+function savePendingCompare(){
+  try{
+    localStorage.setItem(PENDING_KEY,JSON.stringify({
+      at:Date.now(),
+      pressure:g('pressure').value,
+      brands:inclBrands,
+      entries:entries.filter(e=>e.rec).map(e=>({b:e.rec.b,m:e.rec.m,mode:e.rec.mode,inputText:e.inputText,fuzzy:e.fuzzy}))
+    }));
+  }catch(e){}
+}
+function clearPendingCompare(){
+  try{ localStorage.removeItem(PENDING_KEY); }catch(e){}
+}
+function restorePendingCompare(){
+  if(pendingChecked||!DB.length) return;
+  pendingChecked=true;
+  let saved=null;
+  try{ saved=JSON.parse(localStorage.getItem(PENDING_KEY)||'null'); }catch(e){}
+  if(!saved||Date.now()-saved.at>PENDING_MAX_AGE){ clearPendingCompare(); return; }
+  if(entries.length) return;
+
+  saved.entries.forEach(s=>{
+    const rec=DB.find(r=>r.b===s.b&&r.m===s.m&&r.mode===s.mode);
+    if(rec){ entries.push({inputText:s.inputText,rec,fuzzy:s.fuzzy}); ensureDetail(rec); }
+  });
+  if(!entries.length){ clearPendingCompare(); return; }
+  inclBrands=(saved.brands||[]).filter(b=>DB.some(r=>r.b===b));
+  renderChips();
+  g('pressure').value=saved.pressure;
+  g('pdisp').textContent=parseFloat(saved.pressure).toFixed(1);
+  syncEntries();
+  // Ask again — the site shows results if the user now has access
   window.parent.postMessage({type:'cx8-gate'},'*');
 }
 
