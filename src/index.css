@@ -617,6 +617,31 @@ img { max-width: 100%; display: block; }
 .gate-btn-secondary svg { width: 15px; height: 15px; }
 .gate-btn-home { background: none; border: none; color: var(--text3); font-size: 12.5px; cursor: pointer; padding: 4px; transition: color .15s; }
 .gate-btn-home:hover { color: var(--teal2); }
+.gate-btn-primary:disabled, .gate-btn-secondary:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Tool 5 pay-per-query / regular-user modal ── */
+.pay-overlay { overflow-y: auto; align-items: flex-start; }
+.pay-modal { margin: auto 0; }
+.pay-modal-wide { max-width: 640px; }
+.pay-price { font-size: 16px; color: var(--text); margin-bottom: 14px; }
+.pay-price strong { font-family: var(--display); font-size: 22px; color: var(--teal2); }
+.pay-usage { margin-bottom: 22px; }
+.pay-note { font-size: 12.5px; color: var(--text3); line-height: 1.55; margin-bottom: 12px; }
+.pay-consent { display: flex; gap: 10px; align-items: flex-start; text-align: left; font-size: 12px; color: var(--text2); line-height: 1.5; margin: 6px 0 16px; cursor: pointer; }
+.pay-consent input { margin-top: 2px; flex-shrink: 0; width: 16px; height: 16px; accent-color: var(--teal2); }
+.pay-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; text-align: left; }
+.pay-option { display: flex; flex-direction: column; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 18px 16px; }
+.pay-option-featured { border-color: var(--teal2); background: var(--teal-bg); }
+.pay-option-name { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.pay-option-price { font-family: var(--display); font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.pay-option-price span { font-size: 13px; font-weight: 500; color: var(--text3); }
+.pay-option-list { list-style: none; padding: 0; margin: 0 0 6px; font-size: 12.5px; color: var(--text2); line-height: 1.8; }
+.pay-option-list li::before { content: '✓  '; color: var(--teal2); font-weight: 700; }
+.pay-option .pay-consent { margin-top: auto; padding-top: 10px; }
+.pay-error { margin-bottom: 12px; text-align: left; }
+@media (max-width: 640px) {
+  .pay-options { grid-template-columns: 1fr; }
+}
 
 /* ── Coming soon ── */
 .coming-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 32px; text-align: center; min-height: 400px; }

@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import { createClient } from '@supabase/supabase-js'
+import { RERUN_WINDOW_MS } from './_lib/common.js'
 
 export const config = {
   api: { bodyParser: false },
@@ -40,6 +41,29 @@ export default async function handler(req, res) {
   const attrs = event.data?.attributes ?? {}
 
   if (!userId) return res.status(400).json({ error: 'No user_id in custom data' })
+
+  // Pay-per-query orders carry the comparison job they pay for. They unlock
+  // that job's models for 24 hours and never change the user's plan.
+  const jobId = event.meta?.custom_data?.job_id
+  if (jobId) {
+    let jobUpdate = null
+    if (eventName === 'order_created' && attrs.status === 'paid') {
+      const paidAt = new Date()
+      jobUpdate = {
+        status: 'paid',
+        order_id: String(event.data?.id),
+        paid_at: paidAt.toISOString(),
+        expires_at: new Date(paidAt.getTime() + RERUN_WINDOW_MS).toISOString(),
+      }
+    } else if (eventName === 'order_refunded' && attrs.status === 'refunded') {
+      jobUpdate = { status: 'refunded' }
+    }
+    if (jobUpdate) {
+      const { error } = await supabase.from('comparison_jobs').update(jobUpdate).eq('id', jobId).eq('user_id', userId)
+      if (error) return res.status(500).json({ error: 'Failed to update job' })
+    }
+    return res.status(200).json({ received: true })
+  }
 
   let update = null
 

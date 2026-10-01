@@ -45,6 +45,30 @@ create index if not exists preview_rate_limits_visitor_idx
 
 alter table public.preview_rate_limits enable row level security;
 
+-- ── Tool 5 pay-per-query jobs ──
+-- One row per checkout for a set of models (€2 each). The LemonSqueezy
+-- webhook marks it paid; paid models can be re-run for 24 hours
+-- (expires_at). Paid rows this month drive the regular-user page.
+-- Only the service-role API reads or writes it (RLS, no policies).
+
+create table if not exists public.comparison_jobs (
+  id            uuid        primary key default gen_random_uuid(),
+  user_id       uuid        not null references auth.users (id) on delete cascade,
+  models        jsonb       not null,
+  model_count   int         not null,
+  amount_cents  int         not null,
+  status        text        not null default 'pending' check (status in ('pending', 'paid', 'refunded')),
+  order_id      text,
+  created_at    timestamptz not null default now(),
+  paid_at       timestamptz,
+  expires_at    timestamptz
+);
+
+create index if not exists comparison_jobs_user_idx
+  on public.comparison_jobs (user_id, status, paid_at);
+
+alter table public.comparison_jobs enable row level security;
+
 -- ── Supplier listing submissions (Get Listed form) ──
 
 create table if not exists public.supplier_submissions (

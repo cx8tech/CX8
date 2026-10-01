@@ -455,13 +455,6 @@ function getSpringRow(rec,p){
   return rec.springs.reduce((a,b)=>b.hsc<a.hsc?b:a);
 }
 
-/* SA sizing ref = Spring 0° at best spring row; DA = air torque at P */
-function getRefTorque(rec,p){
-  if(rec.mode==='DA') return interp(rec.da,p);
-  const sp=getSpringRow(rec,p);
-  return sp&&sp.s0?sp.s0:null;
-}
-
 function getAllTorques(rec,p){
   if(rec.mode==='DA') return{da:interp(rec.da,p)};
   const sp=getSpringRow(rec,p);
@@ -569,9 +562,13 @@ function ensureDetail(rec){
 }
 
 window.addEventListener('message',e=>{
-  if(e.data?.type==='cx8-data'&&Array.isArray(e.data.db)) loadDatabase(e.data.db);
+  if(e.source!==window.parent) return;
   if(e.data?.type==='cx8-index'&&Array.isArray(e.data.db)) loadDatabase(e.data.db);
-  if(e.data?.type==='cx8-run-results'){ runMultiCompare(); clearPendingCompare(); }
+  if(e.data?.type==='cx8-results'&&Array.isArray(e.data.pairs)){
+    showCompareResults(e.data.pairs,e.data.pressure);
+    clearPendingCompare();
+  }
+  if(e.data?.type==='cx8-compare-error') showEntriesNote(e.data.message||'Something went wrong. Please try again.');
   if(e.data?.type==='cx8-clear-data'){
     DB=[];
     entries=[];
@@ -926,30 +923,39 @@ function addGuidedSelection(){
 // the same compare-against-manufacturers preference as the main search, and
 // always comparing within the same actuator type (DA vs SA are not drop-in
 // equivalents for each other).
-function findBestEquivalent(rec,p){
-  const refT=getRefTorque(rec,p);
-  if(!refT) return null;
-  let pool=DB.filter(r=>!(r.b===rec.b&&r.m===rec.m&&r.mode===rec.mode)&&r.mode===rec.mode);
-  if(inclBrands.length>0) pool=pool.filter(r=>inclBrands.includes(r.b));
-  const scored=pool.map(r=>{
-    const t=getRefTorque(r,p);
-    if(!t||t<=0) return null;
-    const diff=Math.abs(t-refT)/refT;
-    const score=t>=refT?diff:diff+0.5;
-    return{rec:r,refT:t,diff,score};
-  }).filter(Boolean);
-  scored.sort((a,b)=>a.score-b.score);
-  return scored.length?{...scored[0],refTorque:refT}:null;
+// Matching runs on the server (the browser never has the full dataset).
+// The CX8 site sends the request with the user's login and replies with
+// cx8-results, or shows the payment / login prompt instead.
+let compareTimer=null;
+function runMultiCompare(){
+  clearTimeout(compareTimer);
+  compareTimer=setTimeout(requestCompare,350); // debounce pressure-slider changes
+}
+function requestCompare(){
+  const models=entries.filter(e=>e.rec).map(e=>({b:e.rec.b,m:e.rec.m,mode:e.rec.mode}));
+  if(!models.length) return;
+  window.parent.postMessage({type:'cx8-compare',request:{
+    models, pressure:parseFloat(g('pressure').value), brands:inclBrands
+  }},window.location.origin);
 }
 
-function runMultiCompare(){
-  if(!entries.length) return;
-  const p=parseFloat(g('pressure').value);
-  const pairs=entries.map(entry=>{
-    if(!entry.rec) return {inputText:entry.inputText,rec:null,equivalent:null};
-    const equivalent=findBestEquivalent(entry.rec,p);
-    return {inputText:entry.inputText,rec:entry.rec,fuzzy:entry.fuzzy,equivalent,refTorque:equivalent?equivalent.refTorque:getRefTorque(entry.rec,p)};
+// Server pairs carry full records for the requested models and their
+// equivalents only; merge them into the local index records and render.
+function showCompareResults(serverPairs,p){
+  const byKey={};
+  serverPairs.forEach(sp=>{ byKey[sp.key]=sp; });
+  const localRec=rec=>{
+    const r=DB.find(x=>x.b===rec.b&&x.m===rec.m&&x.mode===rec.mode);
+    return r?Object.assign(r,rec):rec;
+  };
+  const pairs=entries.filter(e=>e.rec).map(entry=>{
+    const sp=byKey[entry.rec.b+'|'+entry.rec.m+'|'+entry.rec.mode];
+    if(!sp||!sp.rec) return {inputText:entry.inputText,rec:entry.rec,fuzzy:entry.fuzzy,equivalent:null,refTorque:null};
+    Object.assign(entry.rec,sp.rec);
+    const equivalent=sp.equivalent?{rec:localRec(sp.equivalent.rec),refT:sp.equivalent.refT,diff:sp.equivalent.diff}:null;
+    return {inputText:entry.inputText,rec:entry.rec,fuzzy:entry.fuzzy,equivalent,refTorque:sp.refTorque};
   });
+  renderEntriesList();
   renderMultiResults(pairs,p);
 }
 
@@ -1244,7 +1250,7 @@ function onPressure(el){
 function findEquivalents(){
   if(!entries.length) return;
   savePendingCompare();
-  window.parent.postMessage({type:'cx8-gate'},'*');
+  requestCompare();
 }
 
 /* ── Keep the comparison across the login / checkout round-trip. Saved when
@@ -1270,23 +1276,31 @@ function clearPendingCompare(){
 function restorePendingCompare(){
   if(pendingChecked||!DB.length) return;
   pendingChecked=true;
+  if(!restoreSavedEntries()){
+    // Lets the site stop waiting for a comparison after checkout
+    window.parent.postMessage({type:'cx8-no-pending'},window.location.origin);
+    return;
+  }
+  // Ask again — the site shows results if the user now has access
+  requestCompare();
+}
+function restoreSavedEntries(){
   let saved=null;
   try{ saved=JSON.parse(localStorage.getItem(PENDING_KEY)||'null'); }catch(e){}
-  if(!saved||Date.now()-saved.at>PENDING_MAX_AGE){ clearPendingCompare(); return; }
-  if(entries.length) return;
+  if(!saved||Date.now()-saved.at>PENDING_MAX_AGE){ clearPendingCompare(); return false; }
+  if(entries.length) return false;
 
   saved.entries.forEach(s=>{
     const rec=DB.find(r=>r.b===s.b&&r.m===s.m&&r.mode===s.mode);
     if(rec){ entries.push({inputText:s.inputText,rec,fuzzy:s.fuzzy}); ensureDetail(rec); }
   });
-  if(!entries.length){ clearPendingCompare(); return; }
+  if(!entries.length){ clearPendingCompare(); return false; }
   inclBrands=(saved.brands||[]).filter(b=>DB.some(r=>r.b===b));
   renderChips();
   g('pressure').value=saved.pressure;
   g('pdisp').textContent=parseFloat(saved.pressure).toFixed(1);
   syncEntries();
-  // Ask again — the site shows results if the user now has access
-  window.parent.postMessage({type:'cx8-gate'},'*');
+  return true;
 }
 
 init();

@@ -4,8 +4,8 @@ const faqs = [
   {
     category: 'Tools',
     items: [
-      { q: 'Are the tools free to use?', a: 'Most tools are completely free — Tools 1 through 4 and Tool 6 can be used without an account. Tool 5 (Actuator Cross Reference) is a Pro feature that requires a paid subscription.' },
-      { q: 'Do I need an account to use the tools?', a: 'No account is needed to use the free tools. A free account is needed to download PDF reports. Tool 5 requires you to log in and have an active Pro subscription.' },
+      { q: 'Are the tools free to use?', a: 'Most tools are completely free — Tools 1 through 4 and Tool 6 can be used without an account. In Tool 5 (Actuator Cross Reference) you can browse every model for free and pay €2 for each model you find equivalents for.' },
+      { q: 'Do I need an account to use the tools?', a: 'No account is needed to use the free tools. A free account is needed to download PDF reports and to see Tool 5 results.' },
       { q: 'Can I use the tools on my phone or tablet?', a: 'Yes. All tools are designed to work on mobile, tablet, and desktop.' },
       { q: 'How accurate are the calculations?', a: 'Our tools use industry-standard formulas and reference data. Always verify critical results against official manufacturer documentation before use in safety-critical applications.' },
     ],
@@ -13,7 +13,8 @@ const faqs = [
   {
     category: 'Subscription & Billing',
     items: [
-      { q: 'What does a Pro subscription include?', a: 'Pro gives you access to Tool 5 — the Actuator Cross Reference database — which lets you cross-reference actuator models across manufacturers and find compatible replacements.' },
+      { q: 'How much does Tool 5 cost?', a: 'You pay €2 for each model you find equivalents for — for example, 4 models cost €8. After paying, you can change the pressure or manufacturer preferences for those models as often as you like for 24 hours at no extra cost.' },
+      { q: 'What does a Pro subscription include?', a: 'CX8 Pro Monthly (€99/month) gives you unlimited Tool 5 comparisons. It pays off from about 50 comparisons a month. Once you use Tool 5 regularly, we will show you how your spending compares, so you can decide whether Pro is worth it for you.' },
       { q: 'How do I cancel my subscription?', a: 'You can cancel anytime: log in and click "Manage Subscription" at the top of the page, or email us at sales@cx8motion.com. Your access remains active until the end of your billing period.' },
       { q: 'Do you offer refunds?', a: 'If you are unsatisfied within 7 days of subscribing, contact us and we will issue a full refund, no questions asked.' },
       { q: 'Which payment methods do you accept?', a: 'We accept all major credit and debit cards via LemonSqueezy, our payment provider.' },

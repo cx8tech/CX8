@@ -20,13 +20,17 @@ const IconPlay = () => (
   </svg>
 )
 
-function GateModal({ onClose, toolPath, user, isPaid, reason }) {
+const HOW_IT_WORKS_URL = 'https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg'
+
+// Pro Monthly price shown in the UI; the charged amount is set on the
+// LemonSqueezy subscription product.
+const PRO_MONTHLY_PRICE = '€99'
+
+const euros = cents => `€${(cents / 100).toFixed(cents % 100 ? 2 : 0)}`
+
+// Login prompts: for PDF downloads (Tools 3, 4, 6) and Tool 5 results
+function GateModal({ onClose, toolPath, reason }) {
   const navigate = useNavigate()
-  const variantId = import.meta.env.VITE_LEMONSQUEEZY_VARIANT_ID
-  const checkoutBaseUrl = import.meta.env.VITE_LEMONSQUEEZY_CHECKOUT_URL || `https://cx8technologies.lemonsqueezy.com/checkout/buy/${variantId}`
-  const checkoutUrl = user
-    ? `${checkoutBaseUrl}${checkoutBaseUrl.includes('?') ? '&' : '?'}checkout[email]=${encodeURIComponent(user.email)}&checkout[custom][user_id]=${user.id}`
-    : null
   const redirect = encodeURIComponent(toolPath)
 
   return (
@@ -37,35 +41,123 @@ function GateModal({ onClose, toolPath, user, isPaid, reason }) {
           <>
             <h2 className="gate-title">Log In to Download</h2>
             <p className="gate-sub">Log in or create a free CX8 account to download your results as a PDF.</p>
-            <div className="gate-actions">
-              <Link to={`/login?redirect=${redirect}`} className="gate-btn-primary">Log In</Link>
-              <Link to={`/register?redirect=${redirect}`} className="gate-btn-secondary">Register for Free</Link>
-            </div>
-          </>
-        ) : !user ? (
-          <>
-            <h2 className="gate-title">Login Required</h2>
-            <p className="gate-sub">Log in to access cross-reference results.</p>
-            <div className="gate-actions">
-              <Link to={`/login?redirect=${redirect}`} className="gate-btn-primary">Log In</Link>
-              <a href="https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg" target="_blank" rel="noopener noreferrer" className="gate-btn-secondary">
-                <IconPlay /> See How It Works
-              </a>
-            </div>
           </>
         ) : (
           <>
-            <h2 className="gate-title">CX8 Pro Required</h2>
-            <p className="gate-sub">Upgrade to CX8 Pro to unlock the full cross-reference database.</p>
+            <h2 className="gate-title">Log In to See Results</h2>
+            <p className="gate-sub">Log in or create a free CX8 account to find equivalents. You only pay for the models you compare.</p>
+          </>
+        )}
+        <div className="gate-actions">
+          <Link to={`/login?redirect=${redirect}`} className="gate-btn-primary">Log In</Link>
+          <Link to={`/register?redirect=${redirect}`} className="gate-btn-secondary">Register for Free</Link>
+        </div>
+        <button className="gate-btn-home" onClick={() => navigate('/')}>← Back to Home</button>
+      </div>
+    </div>
+  )
+}
+
+// Pay-per-query prompt. Regular users (3+ paid jobs this month) see their
+// usage and the choice between pay-per-query and Pro Monthly instead.
+function PayModal({ info, user, onClose }) {
+  const [agreeQuery, setAgreeQuery] = useState(false)
+  const [agreeSub, setAgreeSub] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { requested, unpaid, priceCents, usage } = info
+
+  const checkoutBaseUrl = import.meta.env.VITE_LEMONSQUEEZY_CHECKOUT_URL
+  const subscribeUrl = `${checkoutBaseUrl}${checkoutBaseUrl?.includes('?') ? '&' : '?'}checkout[email]=${encodeURIComponent(user?.email ?? '')}&checkout[custom][user_id]=${user?.id ?? ''}`
+
+  const payPerQuery = async () => {
+    setLoading(true)
+    setError('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/tool5-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify({ models: info.models }),
+    })
+    const body = await res.json().catch(() => ({}))
+    if (res.ok && body.url) {
+      window.location.href = body.url
+      return
+    }
+    setLoading(false)
+    setError(body.error || 'Could not start checkout. Please try again.')
+  }
+
+  const queryConsent = (
+    <label className="pay-consent">
+      <input type="checkbox" checked={agreeQuery} onChange={e => setAgreeQuery(e.target.checked)} />
+      <span>I want my results immediately and understand that I lose my right of withdrawal once they are shown.</span>
+    </label>
+  )
+  const n = unpaid
+  const payLabel = loading ? 'Opening checkout…' : `Pay ${euros(priceCents)}`
+
+  return (
+    <div className="gate-overlay pay-overlay" onClick={onClose}>
+      <div className={`gate-modal pay-modal ${usage.regular ? 'pay-modal-wide' : ''}`} onClick={e => e.stopPropagation()}>
+        {usage.regular ? (
+          <>
+            <h2 className="gate-title">You're Using CX8 Regularly</h2>
+            <p className="gate-sub pay-usage">
+              This month: <strong>{usage.models} comparison{usage.models === 1 ? '' : 's'}</strong> · <strong>{euros(usage.spentCents)} spent</strong>
+            </p>
+            <div className="pay-options">
+              <div className="pay-option">
+                <div className="pay-option-name">Keep Pay-per-Query</div>
+                <div className="pay-option-price">€2 <span>/ query</span></div>
+                <ul className="pay-option-list">
+                  <li>Pay only when you compare</li>
+                  <li>No subscription, no commitment</li>
+                </ul>
+                {queryConsent}
+                <button className="gate-btn-secondary" disabled={!agreeQuery || loading} onClick={payPerQuery}>
+                  {loading ? payLabel : `Pay ${euros(priceCents)} for ${n} model${n === 1 ? '' : 's'}`}
+                </button>
+              </div>
+              <div className="pay-option pay-option-featured">
+                <div className="pay-option-name">CX8 Pro Monthly</div>
+                <div className="pay-option-price">{PRO_MONTHLY_PRICE} <span>/ month</span></div>
+                <ul className="pay-option-list">
+                  <li>Unlimited queries</li>
+                  <li>Cancel anytime</li>
+                </ul>
+                <label className="pay-consent">
+                  <input type="checkbox" checked={agreeSub} onChange={e => setAgreeSub(e.target.checked)} />
+                  <span>I agree to a monthly subscription of {PRO_MONTHLY_PRICE} that renews until I cancel.</span>
+                </label>
+                <button className="gate-btn-primary" disabled={!agreeSub} onClick={() => { window.location.href = subscribeUrl }}>
+                  Subscribe — {PRO_MONTHLY_PRICE}/month
+                </button>
+              </div>
+            </div>
+            <p className="pay-note">At €2 per query, Pro pays off from about 50 queries a month.</p>
+          </>
+        ) : (
+          <>
+            <h2 className="gate-title">Find Equivalents</h2>
+            <p className="gate-sub pay-price">
+              {n} model{n === 1 ? '' : 's'} × €2 = <strong>{euros(priceCents)}</strong>
+            </p>
+            {unpaid < requested && (
+              <p className="pay-note">{requested - unpaid} model{requested - unpaid === 1 ? '' : 's'} you paid for in the last 24 hours {requested - unpaid === 1 ? 'is' : 'are'} included free.</p>
+            )}
+            <p className="pay-note">After paying, change the pressure or brands as often as you like for 24 hours at no extra cost.</p>
+            {queryConsent}
             <div className="gate-actions">
-              <a href={checkoutUrl} className="gate-btn-primary">Upgrade to Pro — €9.99/mo</a>
-              <a href="https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg" target="_blank" rel="noopener noreferrer" className="gate-btn-secondary">
+              <button className="gate-btn-primary" disabled={!agreeQuery || loading} onClick={payPerQuery}>{payLabel}</button>
+              <a href={HOW_IT_WORKS_URL} target="_blank" rel="noopener noreferrer" className="gate-btn-secondary">
                 <IconPlay /> See How It Works
               </a>
             </div>
           </>
         )}
-        <button className="gate-btn-home" onClick={() => navigate('/')}>← Back to Home</button>
+        {error && <div className="auth-error pay-error">{error}</div>}
+        <button className="gate-btn-home" onClick={onClose}>Cancel</button>
       </div>
     </div>
   )
@@ -88,7 +180,7 @@ function ConfirmPaymentModal({ timedOut }) {
         ) : (
           <>
             <h2 className="gate-title">Confirming Your Payment…</h2>
-            <p className="gate-sub">Thanks for upgrading! This usually takes under a minute. Your results will appear automatically.</p>
+            <p className="gate-sub">Thanks for your payment! This usually takes under a minute. Your results will appear automatically.</p>
           </>
         )}
       </div>
@@ -102,24 +194,24 @@ const DATA_TOOL_ID = 'actuator-cross-reference'
 export default function ToolViewer() {
   const { toolId } = useParams()
   const location = useLocation()
+  const navigate = useNavigate()
   const tool = allTools.find(t => t.id === toolId)
-  const [showGate, setShowGate] = useState(false)
-  const [gateReason, setGateReason] = useState(null)   // 'pdf' | null (Tool 5 results)
-  const [user, setUser]         = useState(null)
-  const iframeRef               = useRef(null)
-  const indexCacheRef           = useRef(null)
-  const dbCacheRef              = useRef(null)   // holds fetched actuator data
-  const iframeReadyRef          = useRef(false)  // true once iframe fires onLoad
-  const pendingResultsRef        = useRef(false)
-  const navigate                = useNavigate()
-
   const isDataTool = toolId === DATA_TOOL_ID
-  const [isPaid, setIsPaid] = useState(false)
 
-  // LemonSqueezy's "back to tool" button links to ?paid=1. The webhook that
-  // upgrades the account can arrive after the user does, so wait for it.
-  const checkoutReturnRef = useRef(isDataTool && new URLSearchParams(location.search).has('paid'))
+  const [user, setUser]             = useState(null)
+  const [gateReason, setGateReason] = useState(null)   // 'pdf' | 'login' | null
+  const [payInfo, setPayInfo]       = useState(null)   // 402 details from /api/tool5-compare
   const [confirming, setConfirming] = useState(null)   // 'waiting' | 'timeout' | null
+  const iframeRef      = useRef(null)
+  const iframeReadyRef = useRef(false)
+  const indexCacheRef  = useRef(null)
+  const pollRef        = useRef(null)
+
+  // LemonSqueezy sends buyers back to ?paid=1. The webhook that records the
+  // payment can arrive after the user does, so results are polled for.
+  const checkoutReturnRef = useRef(isDataTool && new URLSearchParams(location.search).has('paid'))
+
+  const postToTool = msg => iframeRef.current?.contentWindow.postMessage(msg, window.location.origin)
 
   // ── Track auth state ──
   useEffect(() => {
@@ -128,118 +220,86 @@ export default function ToolViewer() {
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null)
-      if (!session && isDataTool) {
-        dbCacheRef.current = null
-        iframeRef.current?.contentWindow.postMessage({ type: 'cx8-clear-data' }, '*')
-      }
+      if (!session && isDataTool) postToTool({ type: 'cx8-clear-data' })
     })
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(pollRef.current)
+    }
   }, [])
 
-  // ── Check paid status ──
+  // ── Tool 5: public model index (names only) for the pickers ──
   useEffect(() => {
     if (!isDataTool) return
-    if (!user) {
-      setIsPaid(false)
-      return
-    }
-    supabase
-      .from('profiles')
-      .select('plan')
-      .eq('id', user.id)
-      .single()
+    fetch('/api/tool5-data?index=1')
+      .then(r => r.json())
       .then(({ data }) => {
-        const paid = data?.plan === 'pro'
-        setIsPaid(paid)
-        if (paid) setShowGate(false)
+        if (Array.isArray(data)) {
+          indexCacheRef.current = data
+          pushIndexToIframe()
+        }
       })
-  }, [user, isDataTool])
-
-  // ── After checkout: poll until the webhook has upgraded the account ──
-  useEffect(() => {
-    if (!checkoutReturnRef.current || !user) return
-
-    const finish = () => {
-      checkoutReturnRef.current = false
-      setConfirming(null)
-      navigate(location.pathname, { replace: true })
-    }
-    if (isPaid) { finish(); return }
-
-    setConfirming('waiting')
-    let tries = 0
-    const timer = setInterval(async () => {
-      tries++
-      const { data } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
-      if (data?.plan === 'pro') {
-        clearInterval(timer)
-        pendingResultsRef.current = true
-        setIsPaid(true)
-      } else if (tries >= 40) {   // ~2 minutes
-        clearInterval(timer)
-        setConfirming('timeout')
-      }
-    }, 3000)
-    return () => clearInterval(timer)
-  }, [user, isPaid])
-
-  // ── Fetch dataset when user is authenticated and paid ──
-  useEffect(() => {
-    if (!isDataTool) return
-
-    if (!user || !isPaid) {
-      fetch('/api/tool5-data?index=1')
-        .then(r => r.json())
-        .then(({ data }) => {
-          if (Array.isArray(data)) {
-            indexCacheRef.current = data
-            pushIndexToIframe()
-          }
-        })
-      return
-    }
-
-    if (dbCacheRef.current) {
-      pushDataToIframe()
-      return
-    }
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) return
-      fetch('/api/tool5-data', {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      })
-        .then(r => r.json())
-        .then(({ data }) => {
-          if (!data?.length) return
-          dbCacheRef.current = data
-          pushDataToIframe()
-        })
-    })
-  }, [user, isDataTool, isPaid])
-
-  // Send cached data into the iframe (no-op if either isn't ready)
-  function pushDataToIframe() {
-    if (!dbCacheRef.current || !iframeReadyRef.current || !iframeRef.current) return
-    iframeRef.current.contentWindow.postMessage(
-      { type: 'cx8-data', db: dbCacheRef.current },
-      '*'
-    )
-    if (pendingResultsRef.current) {
-      pendingResultsRef.current = false
-      iframeRef.current.contentWindow.postMessage({ type: 'cx8-run-results' }, '*')
-    }
-  }
+  }, [isDataTool])
 
   function pushIndexToIframe() {
-    if (!indexCacheRef.current || !iframeReadyRef.current || !iframeRef.current) return
-    iframeRef.current.contentWindow.postMessage(
-      { type: 'cx8-index', db: indexCacheRef.current },
-      '*'
-    )
+    if (!indexCacheRef.current || !iframeReadyRef.current) return
+    postToTool({ type: 'cx8-index', db: indexCacheRef.current })
   }
 
-  // ── Listen for messages from the tool iframe ──
+  function endCheckoutReturn() {
+    checkoutReturnRef.current = false
+    navigate(location.pathname, { replace: true })
+  }
+
+  // Ask the server for equivalents. Returns 'done', 'login', 'error', or
+  // the payment details when the models still need paying for.
+  async function runCompare(request) {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return 'login'
+    const res = await fetch('/api/tool5-compare', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify(request),
+    })
+    const body = await res.json().catch(() => ({}))
+    if (res.ok) {
+      postToTool({ type: 'cx8-results', pairs: body.pairs, pressure: request.pressure })
+      return 'done'
+    }
+    if (res.status === 402) return { ...body, models: request.models }
+    if (res.status === 401) return 'login'
+    postToTool({ type: 'cx8-compare-error', message: body.error })
+    return 'error'
+  }
+
+  async function handleCompare(request) {
+    const result = await runCompare(request)
+    if (typeof result === 'object') {
+      if (checkoutReturnRef.current) waitForPayment(request)
+      else setPayInfo(result)
+      return
+    }
+    if (checkoutReturnRef.current) endCheckoutReturn()
+    if (result === 'login') setGateReason('login')
+  }
+
+  // Retry every 3s for up to ~2 minutes until the payment is recorded
+  function waitForPayment(request, tries = 0) {
+    setConfirming('waiting')
+    pollRef.current = setTimeout(async () => {
+      const result = await runCompare(request)
+      if (typeof result === 'object') {
+        if (tries < 40) return waitForPayment(request, tries + 1)
+        setConfirming('timeout')
+        return
+      }
+      setConfirming(null)
+      endCheckoutReturn()
+      if (result === 'login') setGateReason('login')
+    }, 3000)
+  }
+
+  // ── Messages from the tool iframe ──
   useEffect(() => {
     const handler = async (e) => {
       if (e.source !== iframeRef.current?.contentWindow) return
@@ -248,39 +308,15 @@ export default function ToolViewer() {
       if (e.data?.type === 'cx8-pdf-request') {
         const { data: { session } } = await supabase.auth.getSession()
         setUser(session?.user ?? null)
-        if (session) {
-          e.source.postMessage({ type: 'cx8-pdf-allowed' }, window.location.origin)
-        } else {
-          setGateReason('pdf')
-          setShowGate(true)
-        }
+        if (session) e.source.postMessage({ type: 'cx8-pdf-allowed' }, window.location.origin)
+        else setGateReason('pdf')
         return
       }
 
-      if (e.data?.type !== 'cx8-gate') return
-      setGateReason(null)
-      // Re-fetch session so user is always fresh when the gate opens
-      const { data: { session } } = await supabase.auth.getSession()
-      const currentUser = session?.user ?? null
-      setUser(currentUser)
-      if (currentUser) {
-        const { data } = await supabase.from('profiles').select('plan').eq('id', currentUser.id).single()
-        const paid = data?.plan === 'pro'
-        setIsPaid(paid)
-        if (paid) {
-          setShowGate(false)
-          pendingResultsRef.current = true
-          if (dbCacheRef.current) pushDataToIframe()
-          return
-        }
-        // Just paid but the upgrade hasn't landed yet: the confirmation
-        // poll will show the results instead of asking them to pay again
-        if (checkoutReturnRef.current) {
-          pendingResultsRef.current = true
-          return
-        }
-      }
-      setShowGate(true)
+      // Tool 5 "Find Equivalents", re-runs after setting changes, and the
+      // comparison restored after login/checkout
+      if (e.data?.type === 'cx8-compare') handleCompare(e.data.request)
+      if (e.data?.type === 'cx8-no-pending' && checkoutReturnRef.current) endCheckoutReturn()
     }
     window.addEventListener('message', handler)
     return () => window.removeEventListener('message', handler)
@@ -300,7 +336,8 @@ export default function ToolViewer() {
   return (
     <div className="tool-viewer">
       {confirming && <ConfirmPaymentModal timedOut={confirming === 'timeout'} />}
-      {showGate && <GateModal onClose={() => setShowGate(false)} toolPath={location.pathname} user={user} isPaid={isPaid} reason={gateReason} />}
+      {gateReason && <GateModal onClose={() => setGateReason(null)} toolPath={location.pathname} reason={gateReason} />}
+      {payInfo && <PayModal info={payInfo} user={user} onClose={() => setPayInfo(null)} />}
       <div className="tool-viewer-bar">
         <Link to="/tools" className="tool-back-btn">
           <IconBack /> Back to Tools
@@ -318,7 +355,6 @@ export default function ToolViewer() {
         onLoad={() => {
           iframeReadyRef.current = true
           pushIndexToIframe()
-          pushDataToIframe()
         }}
       />
     </div>
