@@ -24,8 +24,8 @@ const HOW_IT_WORKS_URL = 'https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysB
 
 // Pro Monthly price shown in the UI; the charged amount is set on the
 // LemonSqueezy subscription product. All prices include VAT.
-const PRO_MONTHLY_CENTS = 9900
-const PRO_MONTHLY_PRICE = '€99'
+const PRO_MONTHLY_CENTS = 6500
+const PRO_MONTHLY_PRICE = '€65'
 
 const euros = cents => `€${(cents / 100).toFixed(cents % 100 ? 2 : 0)}`
 
