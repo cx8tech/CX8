@@ -625,7 +625,6 @@ img { max-width: 100%; display: block; }
 .pay-modal-wide { max-width: 640px; }
 .pay-price { font-size: 16px; color: var(--text); margin-bottom: 14px; }
 .pay-price strong { font-family: var(--display); font-size: 22px; color: var(--teal2); }
-.pay-vat { display: block; font-size: 11.5px; color: var(--text3); margin-top: 2px; }
 .pay-usage { margin-bottom: 22px; }
 .pay-note { font-size: 12.5px; color: var(--text3); line-height: 1.55; margin-bottom: 12px; }
 .pay-consent { display: flex; gap: 10px; align-items: flex-start; text-align: left; font-size: 12px; color: var(--text2); line-height: 1.5; margin: 6px 0 16px; cursor: pointer; }
@@ -636,6 +635,11 @@ img { max-width: 100%; display: block; }
 .pay-option-name { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
 .pay-option-price { font-family: var(--display); font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
 .pay-option-price span { font-size: 13px; font-weight: 500; color: var(--text3); }
+.pay-option-total { font-size: 13px; color: var(--text2); margin-bottom: 10px; }
+.pay-option-total strong { color: var(--teal2); font-size: 15px; }
+.pay-how { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text2); margin-bottom: 8px; }
+.pay-how:hover { color: var(--teal2); }
+.pay-how svg { width: 14px; height: 14px; }
 .pay-option-list { list-style: none; padding: 0; margin: 0 0 6px; font-size: 12.5px; color: var(--text2); line-height: 1.8; }
 .pay-option-list li::before { content: '✓  '; color: var(--teal2); font-weight: 700; }
 .pay-option .pay-consent { margin-top: auto; padding-top: 10px; }

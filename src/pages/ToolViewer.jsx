@@ -59,8 +59,8 @@ function GateModal({ onClose, toolPath, reason }) {
   )
 }
 
-// Pay-per-query prompt. Regular users (3+ paid jobs this month) see their
-// usage and the choice between pay-per-query and Pro Monthly instead.
+// Payment prompt: per-model fee for the selected models, or the monthly
+// subscription. Regular users (3+ paid jobs this month) also see their usage.
 function PayModal({ info, user, onClose }) {
   const [agreeQuery, setAgreeQuery] = useState(false)
   const [agreeSub, setAgreeSub] = useState(false)
@@ -102,64 +102,53 @@ function PayModal({ info, user, onClose }) {
 
   return (
     <div className="gate-overlay pay-overlay" onClick={onClose}>
-      <div className={`gate-modal pay-modal ${usage.regular ? 'pay-modal-wide' : ''}`} onClick={e => e.stopPropagation()}>
+      <div className="gate-modal pay-modal pay-modal-wide" onClick={e => e.stopPropagation()}>
+        <h2 className="gate-title">Find Equivalents</h2>
         {usage.regular ? (
-          <>
-            <h2 className="gate-title">You're Using CX8 Regularly</h2>
-            <p className="gate-sub pay-usage">
-              This month: <strong>{usage.models} comparison{usage.models === 1 ? '' : 's'}</strong> · <strong>{euros(usage.spentCents)} spent</strong>
-            </p>
-            <div className="pay-options">
-              <div className="pay-option">
-                <div className="pay-option-name">Keep Pay-per-Query</div>
-                <div className="pay-option-price">{perQuery} <span>/ query</span></div>
-                <ul className="pay-option-list">
-                  <li>Pay only when you compare</li>
-                  <li>No subscription, no commitment</li>
-                </ul>
-                {queryConsent}
-                <button className="gate-btn-secondary" disabled={!agreeQuery || loading} onClick={payPerQuery}>
-                  {loading ? payLabel : `Pay ${euros(priceCents)} for ${n} model${n === 1 ? '' : 's'}`}
-                </button>
-              </div>
-              <div className="pay-option pay-option-featured">
-                <div className="pay-option-name">CX8 Pro Monthly</div>
-                <div className="pay-option-price">{PRO_MONTHLY_PRICE} <span>/ month</span></div>
-                <ul className="pay-option-list">
-                  <li>Unlimited queries</li>
-                  <li>Cancel anytime</li>
-                </ul>
-                <label className="pay-consent">
-                  <input type="checkbox" checked={agreeSub} onChange={e => setAgreeSub(e.target.checked)} />
-                  <span>I agree to a monthly subscription of {PRO_MONTHLY_PRICE} that renews until I cancel.</span>
-                </label>
-                <button className="gate-btn-primary" disabled={!agreeSub} onClick={() => { window.location.href = subscribeUrl }}>
-                  Subscribe — {PRO_MONTHLY_PRICE}/month
-                </button>
-              </div>
-            </div>
-            <p className="pay-note">At {perQuery} per query, Pro pays off from about {breakEven} queries a month. All prices include VAT.</p>
-          </>
+          <p className="gate-sub pay-usage">
+            This month: <strong>{usage.models} comparison{usage.models === 1 ? '' : 's'}</strong> · <strong>{euros(usage.spentCents)} spent</strong>
+          </p>
         ) : (
-          <>
-            <h2 className="gate-title">Find Equivalents</h2>
-            <p className="gate-sub pay-price">
+          <p className="gate-sub pay-usage">Choose how you'd like to pay.</p>
+        )}
+        <div className="pay-options">
+          <div className="pay-option">
+            <div className="pay-option-name">Per-Model Fee</div>
+            <div className="pay-option-price">{perQuery} <span>/ model</span></div>
+            <div className="pay-option-total">
               {n} model{n === 1 ? '' : 's'} × {perQuery} = <strong>{euros(priceCents)}</strong>
-              <span className="pay-vat">incl. VAT</span>
-            </p>
+            </div>
+            <ul className="pay-option-list">
+              <li>Pay only for the models you selected</li>
+              <li>Change pressure or brands free for 24 hours</li>
+            </ul>
             {unpaid < requested && (
               <p className="pay-note">{requested - unpaid} model{requested - unpaid === 1 ? '' : 's'} you paid for in the last 24 hours {requested - unpaid === 1 ? 'is' : 'are'} included free.</p>
             )}
-            <p className="pay-note">After paying, change the pressure or brands as often as you like for 24 hours at no extra cost.</p>
             {queryConsent}
-            <div className="gate-actions">
-              <button className="gate-btn-primary" disabled={!agreeQuery || loading} onClick={payPerQuery}>{payLabel}</button>
-              <a href={HOW_IT_WORKS_URL} target="_blank" rel="noopener noreferrer" className="gate-btn-secondary">
-                <IconPlay /> See How It Works
-              </a>
-            </div>
-          </>
-        )}
+            <button className="gate-btn-secondary" disabled={!agreeQuery || loading} onClick={payPerQuery}>{payLabel}</button>
+          </div>
+          <div className="pay-option pay-option-featured">
+            <div className="pay-option-name">Monthly Subscription</div>
+            <div className="pay-option-price">{PRO_MONTHLY_PRICE} <span>/ month</span></div>
+            <div className="pay-option-total">Unlimited models, every month</div>
+            <ul className="pay-option-list">
+              <li>Unlimited comparisons</li>
+              <li>Cancel anytime</li>
+            </ul>
+            <label className="pay-consent">
+              <input type="checkbox" checked={agreeSub} onChange={e => setAgreeSub(e.target.checked)} />
+              <span>I agree to a monthly subscription of {PRO_MONTHLY_PRICE} that renews until I cancel.</span>
+            </label>
+            <button className="gate-btn-primary" disabled={!agreeSub} onClick={() => { window.location.href = subscribeUrl }}>
+              Subscribe — {PRO_MONTHLY_PRICE}/month
+            </button>
+          </div>
+        </div>
+        <p className="pay-note">All prices include VAT. The subscription pays off from about {breakEven} models a month.</p>
+        <a href={HOW_IT_WORKS_URL} target="_blank" rel="noopener noreferrer" className="pay-how">
+          <IconPlay /> See how it works
+        </a>
         {error && <div className="auth-error pay-error">{error}</div>}
         <button className="gate-btn-home" onClick={onClose}>Cancel</button>
       </div>
