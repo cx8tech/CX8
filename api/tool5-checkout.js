@@ -4,7 +4,7 @@ import {
 } from './_lib/common.js'
 
 // POST { models: [{b, m, mode}] } → { url } of a LemonSqueezy checkout
-// priced at €2 per model not already paid for. The job is recorded as
+// priced per model not already paid for (PRICE_PER_MODEL_CENTS). The job is recorded as
 // pending; the webhook marks it paid (see lemonsqueezy-webhook.js).
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()

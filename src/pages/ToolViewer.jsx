@@ -23,7 +23,8 @@ const IconPlay = () => (
 const HOW_IT_WORKS_URL = 'https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg'
 
 // Pro Monthly price shown in the UI; the charged amount is set on the
-// LemonSqueezy subscription product.
+// LemonSqueezy subscription product. All prices include VAT.
+const PRO_MONTHLY_CENTS = 9900
 const PRO_MONTHLY_PRICE = '€99'
 
 const euros = cents => `€${(cents / 100).toFixed(cents % 100 ? 2 : 0)}`
@@ -65,7 +66,9 @@ function PayModal({ info, user, onClose }) {
   const [agreeSub, setAgreeSub] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const { requested, unpaid, priceCents, usage } = info
+  const { requested, unpaid, priceCents, pricePerModelCents, usage } = info
+  const perQuery = euros(pricePerModelCents)
+  const breakEven = Math.ceil(PRO_MONTHLY_CENTS / pricePerModelCents)
 
   const checkoutBaseUrl = import.meta.env.VITE_LEMONSQUEEZY_CHECKOUT_URL
   const subscribeUrl = `${checkoutBaseUrl}${checkoutBaseUrl?.includes('?') ? '&' : '?'}checkout[email]=${encodeURIComponent(user?.email ?? '')}&checkout[custom][user_id]=${user?.id ?? ''}`
@@ -109,7 +112,7 @@ function PayModal({ info, user, onClose }) {
             <div className="pay-options">
               <div className="pay-option">
                 <div className="pay-option-name">Keep Pay-per-Query</div>
-                <div className="pay-option-price">€2 <span>/ query</span></div>
+                <div className="pay-option-price">{perQuery} <span>/ query</span></div>
                 <ul className="pay-option-list">
                   <li>Pay only when you compare</li>
                   <li>No subscription, no commitment</li>
@@ -135,13 +138,14 @@ function PayModal({ info, user, onClose }) {
                 </button>
               </div>
             </div>
-            <p className="pay-note">At €2 per query, Pro pays off from about 50 queries a month.</p>
+            <p className="pay-note">At {perQuery} per query, Pro pays off from about {breakEven} queries a month. All prices include VAT.</p>
           </>
         ) : (
           <>
             <h2 className="gate-title">Find Equivalents</h2>
             <p className="gate-sub pay-price">
-              {n} model{n === 1 ? '' : 's'} × €2 = <strong>{euros(priceCents)}</strong>
+              {n} model{n === 1 ? '' : 's'} × {perQuery} = <strong>{euros(priceCents)}</strong>
+              <span className="pay-vat">incl. VAT</span>
             </p>
             {unpaid < requested && (
               <p className="pay-note">{requested - unpaid} model{requested - unpaid === 1 ? '' : 's'} you paid for in the last 24 hours {requested - unpaid === 1 ? 'is' : 'are'} included free.</p>

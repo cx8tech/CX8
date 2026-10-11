@@ -6,7 +6,9 @@ export const supabase = createClient(
 )
 
 // ── Pricing rules (see the CX8 usage-first pricing model) ──
-export const PRICE_PER_MODEL_CENTS = 200          // €2 per model compared
+// The LemonSqueezy store has "prices include tax" on, so this is the final
+// price the customer pays, VAT included. Checkouts use it as custom_price.
+export const PRICE_PER_MODEL_CENTS = 250          // €2.50 per model compared
 export const RERUN_WINDOW_MS = 24 * 60 * 60 * 1000 // paid models re-run free for 24h
 export const REGULAR_JOBS_PER_MONTH = 3            // paid jobs before Pro is offered
 export const MAX_MODELS = 50

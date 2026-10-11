@@ -7,7 +7,7 @@ import { findBestEquivalent, getRefTorque } from './_lib/matching.js'
 // POST { models: [{b, m, mode}], pressure, brands } → equivalents for those
 // models only. Pro users always get results; everyone else needs every
 // model covered by a paid job from the last 24 hours, otherwise this
-// returns 402 with the price of the models still to pay for.
+// returns 402 with the price of the models still to pay for (VAT included).
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
@@ -35,6 +35,7 @@ export default async function handler(req, res) {
         requested: models.length,
         unpaid: unpaid.length,
         priceCents: unpaid.length * PRICE_PER_MODEL_CENTS,
+        pricePerModelCents: PRICE_PER_MODEL_CENTS,
         usage: await getUsage(user.id),
       })
     }
