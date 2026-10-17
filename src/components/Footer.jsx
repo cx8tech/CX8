@@ -102,7 +102,7 @@ export default function Footer() {
             <div className="footer-col-title">Support</div>
             <ul className="footer-links">
               <li><Link to="/help">Help Center</Link></li>
-              <li><Link to="/impressum">Terms of Use</Link></li>
+              {/* Terms of Use link returns once the Terms page exists (it pointed to the Impressum) */}
               <li><Link to="/datenschutz">Privacy Policy</Link></li>
             </ul>
           </div>
