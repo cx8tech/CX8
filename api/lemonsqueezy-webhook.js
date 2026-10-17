@@ -37,14 +37,27 @@ export default async function handler(req, res) {
 
   const event = JSON.parse(rawBody)
   const eventName = event.meta?.event_name
-  const userId = event.meta?.custom_data?.user_id
   const attrs = event.data?.attributes ?? {}
+  const ref = `${eventName} ${event.data?.type} ${event.data?.id}`
 
-  if (!userId) return res.status(400).json({ error: 'No user_id in custom data' })
+  // Checkouts from the site carry the CX8 user ID. A purchase made some other
+  // way (e.g. a shared LemonSqueezy link) is matched by the buyer's email.
+  // Unmatched events are acknowledged so LemonSqueezy doesn't keep retrying.
+  const userId = event.meta?.custom_data?.user_id || await findUserIdByEmail(attrs.user_email)
+  if (!userId) {
+    console.warn(`LemonSqueezy webhook: no CX8 account for ${ref}; nothing unlocked`)
+    return res.status(200).json({ received: true })
+  }
 
   // Pay-per-query orders carry the comparison job they pay for. They unlock
   // that job's models for 24 hours and never change the user's plan.
   const jobId = event.meta?.custom_data?.job_id
+  const isQueryProduct = String(attrs.first_order_item?.variant_id) === String(process.env.LEMONSQUEEZY_QUERY_VARIANT_ID)
+  if (!jobId && isQueryProduct) {
+    // Bought outside the site, so the models are unknown: refund it manually
+    console.warn(`LemonSqueezy webhook: per-model order without a job, ${ref}; refund it in LemonSqueezy`)
+    return res.status(200).json({ received: true })
+  }
   if (jobId) {
     let jobUpdate = null
     if (eventName === 'order_created' && attrs.status === 'paid') {
@@ -91,6 +104,12 @@ export default async function handler(req, res) {
   }
 
   return res.status(200).json({ received: true })
+}
+
+async function findUserIdByEmail(email) {
+  if (typeof email !== 'string' || !email) return null
+  const { data } = await supabase.from('profiles').select('id').eq('email', email.trim().toLowerCase()).limit(1).maybeSingle()
+  return data?.id ?? null
 }
 
 // LemonSqueezy subscription statuses that keep Pro access. 'cancelled' stays
