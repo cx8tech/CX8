@@ -69,7 +69,7 @@ export default function Tools() {
     <div style={{ background: 'var(--bg)', minHeight: '100%' }}>
       <div className="tools-page">
         <h1 className="tools-page-title">Engineering Tools</h1>
-        <p className="tools-page-sub">Vendor-neutral tools for sizing, selection, and specification. Free tools available instantly — no signup required.</p>
+        <p className="tools-page-sub">Vendor-neutral tools for sizing, selection, and specification. Use the free tools instantly — no signup required. A free account lets you download PDF reports.</p>
 
         <div className="page-search-bar">
           <IconSearch />
