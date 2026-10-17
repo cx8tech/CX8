@@ -50,7 +50,7 @@ export default function Register() {
           <img src="/logo.png" alt="CX8" onError={e => { e.target.style.display = 'none' }} />
         </div>
         <h2 className="auth-title">Create your account</h2>
-        <p className="auth-sub">Free access to all engineering tools</p>
+        <p className="auth-sub">Create a free account to get more from CX8's engineering tools</p>
 
         <form className="auth-form" onSubmit={submit}>
           <div className="auth-field">
