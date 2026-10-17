@@ -92,6 +92,9 @@ img { max-width: 100%; display: block; }
 .auth-btn:disabled { opacity: .6; cursor: not-allowed; }
 .auth-switch { font-size: 13px; color: var(--text2); text-align: center; }
 .auth-switch a { color: var(--teal2); font-weight: 500; }
+.auth-resend { align-self: flex-start; background: none; border: none; padding: 0; margin-top: -6px; font-family: inherit; font-size: 12.5px; color: var(--teal2); font-weight: 500; cursor: pointer; text-decoration: underline; }
+.auth-resend:disabled { color: var(--text3); cursor: default; text-decoration: none; }
+.auth-resend-note { margin-top: -6px; font-size: 12.5px; color: var(--teal2); font-weight: 500; }
 .auth-forgot { align-self: flex-end; font-size: 12.5px; color: var(--teal2); font-weight: 500; margin-top: -4px; }.auth-check { width: 52px; height: 52px; border-radius: 50%; background: var(--teal-bg); color: var(--teal2); font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
 .auth-back { display: block; text-align: center; margin-top: 20px; font-size: 13px; color: var(--teal2); font-weight: 500; }
 
