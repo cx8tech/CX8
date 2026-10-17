@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, useLocation, useNavigationType } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -21,7 +22,14 @@ import ScrollToTop from './components/ScrollToTop'
 
 function AppLayout() {
   const { pathname } = useLocation()
+  const navigationType = useNavigationType()
   const isToolViewer = /^\/tools\/.+/.test(pathname)
+
+  // Start each newly opened page at the top. Back/forward (POP) is left to
+  // the browser, and 'instant' skips the site-wide smooth scrolling.
+  useEffect(() => {
+    if (navigationType !== 'POP') window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [pathname])
 
   return (
     <div className="page-wrap">
