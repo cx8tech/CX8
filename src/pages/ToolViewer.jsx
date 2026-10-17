@@ -46,7 +46,7 @@ function GateModal({ onClose, toolPath, reason }) {
         ) : (
           <>
             <h2 className="gate-title">Log In to See Results</h2>
-            <p className="gate-sub">Log in or create a free CX8 account to find equivalents. You only pay for the models you compare.</p>
+            <p className="gate-sub">Log in or create a free CX8 account to find equivalents. Then pay per model, or subscribe for unlimited comparisons.</p>
           </>
         )}
         <div className="gate-actions">
