@@ -287,7 +287,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
           <button class="btn-add" id="btn-add" onclick="addBrand()">+ Add</button>
         </div>
         <div class="chips" id="brand-chips"></div>
-        <div class="compare-hint" id="compare-hint">No selection — all manufacturers included.</div>
+        <div class="compare-hint" id="compare-hint">No preference — best matches from all manufacturers.</div>
       </div>
     </div>
 
@@ -503,8 +503,9 @@ function renderChips(){
     wrap.appendChild(c);
   });
   btn.disabled=false; // no hard cap
+  const brandCount=new Set(DB.map(r=>r.b)).size;
   hint.textContent=inclBrands.length===0
-    ?'No preference — best matches from all 18 manufacturers.'
+    ?'No preference — best matches from all '+(brandCount?brandCount+' ':'')+'manufacturers.'
     :'Prioritising: '+inclBrands.join(', ')+' ('+inclBrands.length+' selected — no limit)';
 }
 
@@ -536,6 +537,7 @@ function loadDatabase(records){
   });
   if(g('flt-brand').value) onBrandChange();
   renderEntriesList();
+  renderChips(); // refresh the manufacturer count in the hint
   restorePendingCompare();
 }
 
