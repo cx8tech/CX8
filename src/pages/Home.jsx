@@ -171,7 +171,7 @@ function ToolsSection() {
                 </li>
               ))}
             </ul>
-            <button className="quot-cta">See How It Works <IconArrow /></button>
+            <a href="https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg" target="_blank" rel="noopener noreferrer" className="quot-cta">See How It Works <IconArrow /></a>
           </div>
         </div>
       </div>
