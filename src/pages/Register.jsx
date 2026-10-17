@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { supabase, confirmRedirectUrl } from '../lib/supabase'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -23,6 +23,7 @@ export default function Register() {
     const { error: err } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
+      options: { emailRedirectTo: confirmRedirectUrl(redirect) },
     })
     setLoading(false)
     if (err) return setError(err.message)

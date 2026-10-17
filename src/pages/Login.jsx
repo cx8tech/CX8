@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { supabase, confirmRedirectUrl } from '../lib/supabase'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -35,7 +35,11 @@ export default function Login() {
 
   const resendConfirmation = async () => {
     setResendStatus('sending')
-    const { error: err } = await supabase.auth.resend({ type: 'signup', email: form.email })
+    const { error: err } = await supabase.auth.resend({
+      type: 'signup',
+      email: form.email,
+      options: { emailRedirectTo: confirmRedirectUrl(redirect) },
+    })
     setResendStatus(err ? 'error' : 'sent')
   }
 
