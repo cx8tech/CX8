@@ -203,7 +203,8 @@ export default function Community() {
                 </div>
                 <div className="comm-thread-stats">
                   <div className="comm-thread-stat"><IconMessage /><span>{thread.replyCount}</span></div>
-                  <div className="comm-thread-stat"><IconEye /><span>{thread.views}</span></div>
+                  {/* Views aren't counted for real discussions, so only samples show them */}
+                  {!thread.isDB && <div className="comm-thread-stat"><IconEye /><span>{thread.views}</span></div>}
                 </div>
               </Link>
             )

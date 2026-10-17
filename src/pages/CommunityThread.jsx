@@ -217,8 +217,6 @@ export default function CommunityThread() {
         </div>
         <h1 className="ct-title">{thread.title}</h1>
         <div className="ct-header-meta">
-          <div className="ct-views"><IconEye /> {thread.views || 0} views</div>
-          <div className="ct-dot">·</div>
           <div className="ct-reply-count">{replies.length} {replies.length === 1 ? 'reply' : 'replies'}</div>
         </div>
       </div>
