@@ -98,3 +98,14 @@ drop policy if exists "auth_read" on public.supplier_submissions;
 -- would let anyone set their own plan to 'pro'.
 drop policy if exists "Users can update own profile" on public.profiles;
 drop policy if exists "users can update own profile" on public.profiles;
+
+-- ── Community (tables and own-row policies created in the dashboard) ──
+-- Users may only write the text fields. Views, upvotes and the accepted
+-- answer flag are set by admins in the dashboard, so they can't be faked.
+revoke insert, update on public.community_threads from anon, authenticated;
+grant insert (user_id, author_name, title, body, category) on public.community_threads to authenticated;
+grant update (title, body, category) on public.community_threads to authenticated;
+
+revoke insert, update on public.community_replies from anon, authenticated;
+grant insert (thread_id, user_id, author_name, body) on public.community_replies to authenticated;
+grant update (body) on public.community_replies to authenticated;
