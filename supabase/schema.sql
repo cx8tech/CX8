@@ -109,3 +109,38 @@ grant update (title, body, category) on public.community_threads to authenticate
 revoke insert, update on public.community_replies from anon, authenticated;
 grant insert (thread_id, user_id, author_name, body) on public.community_replies to authenticated;
 grant update (body) on public.community_replies to authenticated;
+
+-- Posts always carry the name on the poster's account (auth user metadata
+-- full_name, set at registration or on first post), whatever the browser
+-- sends. Accounts without a name can't post.
+create or replace function public.set_community_author()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_name text;
+begin
+  -- Admin/dashboard inserts (no logged-in user) keep the name they give
+  if auth.uid() is null then
+    return new;
+  end if;
+  select nullif(trim(raw_user_meta_data->>'full_name'), '') into v_name
+  from auth.users where id = auth.uid();
+  if v_name is null then
+    raise exception 'Add your name to your account before posting';
+  end if;
+  new.user_id := auth.uid();
+  new.author_name := left(v_name, 50);
+  return new;
+end;
+$$;
+
+drop trigger if exists community_threads_author on public.community_threads;
+create trigger community_threads_author before insert on public.community_threads
+  for each row execute function public.set_community_author();
+
+drop trigger if exists community_replies_author on public.community_replies;
+create trigger community_replies_author before insert on public.community_replies
+  for each row execute function public.set_community_author();
