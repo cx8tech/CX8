@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { supabase, saveAccountName } from '../lib/supabase'
 import { threads as seedThreads } from '../data/communityThreads'
 
 const CATS = ['All', 'Valves', 'Actuators', 'Compressors', 'Instrumentation', 'Materials', 'General']
@@ -62,21 +62,17 @@ export default function Community() {
   const [query, setQuery] = useState('')
   const [dbThreads, setDbThreads] = useState([])
   const [showModal, setShowModal] = useState(false)
-  const [form, setForm] = useState({ title: '', category: 'Valves', body: '', author_name: '' })
+  const [form, setForm] = useState({ title: '', category: 'Valves', body: '' })
+  const [nameInput, setNameInput] = useState('')   // only for accounts without a name yet
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
 
+  // Posts are always shown under the name on the user's account
+  const accountName = user?.user_metadata?.full_name?.trim()
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const u = session?.user ?? null
-      setUser(u)
-      if (u) setForm(f => ({ ...f, author_name: u.email.split('@')[0] }))
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      const u = session?.user ?? null
-      setUser(u)
-      if (u) setForm(f => ({ ...f, author_name: u.email.split('@')[0] }))
-    })
+    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null))
     return () => subscription.unsubscribe()
   }, [])
 
@@ -121,14 +117,20 @@ export default function Community() {
 
   const submit = async e => {
     e.preventDefault()
-    if (!form.title.trim() || !form.body.trim() || !form.author_name.trim()) return
+    if (!form.title.trim() || !form.body.trim()) return
     setSubmitting(true)
     setFormError('')
+    const name = accountName || await saveAccountName(nameInput, setUser)
+    if (!name) {
+      setSubmitting(false)
+      setFormError('Please enter your full name (at least 2 characters).')
+      return
+    }
     const { data, error } = await supabase
       .from('community_threads')
       .insert({
         user_id: user.id,
-        author_name: form.author_name.trim(),
+        author_name: name,
         title: form.title.trim(),
         body: form.body.trim(),
         category: form.category,
@@ -220,17 +222,23 @@ export default function Community() {
               <button className="comm-modal-close" onClick={() => setShowModal(false)}><IconX /></button>
             </div>
             <form onSubmit={submit}>
-              <div className="comm-form-row">
-                <label className="comm-form-label">Your name</label>
-                <input
-                  className="comm-form-input"
-                  value={form.author_name}
-                  onChange={e => setForm(f => ({ ...f, author_name: e.target.value }))}
-                  placeholder="Display name"
-                  required
-                  maxLength={50}
-                />
-              </div>
+              {accountName ? (
+                <div className="comm-posting-as">Posting as <strong>{accountName}</strong></div>
+              ) : (
+                <div className="comm-form-row">
+                  <label className="comm-form-label">Your full name</label>
+                  <input
+                    className="comm-form-input"
+                    value={nameInput}
+                    onChange={e => setNameInput(e.target.value)}
+                    placeholder="Jane Smith"
+                    autoComplete="name"
+                    required
+                    maxLength={50}
+                  />
+                  <div className="comm-form-hint">Add your name to your account. It will be shown on your posts.</div>
+                </div>
+              )}
               <div className="comm-form-row">
                 <label className="comm-form-label">Category</label>
                 <select

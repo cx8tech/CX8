@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { supabase, saveAccountName } from '../lib/supabase'
 import { threads as seedThreads } from '../data/communityThreads'
 
 const categoryColors = {
@@ -59,21 +59,17 @@ export default function CommunityThread() {
   const [thread, setThread] = useState(null)
   const [replies, setReplies] = useState([])
   const [loading, setLoading] = useState(isDb)
-  const [replyForm, setReplyForm] = useState({ author_name: '', body: '' })
+  const [replyForm, setReplyForm] = useState({ body: '' })
+  const [nameInput, setNameInput] = useState('')   // only for accounts without a name yet
   const [submitting, setSubmitting] = useState(false)
   const [replyError, setReplyError] = useState('')
 
+  // Replies are always shown under the name on the user's account
+  const accountName = user?.user_metadata?.full_name?.trim()
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const u = session?.user ?? null
-      setUser(u)
-      if (u) setReplyForm(f => ({ ...f, author_name: u.email.split('@')[0] }))
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      const u = session?.user ?? null
-      setUser(u)
-      if (u) setReplyForm(f => ({ ...f, author_name: u.email.split('@')[0] }))
-    })
+    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null))
     return () => subscription.unsubscribe()
   }, [])
 
@@ -91,15 +87,21 @@ export default function CommunityThread() {
 
   const submitReply = async e => {
     e.preventDefault()
-    if (!replyForm.body.trim() || !replyForm.author_name.trim()) return
+    if (!replyForm.body.trim()) return
     setSubmitting(true)
     setReplyError('')
+    const name = accountName || await saveAccountName(nameInput, setUser)
+    if (!name) {
+      setSubmitting(false)
+      setReplyError('Please enter your full name (at least 2 characters).')
+      return
+    }
     const { data, error } = await supabase
       .from('community_replies')
       .insert({
         thread_id: threadId,
         user_id: user.id,
-        author_name: replyForm.author_name.trim(),
+        author_name: name,
         body: replyForm.body.trim(),
       })
       .select()
@@ -269,16 +271,24 @@ export default function CommunityThread() {
             <div className="ct-reply-form-heading">Post a Reply</div>
             <div className="ct-reply-form-header">
               <div className="ct-avatar" style={{ background: avatarColor(user.id) }}>
-                {(replyForm.author_name || '?').slice(0, 2).toUpperCase()}
+                {(accountName || nameInput || '?').slice(0, 2).toUpperCase()}
               </div>
-              <input
-                className="ct-reply-name"
-                value={replyForm.author_name}
-                onChange={e => setReplyForm(f => ({ ...f, author_name: e.target.value }))}
-                placeholder="Your name"
-                maxLength={50}
-                required
-              />
+              {accountName ? (
+                <div className="comm-posting-as">Posting as <strong>{accountName}</strong></div>
+              ) : (
+                <div style={{ flex: 1 }}>
+                  <input
+                    className="ct-reply-name"
+                    value={nameInput}
+                    onChange={e => setNameInput(e.target.value)}
+                    placeholder="Your full name"
+                    autoComplete="name"
+                    maxLength={50}
+                    required
+                  />
+                  <div className="comm-form-hint">Add your name to your account. It will be shown on your posts.</div>
+                </div>
+              )}
             </div>
             <textarea
               className="ct-reply-textarea"

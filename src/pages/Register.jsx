@@ -7,7 +7,7 @@ export default function Register() {
   const location = useLocation()
   const redirect = new URLSearchParams(location.search).get('redirect')
   const loginPath = redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login'
-  const [form, setForm] = useState({ email: '', password: '', confirm: '' })
+  const [form, setForm] = useState({ fullName: '', email: '', password: '', confirm: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
@@ -17,13 +17,16 @@ export default function Register() {
   const submit = async (e) => {
     e.preventDefault()
     setError('')
+    const fullName = form.fullName.trim()
+    if (fullName.length < 2) return setError('Please enter your full name.')
     if (form.password !== form.confirm) return setError('Passwords do not match.')
     if (form.password.length < 6) return setError('Password must be at least 6 characters.')
     setLoading(true)
     const { error: err } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
-      options: { emailRedirectTo: confirmRedirectUrl(redirect) },
+      // Shown as the author name on community posts
+      options: { emailRedirectTo: confirmRedirectUrl(redirect), data: { full_name: fullName } },
     })
     setLoading(false)
     if (err) return setError(err.message)
@@ -54,6 +57,20 @@ export default function Register() {
 
         <form className="auth-form" onSubmit={submit}>
           <div className="auth-field">
+            <label className="auth-label">Full name</label>
+            <input
+              className="auth-input"
+              type="text"
+              placeholder="Jane Smith"
+              value={form.fullName}
+              onChange={set('fullName')}
+              autoComplete="name"
+              maxLength={50}
+              required
+              autoFocus
+            />
+          </div>
+          <div className="auth-field">
             <label className="auth-label">Email address</label>
             <input
               className="auth-input"
@@ -62,7 +79,6 @@ export default function Register() {
               value={form.email}
               onChange={set('email')}
               required
-              autoFocus
             />
           </div>
           <div className="auth-field">

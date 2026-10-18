@@ -717,6 +717,10 @@ img { max-width: 100%; display: block; }
 .comm-modal-close:hover { color: var(--text); }
 .comm-modal-close svg { width: 18px; height: 18px; }
 .comm-form-row { margin-bottom: 16px; }
+.comm-posting-as { font-size: 13px; color: var(--text2); margin-bottom: 16px; }
+.ct-reply-form-header .comm-posting-as { margin-bottom: 0; align-self: center; }
+.comm-form-hint { font-size: 11.5px; color: var(--text3); margin-top: 5px; }
+.ct-reply-form-header .ct-reply-name { width: 100%; }
 .comm-form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; letter-spacing: .02em; }
 .comm-form-input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--text); background: var(--bg); transition: border-color .15s; box-sizing: border-box; }
 .comm-form-input:focus { outline: none; border-color: var(--teal2); }

@@ -11,6 +11,17 @@ export function confirmRedirectUrl(redirect) {
   return `${window.location.origin}${path}`
 }
 
+// Saves a name to an account that has none yet (community posts show the
+// account's name). Returns the saved name, or null if invalid or it failed.
+export async function saveAccountName(rawName, setUser) {
+  const name = rawName.trim()
+  if (name.length < 2) return null
+  const { data, error } = await supabase.auth.updateUser({ data: { full_name: name } })
+  if (error) return null
+  setUser(data.user)
+  return name
+}
+
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: true,       // keeps session across browser close (cross-device login)
