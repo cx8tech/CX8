@@ -57,15 +57,26 @@ export function parseModels(raw) {
   return [...seen.values()]
 }
 
-// Models the user has paid for within the re-run window
+// Validated manufacturer preferences, sorted and de-duplicated, or null
+export function parseBrands(raw) {
+  if (raw === undefined) return []
+  if (!Array.isArray(raw) || raw.length > 50 || !raw.every(b => typeof b === 'string')) return null
+  return [...new Set(raw)].sort()
+}
+
+// A paid model is only covered with the manufacturer preferences it was
+// paid with: within the re-run window only the pressure may change.
+export const coverKey = (model, brands) => `${modelKey(model)}#${JSON.stringify([...new Set(brands)].sort())}`
+
+// Model + preference combinations the user has paid for within the re-run window
 export async function getCoveredKeys(userId) {
   const { data } = await supabase
     .from('comparison_jobs')
-    .select('models')
+    .select('models, brands')
     .eq('user_id', userId)
     .eq('status', 'paid')
     .gt('expires_at', new Date().toISOString())
-  return new Set((data ?? []).flatMap(job => job.models.map(modelKey)))
+  return new Set((data ?? []).flatMap(job => job.models.map(m => coverKey(m, job.brands ?? []))))
 }
 
 // Paid jobs this calendar month, for the regular-user page

@@ -1,12 +1,13 @@
 import {
-  supabase, getUser, getPlan, isRateLimited, parseModels, modelKey,
-  getCoveredKeys, getUsage, PRICE_PER_MODEL_CENTS,
+  supabase, getUser, getPlan, isRateLimited, parseModels, parseBrands, modelKey,
+  coverKey, getCoveredKeys, getUsage, PRICE_PER_MODEL_CENTS,
 } from './_lib/common.js'
 import { findBestEquivalent, getRefTorque } from './_lib/matching.js'
 
 // POST { models: [{b, m, mode}], pressure, brands } → equivalents for those
 // models only. Pro users always get results; everyone else needs every
-// model covered by a paid job from the last 24 hours, otherwise this
+// model covered by a paid job from the last 24 hours with the same
+// manufacturer preferences (only the pressure may change), otherwise this
 // returns 402 with the price of the models still to pay for (VAT included).
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -16,9 +17,8 @@ export default async function handler(req, res) {
 
   const models = parseModels(req.body?.models)
   const pressure = Number(req.body?.pressure)
-  const brands = req.body?.brands ?? []
-  if (!models || !(pressure >= 2 && pressure <= 10) ||
-      !Array.isArray(brands) || brands.length > 50 || !brands.every(b => typeof b === 'string')) {
+  const brands = parseBrands(req.body?.brands)
+  if (!models || !(pressure >= 2 && pressure <= 10) || !brands) {
     return res.status(400).json({ error: 'Invalid request' })
   }
 
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   if (await getPlan(user.id) !== 'pro') {
     const covered = await getCoveredKeys(user.id)
-    const unpaid = models.filter(m => !covered.has(modelKey(m)))
+    const unpaid = models.filter(m => !covered.has(coverKey(m, brands)))
     if (unpaid.length) {
       return res.status(402).json({
         error: 'Payment required',

@@ -13,7 +13,7 @@ const faqs = [
   {
     category: 'Subscription & Billing',
     items: [
-      { q: 'How much does Tool 5 cost?', a: 'You pay €2.50 for each model you find equivalents for, VAT included — for example, 4 models cost €10. After paying, you can change the pressure or manufacturer preferences for those models as often as you like for 24 hours at no extra cost.' },
+      { q: 'How much does Tool 5 cost?', a: 'You pay €2.50 for each model you find equivalents for, VAT included — for example, 4 models cost €10. After paying, you can change the pressure for those models as often as you like for 24 hours at no extra cost. Adding models or changing manufacturer preferences needs a new payment.' },
       { q: 'What does a Pro subscription include?', a: 'CX8 Pro Monthly (€75/month, VAT included) gives you unlimited Tool 5 comparisons. It pays off from about 30 comparisons a month. When you click Find Equivalents, you can choose either the per-model fee or the monthly subscription.' },
       { q: 'How do I cancel my subscription?', a: 'You can cancel anytime: log in and click "Manage Subscription" at the top of the page, or email us at sales@cx8motion.com. Your access remains active until the end of your billing period.' },
       { q: 'Do you offer refunds?', a: 'If you are unsatisfied within 7 days of subscribing, contact us and we will issue a full refund, no questions asked.' },

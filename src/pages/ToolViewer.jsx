@@ -97,7 +97,7 @@ function PayModal({ info, user, onClose }) {
     const res = await fetch('/api/tool5-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
-      body: JSON.stringify({ models: info.models }),
+      body: JSON.stringify({ models: info.models, brands: info.brands }),
     })
     const body = await res.json().catch(() => ({}))
     if (res.ok && body.url) {
@@ -138,8 +138,14 @@ function PayModal({ info, user, onClose }) {
             </div>
             <ul className="pay-option-list">
               <li>Pay only for the models you selected</li>
-              <li>Change pressure or brands free for 24 hours</li>
             </ul>
+            <div className="pay-rules">
+              <div className="pay-rules-title">After paying, for 24 hours:</div>
+              <ul>
+                <li className="pay-rule-yes">Change the pressure as often as you like</li>
+                <li className="pay-rule-no">Adding models or changing manufacturer preferences needs a new payment</li>
+              </ul>
+            </div>
             {unpaid < requested && (
               <p className="pay-note">{requested - unpaid} model{requested - unpaid === 1 ? '' : 's'} you paid for in the last 24 hours {requested - unpaid === 1 ? 'is' : 'are'} included free.</p>
             )}
@@ -275,7 +281,7 @@ export default function ToolViewer() {
       postToTool({ type: 'cx8-results', pairs: body.pairs, pressure: request.pressure })
       return 'done'
     }
-    if (res.status === 402) return { ...body, models: request.models }
+    if (res.status === 402) return { ...body, models: request.models, brands: request.brands }
     if (res.status === 401) return 'login'
     postToTool({ type: 'cx8-compare-error', message: body.error })
     return 'error'

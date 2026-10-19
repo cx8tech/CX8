@@ -1,11 +1,12 @@
 import {
-  supabase, getUser, getPlan, isRateLimited, parseModels, modelKey,
-  getCoveredKeys, PRICE_PER_MODEL_CENTS,
+  supabase, getUser, getPlan, isRateLimited, parseModels, parseBrands,
+  coverKey, getCoveredKeys, PRICE_PER_MODEL_CENTS,
 } from './_lib/common.js'
 
-// POST { models: [{b, m, mode}] } → { url } of a LemonSqueezy checkout
-// priced per model not already paid for (PRICE_PER_MODEL_CENTS). The job is recorded as
-// pending; the webhook marks it paid (see lemonsqueezy-webhook.js).
+// POST { models: [{b, m, mode}], brands } → { url } of a LemonSqueezy
+// checkout priced per model not already paid for with these manufacturer
+// preferences (PRICE_PER_MODEL_CENTS). The job is recorded as pending with
+// its models and preferences; the webhook marks it paid.
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
@@ -13,7 +14,8 @@ export default async function handler(req, res) {
   if (!user) return res.status(401).json({ error: 'Login required' })
 
   const models = parseModels(req.body?.models)
-  if (!models) return res.status(400).json({ error: 'Invalid request' })
+  const brands = parseBrands(req.body?.brands)
+  if (!models || !brands) return res.status(400).json({ error: 'Invalid request' })
 
   if (await isRateLimited(user.id, 'tool5-checkout', 20)) {
     return res.status(429).json({ error: 'Too many checkout attempts. Please try again later.' })
@@ -23,13 +25,13 @@ export default async function handler(req, res) {
   }
 
   const covered = await getCoveredKeys(user.id)
-  const unpaid = models.filter(m => !covered.has(modelKey(m)))
+  const unpaid = models.filter(m => !covered.has(coverKey(m, brands)))
   if (!unpaid.length) return res.status(400).json({ error: 'These models are already paid for' })
 
   const amountCents = unpaid.length * PRICE_PER_MODEL_CENTS
   const { data: job, error: jobError } = await supabase
     .from('comparison_jobs')
-    .insert({ user_id: user.id, models: unpaid, model_count: unpaid.length, amount_cents: amountCents })
+    .insert({ user_id: user.id, models: unpaid, brands, model_count: unpaid.length, amount_cents: amountCents })
     .select('id')
     .single()
   if (jobError) return res.status(500).json({ error: 'Could not start checkout' })

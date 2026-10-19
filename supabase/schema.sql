@@ -64,6 +64,11 @@ create table if not exists public.comparison_jobs (
   expires_at    timestamptz
 );
 
+-- Manufacturer preferences the job was paid with: during the re-run window
+-- only the pressure may change, so other preferences need a new payment.
+alter table public.comparison_jobs
+  add column if not exists brands jsonb not null default '[]'::jsonb;
+
 create index if not exists comparison_jobs_user_idx
   on public.comparison_jobs (user_id, status, paid_at);
 
