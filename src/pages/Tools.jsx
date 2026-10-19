@@ -58,6 +58,22 @@ const IconLock = () => (
   </svg>
 )
 
+const IconPlay = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+  </svg>
+)
+
+const HOW_IT_WORKS_URL = 'https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg'
+
+// The whole card is a link to the tool, so this opens the video in a new
+// tab without following the card's link (a link can't contain another link).
+const openHowItWorks = e => {
+  e.preventDefault()
+  e.stopPropagation()
+  window.open(HOW_IT_WORKS_URL, '_blank', 'noopener,noreferrer')
+}
+
 export default function Tools() {
   const [query, setQuery] = useState('')
   const q = query.toLowerCase()
@@ -104,7 +120,18 @@ export default function Tools() {
                 {tool.logo && <img src={tool.logo} alt={tool.name} className="tool-card-page-logo" />}
                 <div className="tool-name" style={{ fontFamily: 'var(--display)', fontSize: 14, fontWeight: 600 }}>{tool.name}</div>
                 <div className="tool-desc" style={{ fontSize: 12.5, color: 'var(--text2)', lineHeight: 1.55, flex: 1 }}>{tool.desc}</div>
-                <span className="tool-badge paid">PRO</span>
+                <div className="tool-badge-row">
+                  <span className="tool-badge paid">PRO</span>
+                  <span
+                    className="tool-how-link"
+                    role="link"
+                    tabIndex={0}
+                    onClick={openHowItWorks}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') openHowItWorks(e) }}
+                  >
+                    <IconPlay /> See how it works
+                  </span>
+                </div>
                 <div className="open-tool-btn" style={{ background: 'var(--amber)', gap: 6 }}>
                   <IconLock /> Unlock Access
                 </div>

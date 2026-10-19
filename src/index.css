@@ -489,6 +489,11 @@ img { max-width: 100%; display: block; }
 .tool-badge { display: inline-flex; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: .04em; margin-top: 4px; align-self: flex-start; }
 .tool-badge.free { background: var(--teal-bg); color: var(--teal); }
 .tool-badge.paid { background: var(--amber-bg); color: var(--amber); }
+.tool-badge-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.tool-badge-row .tool-badge { margin-top: 0; }
+.tool-how-link { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; }
+.tool-how-link:hover, .tool-how-link:focus-visible { color: var(--teal2); text-decoration: underline; }
+.tool-how-link svg { width: 14px; height: 14px; }
 .open-tool-btn { display: flex; align-items: center; justify-content: center; gap: 7px; background: var(--teal2); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px; font-size: 12.5px; font-weight: 600; transition: all .15s; margin-top: 4px; }
 .open-tool-btn:hover { background: #0a7569; }
 .open-tool-btn svg { width: 12px; height: 12px; }
@@ -644,9 +649,6 @@ img { max-width: 100%; display: block; }
 .pay-option-price span { font-size: 13px; font-weight: 500; color: var(--text3); }
 .pay-option-total { font-size: 13px; color: var(--text2); margin-bottom: 10px; }
 .pay-option-total strong { color: var(--teal2); font-size: 15px; }
-.pay-how { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text2); margin-bottom: 8px; }
-.pay-how:hover { color: var(--teal2); }
-.pay-how svg { width: 14px; height: 14px; }
 .pay-option-list { list-style: none; padding: 0; margin: 0 0 6px; font-size: 12.5px; color: var(--text2); line-height: 1.8; }
 .pay-option-list li::before { content: '✓  '; color: var(--teal2); font-weight: 700; }
 .pay-error { margin-bottom: 12px; text-align: left; }

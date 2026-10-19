@@ -14,13 +14,6 @@ const IconLock = () => (
     <path d="M7 11V7a5 5 0 0110 0v4"/>
   </svg>
 )
-const IconPlay = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
-  </svg>
-)
-
-const HOW_IT_WORKS_URL = 'https://www.youtube.com/channel/UCPbeLgu2-X9W_dtl0fysBkg'
 
 // Pro Monthly price shown in the UI; the charged amount is set on the
 // LemonSqueezy subscription product. All prices include VAT.
@@ -172,9 +165,6 @@ function PayModal({ info, user, onClose }) {
           <button className="gate-btn-primary" disabled={!choice || !agreed || loading} onClick={proceed}>{buttonLabel}</button>
         </div>
         <p className="pay-note">All prices include VAT. The subscription pays off from about {breakEven} models a month.</p>
-        <a href={HOW_IT_WORKS_URL} target="_blank" rel="noopener noreferrer" className="pay-how">
-          <IconPlay /> See how it works
-        </a>
         {error && <div className="auth-error pay-error">{error}</div>}
         <button className="gate-btn-home" onClick={onClose}>Cancel</button>
       </div>
