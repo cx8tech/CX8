@@ -59,11 +59,13 @@ function GateModal({ onClose, toolPath, reason }) {
   )
 }
 
-// Payment prompt: per-model fee for the selected models, or the monthly
-// subscription. Regular users (3+ paid jobs this month) also see their usage.
+// Payment prompt: the user picks ONE option — the per-model fee for the
+// selected models, or the monthly subscription — then agrees to that
+// option's terms and continues. Regular users (3+ paid jobs this month)
+// also see their usage.
 function PayModal({ info, user, onClose }) {
-  const [agreeQuery, setAgreeQuery] = useState(false)
-  const [agreeSub, setAgreeSub] = useState(false)
+  const [choice, setChoice] = useState(null)   // 'model' | 'monthly' | null
+  const [agreed, setAgreed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const { requested, unpaid, priceCents, pricePerModelCents, usage } = info
@@ -72,6 +74,28 @@ function PayModal({ info, user, onClose }) {
 
   const checkoutBaseUrl = import.meta.env.VITE_LEMONSQUEEZY_CHECKOUT_URL
   const subscribeUrl = `${checkoutBaseUrl}${checkoutBaseUrl?.includes('?') ? '&' : '?'}checkout[email]=${encodeURIComponent(user?.email ?? '')}&checkout[custom][user_id]=${user?.id ?? ''}`
+
+  // Switching option clears the consent, so it always matches the choice
+  const choose = c => {
+    if (c === choice) return
+    setChoice(c)
+    setAgreed(false)
+    setError('')
+  }
+  const optionProps = c => ({
+    role: 'radio',
+    'aria-checked': choice === c,
+    tabIndex: 0,
+    className: `pay-option ${choice === c ? 'pay-option-selected' : ''}`,
+    onClick: () => choose(c),
+    onKeyDown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(c) } },
+  })
+
+  const proceed = () => {
+    if (choice === 'model') return payPerQuery()
+    setLoading(true)
+    window.location.href = subscribeUrl
+  }
 
   const payPerQuery = async () => {
     setLoading(true)
@@ -91,14 +115,14 @@ function PayModal({ info, user, onClose }) {
     setError(body.error || 'Could not start checkout. Please try again.')
   }
 
-  const queryConsent = (
-    <label className="pay-consent">
-      <input type="checkbox" checked={agreeQuery} onChange={e => setAgreeQuery(e.target.checked)} />
-      <span>I want my results immediately and understand that I lose my right of withdrawal once they are shown.</span>
-    </label>
-  )
   const n = unpaid
-  const payLabel = loading ? 'Opening checkout…' : `Pay ${euros(priceCents)}`
+  const consentText = choice === 'model'
+    ? 'I want my results immediately and understand that I lose my right of withdrawal once they are shown.'
+    : `I agree to a monthly subscription of ${PRO_MONTHLY_PRICE} that renews until I cancel.`
+  const buttonLabel = loading ? 'Opening checkout…'
+    : choice === 'model' ? `Pay ${euros(priceCents)}`
+    : choice === 'monthly' ? `Subscribe — ${PRO_MONTHLY_PRICE}/month`
+    : 'Choose an option above'
 
   return (
     <div className="gate-overlay pay-overlay" onClick={onClose}>
@@ -111,8 +135,9 @@ function PayModal({ info, user, onClose }) {
         ) : (
           <p className="gate-sub pay-usage">Choose how you'd like to pay.</p>
         )}
-        <div className="pay-options">
-          <div className="pay-option">
+        <div className="pay-options" role="radiogroup" aria-label="Payment option">
+          <div {...optionProps('model')}>
+            <span className="pay-option-radio" aria-hidden="true" />
             <div className="pay-option-name">Per-Model Fee</div>
             <div className="pay-option-price">{perQuery} <span>/ model</span></div>
             <div className="pay-option-total">
@@ -125,10 +150,9 @@ function PayModal({ info, user, onClose }) {
             {unpaid < requested && (
               <p className="pay-note">{requested - unpaid} model{requested - unpaid === 1 ? '' : 's'} you paid for in the last 24 hours {requested - unpaid === 1 ? 'is' : 'are'} included free.</p>
             )}
-            {queryConsent}
-            <button className="gate-btn-secondary" disabled={!agreeQuery || loading} onClick={payPerQuery}>{payLabel}</button>
           </div>
-          <div className="pay-option pay-option-featured">
+          <div {...optionProps('monthly')}>
+            <span className="pay-option-radio" aria-hidden="true" />
             <div className="pay-option-name">Monthly Subscription</div>
             <div className="pay-option-price">{PRO_MONTHLY_PRICE} <span>/ month</span></div>
             <div className="pay-option-total">Unlimited models, every month</div>
@@ -136,14 +160,16 @@ function PayModal({ info, user, onClose }) {
               <li>Unlimited comparisons</li>
               <li>Cancel anytime</li>
             </ul>
-            <label className="pay-consent">
-              <input type="checkbox" checked={agreeSub} onChange={e => setAgreeSub(e.target.checked)} />
-              <span>I agree to a monthly subscription of {PRO_MONTHLY_PRICE} that renews until I cancel.</span>
-            </label>
-            <button className="gate-btn-primary" disabled={!agreeSub} onClick={() => { window.location.href = subscribeUrl }}>
-              Subscribe — {PRO_MONTHLY_PRICE}/month
-            </button>
           </div>
+        </div>
+        {choice && (
+          <label className="pay-consent">
+            <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} />
+            <span>{consentText}</span>
+          </label>
+        )}
+        <div className="gate-actions">
+          <button className="gate-btn-primary" disabled={!choice || !agreed || loading} onClick={proceed}>{buttonLabel}</button>
         </div>
         <p className="pay-note">All prices include VAT. The subscription pays off from about {breakEven} models a month.</p>
         <a href={HOW_IT_WORKS_URL} target="_blank" rel="noopener noreferrer" className="pay-how">

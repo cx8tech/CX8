@@ -633,8 +633,12 @@ img { max-width: 100%; display: block; }
 .pay-consent { display: flex; gap: 10px; align-items: flex-start; text-align: left; font-size: 12px; color: var(--text2); line-height: 1.5; margin: 6px 0 16px; cursor: pointer; }
 .pay-consent input { margin-top: 2px; flex-shrink: 0; width: 16px; height: 16px; accent-color: var(--teal2); }
 .pay-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; text-align: left; }
-.pay-option { display: flex; flex-direction: column; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 18px 16px; }
-.pay-option-featured { border-color: var(--teal2); background: var(--teal-bg); }
+.pay-option { position: relative; display: flex; flex-direction: column; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 18px 16px; cursor: pointer; transition: border-color .15s, background .15s; }
+.pay-option:hover { border-color: var(--teal2); }
+.pay-option:focus-visible { outline: 2px solid var(--teal2); outline-offset: 2px; }
+.pay-option-selected { border-color: var(--teal2); background: var(--teal-bg); box-shadow: 0 0 0 1px var(--teal2); }
+.pay-option-radio { position: absolute; top: 16px; right: 16px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border2); background: var(--surface); }
+.pay-option-selected .pay-option-radio { border-color: var(--teal2); box-shadow: inset 0 0 0 4px var(--surface); background: var(--teal2); }
 .pay-option-name { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
 .pay-option-price { font-family: var(--display); font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
 .pay-option-price span { font-size: 13px; font-weight: 500; color: var(--text3); }
@@ -645,7 +649,6 @@ img { max-width: 100%; display: block; }
 .pay-how svg { width: 14px; height: 14px; }
 .pay-option-list { list-style: none; padding: 0; margin: 0 0 6px; font-size: 12.5px; color: var(--text2); line-height: 1.8; }
 .pay-option-list li::before { content: '✓  '; color: var(--teal2); font-weight: 700; }
-.pay-option .pay-consent { margin-top: auto; padding-top: 10px; }
 .pay-error { margin-bottom: 12px; text-align: left; }
 @media (max-width: 640px) {
   .pay-options { grid-template-columns: 1fr; }
