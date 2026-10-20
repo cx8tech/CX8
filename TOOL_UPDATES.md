@@ -14,10 +14,11 @@ Each tool is one HTML file in the folder **`public/tools/`** of this repository.
 | 4 — Actuator / Valve Match | `public/tools/tool4.html` |
 | 5 — Actuator Cross Reference | `public/tools/tool5.html` |
 | 6 — Advanced Compressor Tool | `public/tools/tool6.html` |
+| 8 — ΔP Finder (Pressure Drop Wizard) | `public/tools/tool8.html` |
 
 ## Which tools are safe to replace
 
-- **Tools 1 and 2: safe.** The website uses these files exactly as you wrote them. You can replace them directly.
+- **Tools 1, 2 and 8: safe.** The website uses these files exactly as you wrote them. You can replace them directly.
 - **Tools 3, 4 and 6: contact Keya first.** The website versions have extra code added, so that only logged-in users can download PDFs. If you upload your original file, that code is lost. The automatic check (see below) will stop the upload from going live.
 - **Tool 5: never upload your original file.** Your original Tool 5 file contains the full actuator dataset. On the website, that data is kept in a protected database instead, so it can't be copied from the page. Always send Tool 5 changes to Keya.
 - **New tools (7, 8, …):** uploading the file is not enough, because the tool also has to be added to the Tools page. Send new tools to Keya.

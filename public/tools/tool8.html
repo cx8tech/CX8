@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ΔP Finder — Pressure Drop Wizard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F1EFE7; --ink: #1C2430; --ink-soft: #4A5566;
+    --steel: #3A6E8F; --steel-deep: #244B63; --rust: #BD4A20;
+    --line: #C7C1B0; --card: #FBFAF6; --good: #3E7A4E; --grid: rgba(28,36,48,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #14181F; --ink: #EDEBE3; --ink-soft: #A8B0BC;
+      --steel: #6FA3C2; --steel-deep: #8FBBD6; --rust: #E27A4F;
+      --line: #333c48; --card: #1B212B; --good: #6FBD82; --grid: rgba(237,235,227,0.05);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #14181F; --ink: #EDEBE3; --ink-soft: #A8B0BC;
+    --steel: #6FA3C2; --steel-deep: #8FBBD6; --rust: #E27A4F;
+    --line: #333c48; --card: #1B212B; --good: #6FBD82; --grid: rgba(237,235,227,0.05);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--paper);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 28px 28px; color: var(--ink); font-family: 'JetBrains Mono', monospace;
+    min-height: 100%; padding: env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px) 0;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 28px 20px 40px; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* progress */
+  .progress { display: flex; gap: 6px; margin-bottom: 22px; }
+  .progress .dot { flex: 1; height: 4px; background: var(--line); border-radius: 2px; }
+  .progress .dot.done { background: var(--steel-deep); }
+  .progress .dot.active { background: var(--rust); }
+  .step-label { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+
+  h1.htitle {
+    font-family: 'Archivo', sans-serif; font-weight: 700; font-size: clamp(20px,5vw,26px);
+    margin: 0 0 4px; letter-spacing: -0.01em;
+  }
+  h1.htitle span { color: var(--rust); }
+
+  .step { display: none; flex: 1; flex-direction: column; }
+  .step.active { display: flex; }
+
+  .card { background: var(--card); border: 1px solid var(--line); padding: 20px; margin-bottom: 14px; }
+
+  /* step 1 concept */
+  .big-concept { font-size: 14px; line-height: 1.6; }
+  .big-concept b { color: var(--rust); }
+  .formula-box {
+    margin-top: 14px; padding: 14px 16px; background: var(--paper); border: 1px dashed var(--line);
+    text-align: center; font-size: 16px; font-weight: 700; color: var(--steel-deep); font-family: 'JetBrains Mono', monospace;
+  }
+  .mini-list { margin: 10px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.6; color: var(--ink-soft); }
+  .mini-list b { color: var(--ink); }
+
+  /* mode cards */
+  .mode-card {
+    background: var(--card); border: 2px solid var(--line); padding: 16px 18px; cursor: pointer; margin-bottom: 12px;
+  }
+  .mode-card.active { border-color: var(--rust); }
+  .mode-card .mtitle {
+    font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 4px;
+    display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  }
+  .mode-card .mtitle .letter {
+    background: var(--ink); color: var(--paper); font-size: 11px; width: 20px; height: 20px;
+    display: inline-flex; align-items: center; justify-content: center; border-radius: 2px; flex: none;
+  }
+  .mode-card.active .mtitle .letter { background: var(--rust); }
+  .mode-card .mtitle > span:last-child { font-size: 11px; font-weight: 400; color: var(--ink-soft); }
+  .mode-card .mdesc { font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+
+  .field-label-row { display: flex; align-items: center; gap: 6px; margin-top: 14px; margin-bottom: 5px; }
+  .field-label-row:first-of-type { margin-top: 0; }
+  .field-label-row label { margin: 0; font-size: 11.5px; color: var(--ink-soft); }
+
+  select, input[type=number], input[type=text] {
+    width: 100%; background: var(--paper); border: 1px solid var(--line); color: var(--ink);
+    padding: 9px 10px; font-family: 'JetBrains Mono', monospace; font-size: 14px; border-radius: 2px;
+  }
+  select:focus, input:focus { outline: 2px solid var(--steel); outline-offset: 1px; }
+  input::placeholder { color: var(--ink-soft); opacity: 0.55; }
+  .device-desc { font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; margin-top: 4px; }
+
+  .info-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--steel);
+    color: var(--steel-deep); font-family: 'Archivo', sans-serif; font-size: 10px; font-weight: 700;
+    cursor: pointer; flex: none; background: transparent; user-select: none;
+  }
+  .info-icon:hover, .info-icon:focus { background: var(--steel); color: var(--card); outline: none; }
+  .tooltip-popover {
+    position: fixed; max-width: 230px; background: var(--ink); color: var(--paper);
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.5;
+    padding: 9px 11px; border-radius: 3px; z-index: 999; box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  }
+
+  .slider-row { display: flex; align-items: center; gap: 10px; }
+  input[type=range] { flex: 1; accent-color: var(--steel); }
+  .slider-val { font-size: 13px; font-weight: 600; min-width: 42px; text-align: right; }
+
+  .unit-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+  .unit-switch button {
+    background: var(--paper); border: none; color: var(--ink-soft); font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600; padding: 8px 18px; cursor: pointer;
+  }
+  .unit-switch button.active { background: var(--steel); color: var(--card); }
+  .unit-switch button:not(:last-child) { border-right: 1px solid var(--line); }
+
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); gap: 10px;
+  }
+  .toggle-row .tlabel { font-size: 12px; color: var(--ink); }
+  .toggle-row .thint { font-size: 10.5px; color: var(--ink-soft); }
+  .switch { position: relative; width: 40px; height: 22px; flex: none; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider-switch { position: absolute; cursor: pointer; inset: 0; background: var(--line); border-radius: 22px; transition: 0.15s; }
+  .slider-switch::before {
+    content: ""; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px;
+    background: var(--card); border-radius: 50%; transition: 0.15s;
+  }
+  input:checked + .slider-switch { background: var(--steel); }
+  input:checked + .slider-switch::before { transform: translateX(18px); }
+
+  .row-list { margin-top: 8px; }
+  .acc-row { display: grid; grid-template-columns: 1fr 80px 28px; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .acc-label-cell select, .acc-label-cell input[type=text] { font-size: 12.5px; }
+  .acc-row input[type=number] { font-size: 12.5px; text-align: right; }
+  .rm-btn { background: none; border: 1px solid var(--line); color: var(--ink-soft); cursor: pointer; width: 28px; height: 34px; font-size: 14px; border-radius: 2px; }
+  .rm-btn:hover { border-color: var(--rust); color: var(--rust); }
+  .add-btn {
+    margin-top: 4px; width: 100%; background: none; border: 1px dashed var(--line); color: var(--steel-deep);
+    padding: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px; cursor: pointer; border-radius: 2px;
+  }
+  .add-btn:hover { border-color: var(--steel); }
+  .preset-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .preset-btn {
+    background: none; border: 1px solid var(--line); color: var(--ink-soft); font-size: 11px;
+    padding: 5px 9px; cursor: pointer; border-radius: 2px; font-family: 'JetBrains Mono', monospace;
+  }
+  .preset-btn:hover { border-color: var(--steel); color: var(--ink); }
+  .acc-sum { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 12.5px; }
+  .acc-sum .v { font-weight: 700; }
+
+  .result-block { margin-top: 4px; }
+  .stat { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .stat:last-child { border-bottom: none; }
+  .stat .k { font-size: 12px; color: var(--ink-soft); }
+  .stat .v { font-size: 17px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .stat.highlight .v { color: var(--rust); font-size: 23px; }
+  .diagram { margin: 16px 0 4px; }
+  .diagram svg { width: 100%; height: auto; display: block; }
+
+  .warning {
+    margin-top: 14px; padding: 12px 14px; font-size: 12px; line-height: 1.5;
+    border-left: 3px solid var(--rust); background: color-mix(in srgb, var(--rust) 8%, transparent); color: var(--ink);
+  }
+  .warning.ok { border-left-color: var(--good); background: color-mix(in srgb, var(--good) 8%, transparent); }
+  .warning.info { border-left-color: var(--steel); background: color-mix(in srgb, var(--steel) 8%, transparent); }
+  .warning b { display: block; margin-bottom: 3px; font-family: 'Archivo', sans-serif; }
+
+  .concept {
+    background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--steel);
+    padding: 12px 14px; margin-top: 16px; font-size: 12px; line-height: 1.6; color: var(--ink-soft);
+  }
+  .concept b { color: var(--ink); font-weight: 600; }
+
+  /* nav */
+  .nav-row { display: flex; gap: 10px; margin-top: auto; padding-top: 18px; }
+  .btn {
+    font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.02em;
+    padding: 12px 20px; border-radius: 2px; cursor: pointer; border: 2px solid var(--ink); background: var(--ink); color: var(--paper);
+    flex: 1; text-align: center;
+  }
+  .btn.secondary { background: transparent; color: var(--ink); border: 2px solid var(--line); flex: none; padding: 12px 18px; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.restart { background: var(--rust); border-color: var(--rust); color: var(--card); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1 class="htitle">ΔP <span>Finder</span></h1>
+  <div class="progress" id="progress"></div>
+
+  <!-- STEP 1: What is P2 -->
+  <div class="step active" data-step="1">
+    <div class="step-label">Step 1 of 5 — The concept</div>
+    <div class="card">
+      <div class="big-concept">
+        Sizing a valve or actuator needs <b>ΔP</b> — the pressure dropped across it. ΔP isn't guessed. It falls out once you know <b>P2</b>.
+      </div>
+      <div class="formula-box">ΔP = P1 − P2</div>
+      <ul class="mini-list">
+        <li><b>P1</b> — your supply or pump pressure. Usually already known.</li>
+        <li><b>P2</b> — the pressure your device needs downstream to actually do its job. This is the number people get stuck on.</li>
+        <li>Find P2 first. ΔP is just what's left over.</li>
+      </ul>
+    </div>
+    <div class="nav-row">
+      <button class="btn" id="toStep2">Start →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Mode -->
+  <div class="step" data-step="2">
+    <div class="step-label">Step 2 of 5 — What are you sizing?</div>
+    <div class="mode-card active" id="cardA" data-mode="convert">
+      <div class="mtitle"><span class="letter">A</span> Convert <span>(cylinders, rack-&amp;-pinion, vane actuators)</span></div>
+      <div class="mdesc">Device converts pressure into force/torque via known geometry.</div>
+    </div>
+    <div class="mode-card" id="cardB" data-mode="accumulate">
+      <div class="mtitle"><span class="letter">B</span> Accumulate <span>(ball/control valves, glycol or water loops)</span></div>
+      <div class="mdesc">No conversion factor — P2 comes from what's downstream.</div>
+    </div>
+    <div class="nav-row">
+      <button class="btn secondary" data-back>← Back</button>
+      <button class="btn" id="toStep3">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Inputs -->
+  <div class="step" data-step="3">
+    <div class="step-label">Step 3 of 5 — Your numbers</div>
+    <div class="card">
+      <div class="field-label-row">
+        <label for="p1">Supply / pump pressure — P1</label>
+        <span class="info-icon" tabindex="0" data-tip="What you start with: compressor/line pressure (pneumatic) or pump discharge pressure (liquid loop).">i</span>
+      </div>
+      <input type="number" id="p1" placeholder="e.g. 6.0">
+
+      <div id="modeAFields">
+        <div class="field-label-row">
+          <label for="deviceType">Device type</label>
+          <span class="info-icon" tabindex="0" data-tip="Pick the closest match — loads the right formula automatically.">i</span>
+        </div>
+        <select id="deviceType">
+          <option value="linear">Linear actuator (force)</option>
+          <option value="rackpinion">Rotary — rack &amp; pinion (torque)</option>
+          <option value="vane">Rotary — vane (torque)</option>
+          <option value="custom">Custom conversion factor</option>
+        </select>
+        <div class="device-desc" id="deviceDesc"></div>
+        <div id="dynamicFields"></div>
+      </div>
+
+      <div id="modeBFields" style="display:none;">
+        <div class="field-label-row">
+          <label>Downstream requirements</label>
+          <span class="info-icon" tabindex="0" data-tip="Everything past this valve needing pressure to work. Their sum is P2.">i</span>
+        </div>
+        <div class="row-list" id="accRows"></div>
+        <button class="add-btn" id="addRow">+ add requirement</button>
+        <div class="preset-row">
+          <button class="preset-btn" id="presetBallAir">Example: air line valve</button>
+          <button class="preset-btn" id="presetGlycol">Example: glycol loop valve</button>
+        </div>
+        <div class="acc-sum"><span>Sum → P2</span><span class="v" id="accSum">—</span></div>
+
+        <div class="toggle-row">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div>
+              <div class="tlabel">Closed loop check</div>
+              <div class="thint">Pumped loop sharing P1 with other valves</div>
+            </div>
+            <span class="info-icon" tabindex="0" data-tip="Turn on for a pumped liquid loop with other valves sharing the same pump. Checks if this valve keeps control.">i</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="loopToggle">
+            <span class="slider-switch"></span>
+          </label>
+        </div>
+        <div id="loopFields" style="display:none;">
+          <div class="field-label-row">
+            <label for="loopTotal">Total loop ΔP available</label>
+            <span class="info-icon" tabindex="0" data-tip="Pump head across the whole loop, supply to return — not just this valve.">i</span>
+          </div>
+          <input type="number" id="loopTotal" placeholder="e.g. 1.5">
+        </div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn secondary" data-back>← Back</button>
+      <button class="btn" id="toStep4">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: margin + units -->
+  <div class="step" data-step="4">
+    <div class="step-label">Step 4 of 5 — Margin &amp; units</div>
+    <div class="card">
+      <div class="field-label-row">
+        <label for="margin">Safety / dynamic-loss margin</label>
+        <span class="info-icon" tabindex="0" data-tip="Covers friction, seal drag, losses the formula misses. 15–30% typical.">i</span>
+      </div>
+      <div class="slider-row">
+        <input type="range" id="margin" min="0" max="50" value="20">
+        <div class="slider-val" id="marginVal">20%</div>
+      </div>
+
+      <div class="field-label-row" style="margin-top:22px;">
+        <label>Units</label>
+      </div>
+      <div class="unit-switch" id="unitSwitch">
+        <button data-unit="bar" class="active">bar</button>
+        <button data-unit="psi">psi</button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn secondary" data-back>← Back</button>
+      <button class="btn" id="toStep5">Calculate →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: Result -->
+  <div class="step" data-step="5">
+    <div class="step-label">Step 5 of 5 — Result</div>
+    <div class="card">
+      <div class="result-block">
+        <div class="stat"><div class="k">P2 — pressure needed at device</div><div class="v" id="outP2">—</div></div>
+        <div class="stat highlight"><div class="k">ΔP — pressure drop available</div><div class="v" id="outDP">—</div></div>
+        <div class="stat" id="authorityStat" style="display:none;"><div class="k">Valve authority β</div><div class="v" id="outBeta">—</div></div>
+      </div>
+      <div class="diagram"><svg id="pdiagram" viewBox="0 0 400 90" xmlns="http://www.w3.org/2000/svg"></svg></div>
+      <div id="warningBox"></div>
+    </div>
+
+    <div class="card" id="kvPanel" style="display:none;">
+      <div class="field-label-row"><label style="font-size:12.5px;font-weight:700;color:var(--ink);">Required Kv &amp; valve check</label></div>
+      <div class="concept">
+        <b>Kv</b> = flow coefficient at actual opening. <b>Kvs</b> = Kv fully open (datasheet). Below is <b>required Kv</b> — match a valve whose Kvs covers it with margin.
+      </div>
+      <div class="field-label-row" style="margin-top:14px;">
+        <label for="kvFlow">Design flow Q (m³/h)</label>
+        <span class="info-icon" tabindex="0" data-tip="Flow the valve must pass at normal operating conditions.">i</span>
+      </div>
+      <input type="number" id="kvFlow" placeholder="e.g. 12">
+      <div class="field-label-row">
+        <label for="kvSg">Specific gravity (SG)</label>
+        <span class="info-icon" tabindex="0" data-tip="1.0 for water. Glycol mixes ~1.03–1.08.">i</span>
+      </div>
+      <input type="number" id="kvSg" value="1.0" step="0.01">
+      <div class="stat" style="margin-top:10px;"><div class="k">Required Kv</div><div class="v" id="outReqKv">—</div></div>
+
+      <div class="field-label-row" style="margin-top:14px;">
+        <label for="kvKvs">Candidate valve's Kvs</label>
+        <span class="info-icon" tabindex="0" data-tip="Published Kvs of the model you're considering, fully open.">i</span>
+      </div>
+      <input type="number" id="kvKvs" placeholder="e.g. 16">
+      <div class="stat" style="margin-top:10px;"><div class="k">Required Kv ÷ Kvs</div><div class="v" id="outKvRatio">—</div></div>
+      <div id="kvWarning"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn secondary" data-back>← Back</button>
+      <button class="btn restart" id="restartBtn">Start over</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const PSI_PER_BAR = 14.5038;
+  let unit = "bar";
+
+  function toBar(v) { return unit === "psi" ? v / PSI_PER_BAR : v; }
+  function fromBar(v) { return unit === "psi" ? v * PSI_PER_BAR : v; }
+  function fmt(v) { return (unit === "psi" ? v.toFixed(1) : v.toFixed(2)) + " " + unit; }
+  function round(v) { return unit === "psi" ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100; }
+
+  // ---- wizard navigation ----
+  const TOTAL_STEPS = 5;
+  let currentStep = 1;
+  function renderProgress() {
+    const prog = $("progress");
+    prog.innerHTML = "";
+    for (let i = 1; i <= TOTAL_STEPS; i++) {
+      const d = document.createElement("div");
+      d.className = "dot" + (i < currentStep ? " done" : "") + (i === currentStep ? " active" : "");
+      prog.appendChild(d);
+    }
+  }
+  function goToStep(n) {
+    currentStep = n;
+    document.querySelectorAll(".step").forEach(s => s.classList.toggle("active", parseInt(s.dataset.step) === n));
+    renderProgress();
+    window.scrollTo(0,0);
+    if (n === 5) compute();
+  }
+  document.querySelectorAll("[data-back]").forEach(btn => {
+    btn.addEventListener("click", () => goToStep(Math.max(1, currentStep - 1)));
+  });
+  $("toStep2").addEventListener("click", () => goToStep(2));
+  $("toStep3").addEventListener("click", () => goToStep(3));
+  $("toStep4").addEventListener("click", () => goToStep(4));
+  $("toStep5").addEventListener("click", () => goToStep(5));
+  $("restartBtn").addEventListener("click", () => goToStep(1));
+  renderProgress();
+
+  const deviceConfig = {
+    linear: {
+      desc: "P2 = Force required ÷ effective piston area.",
+      fields: [
+        { id: "force", label: "Required force (N)", ph: "e.g. 500", tip: "Force the cylinder must produce — from your application spec." },
+        { id: "area", label: "Effective piston area (mm²)", ph: "e.g. 1000", tip: "π × (bore diameter/2)² from the cylinder datasheet." }
+      ],
+      compute: v => v.force / v.area * 10
+    },
+    rackpinion: {
+      desc: "P2 = Torque required ÷ (piston area × pinion radius × pistons).",
+      fields: [
+        { id: "torque", label: "Required torque (Nm)", ph: "e.g. 40", tip: "Torque the actuator must deliver at the shaft." },
+        { id: "area", label: "Piston area (mm²)", ph: "e.g. 800", tip: "Single piston's effective area, from the datasheet." },
+        { id: "radius", label: "Pinion pitch radius (mm)", ph: "e.g. 12", tip: "Pitch circle radius — not the shaft diameter." },
+        { id: "pistons", label: "Engaged pistons", ph: "e.g. 2", tip: "Usually 2 for dual-rack, 1 for single-rack." }
+      ],
+      compute: v => {
+        const forceN = (v.torque * 1000) / (v.radius * v.pistons);
+        return forceN / v.area * 10;
+      }
+    },
+    vane: {
+      desc: "P2 = Torque required ÷ torque-per-bar constant.",
+      fields: [
+        { id: "torque", label: "Required torque (Nm)", ph: "e.g. 60", tip: "Torque the actuator must deliver at the shaft." },
+        { id: "constant", label: "Torque-per-bar constant (Nm/bar)", ph: "e.g. 12", tip: "Published by the manufacturer for this model." }
+      ],
+      compute: v => v.torque / v.constant
+    },
+    custom: {
+      desc: "P2 = Required output ÷ your conversion factor.",
+      fields: [
+        { id: "output", label: "Required output (your unit)", ph: "e.g. 100", tip: "Whatever your device outputs, in your unit." },
+        { id: "factor", label: "Conversion factor (output-unit / bar)", ph: "e.g. 25", tip: "Output per bar of pressure for this device." }
+      ],
+      compute: v => v.output / v.factor
+    }
+  };
+
+  const dsOptions = [
+    "Downstream equipment min. pressure", "Pipe friction loss", "Elevation head",
+    "CDU / coil min. ΔP", "Return header pressure", "Other component drop"
+  ];
+
+  let mode = "convert";
+  const cardA = $("cardA"), cardB = $("cardB");
+  const modeAFields = $("modeAFields"), modeBFields = $("modeBFields");
+  const deviceType = $("deviceType"), dynamicFields = $("dynamicFields"), deviceDesc = $("deviceDesc");
+  const accRows = $("accRows");
+  const marginInput = $("margin"), marginVal = $("marginVal");
+  const p1Input = $("p1");
+  const loopToggle = $("loopToggle"), loopFields = $("loopFields"), loopTotal = $("loopTotal");
+  const authorityStat = $("authorityStat");
+
+  $("unitSwitch").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-unit]");
+    if (!btn) return;
+    const newUnit = btn.dataset.unit;
+    if (newUnit === unit) return;
+    convertFieldsOnUnitChange(unit, newUnit);
+    unit = newUnit;
+    document.querySelectorAll("#unitSwitch button").forEach(b => b.classList.toggle("active", b.dataset.unit === unit));
+    updateUnitLabels();
+  });
+
+  function convertFieldsOnUnitChange(oldU, newU) {
+    const convert = (val) => {
+      if (val === "" || val === null || isNaN(parseFloat(val))) return val;
+      const bar = oldU === "psi" ? parseFloat(val) / PSI_PER_BAR : parseFloat(val);
+      const out = newU === "psi" ? bar * PSI_PER_BAR : bar;
+      return newU === "psi" ? (Math.round(out * 10) / 10) : (Math.round(out * 100) / 100);
+    };
+    p1Input.value = convert(p1Input.value);
+    if (loopTotal.value !== "") loopTotal.value = convert(loopTotal.value);
+    accRows.querySelectorAll(".acc-row").forEach(row => {
+      const numInput = row.querySelector("input[type=number]");
+      if (numInput.value !== "") numInput.value = convert(numInput.value);
+    });
+  }
+  function updateUnitLabels() {
+    p1Input.placeholder = unit === "psi" ? "e.g. 87.0" : "e.g. 6.0";
+    loopTotal.placeholder = unit === "psi" ? "e.g. 21.8" : "e.g. 1.5";
+    accRows.querySelectorAll(".acc-row input[type=number]").forEach(inp => { inp.placeholder = unit; });
+  }
+
+  function setMode(m) {
+    mode = m;
+    cardA.classList.toggle("active", m === "convert");
+    cardB.classList.toggle("active", m === "accumulate");
+    modeAFields.style.display = m === "convert" ? "block" : "none";
+    modeBFields.style.display = m === "accumulate" ? "block" : "none";
+  }
+  cardA.addEventListener("click", () => setMode("convert"));
+  cardB.addEventListener("click", () => setMode("accumulate"));
+
+  function renderDeviceFields() {
+    const cfg = deviceConfig[deviceType.value];
+    deviceDesc.textContent = cfg.desc;
+    dynamicFields.innerHTML = "";
+    cfg.fields.forEach(f => {
+      const row = document.createElement("div");
+      row.className = "field-label-row";
+      row.innerHTML = `<label>${f.label}</label><span class="info-icon" tabindex="0" data-tip="${escapeAttr(f.tip || "")}">i</span>`;
+      const inp = document.createElement("input");
+      inp.type = "number"; inp.id = "fld_" + f.id; inp.placeholder = f.ph || ""; inp.step = "any";
+      dynamicFields.appendChild(row); dynamicFields.appendChild(inp);
+    });
+    bindTooltips();
+  }
+  deviceType.addEventListener("change", renderDeviceFields);
+
+  function computeModeA() {
+    const cfg = deviceConfig[deviceType.value];
+    const v = {};
+    let complete = true;
+    cfg.fields.forEach(f => {
+      const raw = $("fld_" + f.id).value;
+      if (raw === "") complete = false;
+      v[f.id] = parseFloat(raw) || 0;
+    });
+    return complete ? cfg.compute(v) : null;
+  }
+
+  function addAccRow() {
+    const row = document.createElement("div");
+    row.className = "acc-row";
+    const labelCell = document.createElement("div");
+    labelCell.className = "acc-label-cell";
+    labelCell.appendChild(buildLabelSelect());
+    const valInput = document.createElement("input");
+    valInput.type = "number"; valInput.step = "any"; valInput.placeholder = unit;
+    const rmBtn = document.createElement("button");
+    rmBtn.className = "rm-btn"; rmBtn.title = "remove"; rmBtn.textContent = "✕";
+    rmBtn.addEventListener("click", () => { row.remove(); });
+    row.appendChild(labelCell); row.appendChild(valInput); row.appendChild(rmBtn);
+    accRows.appendChild(row);
+  }
+  function buildLabelSelect() {
+    const sel = document.createElement("select");
+    const blank = document.createElement("option");
+    blank.value = ""; blank.textContent = "Select what this is…"; blank.disabled = true; blank.selected = true;
+    sel.appendChild(blank);
+    dsOptions.forEach(o => { const opt = document.createElement("option"); opt.value = o; opt.textContent = o; sel.appendChild(opt); });
+    const other = document.createElement("option");
+    other.value = "__other__"; other.textContent = "Other — type my own";
+    sel.appendChild(other);
+    sel.addEventListener("change", () => {
+      if (sel.value === "__other__") {
+        const cell = sel.parentElement;
+        cell.innerHTML = "";
+        const txt = document.createElement("input");
+        txt.type = "text"; txt.placeholder = "Type what this is";
+        cell.appendChild(txt);
+        txt.focus();
+      }
+    });
+    return sel;
+  }
+  $("addRow").addEventListener("click", addAccRow);
+  function clearAccRows() { accRows.innerHTML = ""; }
+  function fillAccRow(label, valBar) {
+    addAccRow();
+    const row = accRows.lastElementChild;
+    const cell = row.querySelector(".acc-label-cell");
+    cell.innerHTML = "";
+    const txt = document.createElement("input");
+    txt.type = "text"; txt.value = label;
+    cell.appendChild(txt);
+    row.querySelector("input[type=number]").value = round(fromBar(valBar));
+  }
+  $("presetBallAir").addEventListener("click", () => {
+    clearAccRows();
+    fillAccRow("Downstream process min. pressure", 3.5);
+    fillAccRow("Pipe friction loss", 0.3);
+    loopToggle.checked = false; loopFields.style.display = "none";
+  });
+  $("presetGlycol").addEventListener("click", () => {
+    clearAccRows();
+    fillAccRow("Return header pressure", 1.0);
+    fillAccRow("CDU / coil min. ΔP", 1.0);
+    fillAccRow("Pipe friction loss", 0.6);
+    fillAccRow("Elevation head", 0.2);
+    loopToggle.checked = true; loopFields.style.display = "block";
+    loopTotal.value = round(fromBar(1.5));
+  });
+  function computeModeB() {
+    let sum = 0, any = false;
+    accRows.querySelectorAll(".acc-row").forEach(row => {
+      const raw = row.querySelector("input[type=number]").value;
+      if (raw !== "") { sum += toBar(parseFloat(raw) || 0); any = true; }
+    });
+    $("accSum").textContent = any ? fmt(sum) : "—";
+    return any ? sum : null;
+  }
+  loopToggle.addEventListener("change", () => { loopFields.style.display = loopToggle.checked ? "block" : "none"; });
+  marginInput.addEventListener("input", () => { marginVal.textContent = marginInput.value + "%"; });
+
+  // ---- tooltips ----
+  function escapeAttr(s) { return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"); }
+  let activeTooltip = null;
+  function closeTooltip() { if (activeTooltip) { activeTooltip.remove(); activeTooltip = null; } }
+  function bindTooltips() {
+    document.querySelectorAll(".info-icon").forEach(el => {
+      if (el.dataset.bound) return;
+      el.dataset.bound = "1";
+      const open = (e) => {
+        e.stopPropagation();
+        const already = activeTooltip && activeTooltip.dataset.owner === el.dataset.id;
+        closeTooltip();
+        if (already) return;
+        const id = el.dataset.id || Math.random().toString(36).slice(2);
+        el.dataset.id = id;
+        const tip = document.createElement("div");
+        tip.className = "tooltip-popover"; tip.dataset.owner = id;
+        tip.textContent = el.getAttribute("data-tip");
+        document.body.appendChild(tip);
+        const r = el.getBoundingClientRect();
+        const tw = tip.offsetWidth;
+        let left = r.left + r.width/2 - tw/2;
+        left = Math.max(10, Math.min(left, window.innerWidth - tw - 10));
+        let top = r.bottom + 8;
+        if (top + tip.offsetHeight > window.innerHeight - 10) top = r.top - tip.offsetHeight - 8;
+        tip.style.left = left + "px"; tip.style.top = top + "px";
+        activeTooltip = tip;
+      };
+      el.addEventListener("click", open);
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(e); } });
+    });
+  }
+  document.addEventListener("click", closeTooltip);
+  window.addEventListener("scroll", closeTooltip, true);
+
+  function drawDiagram(p1, p2, dp) {
+    const svg = $("pdiagram");
+    const scale = p1 > 0 ? 340 / p1 : 0;
+    const p2x = 30 + Math.max(0, Math.min(p1, p2)) * scale;
+    const p1x = 30 + p1 * scale;
+    const dpNegative = p2 > p1;
+    svg.innerHTML = `
+      <line x1="30" y1="45" x2="370" y2="45" stroke="var(--line)" stroke-width="1"/>
+      <rect x="30" y="35" width="${Math.max(0,p2x-30)}" height="20" fill="var(--steel)" opacity="0.35"/>
+      <rect x="${p2x}" y="35" width="${Math.max(0,p1x-p2x)}" height="20" fill="var(--rust)" opacity="${dpNegative ? '0.15' : '0.55'}"/>
+      <line x1="30" y1="25" x2="30" y2="65" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="${p1x}" y1="25" x2="${p1x}" y2="65" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="${p2x}" y1="25" x2="${p2x}" y2="65" stroke="var(--steel-deep)" stroke-width="2"/>
+      <text x="30" y="80" font-family="JetBrains Mono" font-size="10" fill="var(--ink-soft)" text-anchor="middle">0</text>
+      <text x="${p1x}" y="80" font-family="JetBrains Mono" font-size="10" fill="var(--ink)" text-anchor="middle" font-weight="700">P1 ${fromBar(p1).toFixed(1)}</text>
+      <text x="${p2x}" y="18" font-family="JetBrains Mono" font-size="10" fill="var(--steel-deep)" text-anchor="middle" font-weight="700">P2 ${fromBar(p2).toFixed(1)}</text>
+      <text x="${(p1x+p2x)/2}" y="60" font-family="JetBrains Mono" font-size="10" fill="var(--rust)" text-anchor="middle" font-weight="700">${dpNegative ? '✕' : 'ΔP ' + fromBar(dp).toFixed(1)}</text>
+    `;
+  }
+
+  const kvPanel = $("kvPanel"), kvFlow = $("kvFlow"), kvSg = $("kvSg"), kvKvs = $("kvKvs");
+  function computeKv(dpBar) {
+    if (mode !== "accumulate" || dpBar === null || dpBar <= 0) { kvPanel.style.display = "none"; return; }
+    kvPanel.style.display = "block";
+    const q = parseFloat(kvFlow.value);
+    const sg = parseFloat(kvSg.value) || 1.0;
+    if (!q || q <= 0) {
+      $("outReqKv").textContent = "—"; $("outKvRatio").textContent = "—"; $("kvWarning").innerHTML = ""; return;
+    }
+    const reqKv = q * Math.sqrt(sg / dpBar);
+    $("outReqKv").textContent = reqKv.toFixed(2);
+    const kvs = parseFloat(kvKvs.value);
+    if (!kvs || kvs <= 0) {
+      $("outKvRatio").textContent = "—";
+      $("kvWarning").innerHTML = `<div class="warning info"><b>Enter a candidate Kvs</b>Type a valve's datasheet Kvs to check sizing.</div>`;
+      return;
+    }
+    const ratio = reqKv / kvs;
+    $("outKvRatio").textContent = (ratio * 100).toFixed(0) + "%";
+    if (ratio > 0.9) {
+      $("kvWarning").innerHTML = `<div class="warning"><b>Undersized</b>Runs near fully open at design flow. Pick a larger Kvs.</div>`;
+    } else if (ratio < 0.5) {
+      $("kvWarning").innerHTML = `<div class="warning"><b>Oversized</b>Sits barely open — poor control. Pick a smaller Kvs.</div>`;
+    } else {
+      $("kvWarning").innerHTML = `<div class="warning ok"><b>Good match</b>${(ratio*100).toFixed(0)}% of Kvs — reasonable control margin.</div>`;
+    }
+  }
+  kvFlow.addEventListener("input", () => computeKv(lastDp));
+  kvSg.addEventListener("input", () => computeKv(lastDp));
+  kvKvs.addEventListener("input", () => computeKv(lastDp));
+
+  let lastDp = null;
+
+  function compute() {
+    const margin = parseFloat(marginInput.value) / 100;
+    const p1 = toBar(parseFloat(p1Input.value) || 0);
+    let p2raw = mode === "convert" ? computeModeA() : computeModeB();
+    const warningBox = $("warningBox");
+
+    if (p2raw === null) {
+      $("outP2").textContent = "—"; $("outDP").textContent = "—";
+      drawDiagram(p1, 0, p1);
+      warningBox.innerHTML = `<div class="warning info"><b>Missing inputs</b>Go back and fill in step 3's fields.</div>`;
+      authorityStat.style.display = "none";
+      lastDp = null; computeKv(null);
+      return;
+    }
+
+    let p2 = p2raw * (1 + margin);
+    const dp = p1 - p2;
+    $("outP2").textContent = fmt(p2);
+    $("outDP").textContent = fmt(dp);
+    drawDiagram(p1, p2, dp);
+
+    const dpPct = p1 > 0 ? (dp / p1) * 100 : 0;
+    let msgs = [];
+    if (dp < 0) {
+      msgs.push(`<div class="warning"><b>Not achievable</b>Required P2 (${fmt(p2)}) exceeds P1. Raise supply pressure or re-check downstream requirements.</div>`);
+    } else if (dp === 0) {
+      msgs.push(`<div class="warning"><b>Zero margin</b>P2 equals P1 — no drop budget left.</div>`);
+    } else if (dpPct < 5) {
+      msgs.push(`<div class="warning"><b>Very small ΔP</b>Only ${dpPct.toFixed(1)}% of P1 → oversized, costlier component.</div>`);
+    } else if (dpPct > 50) {
+      msgs.push(`<div class="warning"><b>Large ΔP</b>Over half of P1 dropped here — check if P2 is really this low.</div>`);
+    } else {
+      msgs.push(`<div class="warning ok"><b>Reasonable range</b>ΔP is ${dpPct.toFixed(1)}% of P1 — workable for sizing.</div>`);
+    }
+
+    if (mode === "accumulate" && loopToggle.checked && dp > 0 && loopTotal.value !== "") {
+      const loopTot = toBar(parseFloat(loopTotal.value) || 0);
+      const beta = loopTot > 0 ? dp / loopTot : 0;
+      authorityStat.style.display = "flex";
+      $("outBeta").textContent = beta.toFixed(2);
+      if (beta < 0.3) msgs.push(`<div class="warning"><b>Low authority (β ${beta.toFixed(2)})</b>Valve loses control once others open. Target ~0.3–0.5.</div>`);
+      else if (beta > 0.5) msgs.push(`<div class="warning info"><b>High authority (β ${beta.toFixed(2)})</b>Fine for control, check pump sizing/energy cost.</div>`);
+      else msgs.push(`<div class="warning ok"><b>Good authority (β ${beta.toFixed(2)})</b>Valve retains real control.</div>`);
+    } else {
+      authorityStat.style.display = "none";
+    }
+    warningBox.innerHTML = msgs.join("");
+    lastDp = dp;
+    computeKv(dp);
+  }
+
+  addAccRow();
+  renderDeviceFields();
+  bindTooltips();
+  updateUnitLabels();
+})();
+</script>
+</body>
+</html>

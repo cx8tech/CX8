@@ -4,6 +4,7 @@ import tool3Logo from '../../assets/images/tool 3 logo.png'
 import tool4Logo from '../../assets/images/tool 4 logo.png'
 import tool5Logo from '../../assets/images/tool 5 logo.png'
 import tool6Logo from '../../assets/images/tool 6 logo (pro tool).png'
+import tool8Logo from '../../assets/images/Tool 8 Delta P Image.png'
 
 export const allTools = [
   {
@@ -59,5 +60,14 @@ export const allTools = [
     badge: 'free',
     icon: 'compressor',
     logo: tool5Logo,
+  },
+  {
+    id: 'pressure-drop',
+    name: 'ΔP Finder — Pressure Drop Wizard',
+    desc: 'Work out the pressure drop (ΔP) you need to size a valve or actuator — find the required downstream pressure in five guided steps.',
+    file: '/tools/tool8.html',
+    badge: 'free',
+    icon: 'flow',
+    logo: tool8Logo,
   },
 ]
