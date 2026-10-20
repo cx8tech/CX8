@@ -1,37 +1,32 @@
 import { useState } from 'react'
 
+// Text from pages/CX8_FAQ.docx (client-supplied, October 2026)
 const faqs = [
   {
     category: 'Tools',
     items: [
-      { q: 'Are the tools free to use?', a: 'Most tools are completely free — Tools 1 through 4 and Tool 6 can be used without an account. In Tool 5 (Actuator Cross Reference) you can browse every model for free and pay €2.50 (incl. VAT) for each model you find equivalents for.' },
-      { q: 'Do I need an account to use the tools?', a: 'No account is needed to use the free tools. A free account is needed to download PDF reports and to see Tool 5 results.' },
-      { q: 'Can I use the tools on my phone or tablet?', a: 'Yes. All tools are designed to work on mobile, tablet, and desktop.' },
-      { q: 'How accurate are the calculations?', a: 'Our tools use industry-standard formulas and reference data. Always verify critical results against official manufacturer documentation before use in safety-critical applications.' },
+      { q: 'Are the tools free to use?', a: 'Most of our tools are free and can be used without an account. Some advanced tools are part of CX8 Pro. Details are in the Pricing section.' },
+      { q: 'Do I need an account to use the tools?', a: 'No account is needed for the free tools. A free account lets you download PDF reports. Pro tools need an account and a Pro purchase or subscription.' },
+      { q: 'Can I use the tools on my phone or tablet?', a: 'Yes. All tools work on mobile, tablet and desktop.' },
+      { q: 'How accurate are the calculations?', a: 'Our tools use industry-standard formulas and reference data. Always check critical results against the official manufacturer documentation before using them in safety-critical applications.' },
     ],
   },
   {
     category: 'Subscription & Billing',
     items: [
-      { q: 'How much does Tool 5 cost?', a: 'You pay €2.50 for each model you find equivalents for, VAT included — for example, 4 models cost €10. After paying, you can change the pressure for those models as often as you like for 24 hours at no extra cost. Adding models or changing manufacturer preferences needs a new payment.' },
-      { q: 'What does a Pro subscription include?', a: 'CX8 Pro Monthly (€75/month, VAT included) gives you unlimited Tool 5 comparisons. It pays off from about 30 comparisons a month. When you click Find Equivalents, you can choose either the per-model fee or the monthly subscription.' },
-      { q: 'How do I cancel my subscription?', a: 'You can cancel anytime: log in and click "Manage Subscription" at the top of the page, or email us at sales@cx8motion.com. Your access remains active until the end of your billing period.' },
-      { q: 'Do you offer refunds?', a: 'If you are unsatisfied within 7 days of subscribing, contact us and we will issue a full refund, no questions asked.' },
-      { q: 'Which payment methods do you accept?', a: 'We accept all major credit and debit cards via LemonSqueezy, our payment provider.' },
+      { q: 'What is the difference between the free tools and Pro?', a: 'Free tools are open to everyone. Pro tools add advanced functionality and are available as pay-per-use or as a subscription. See the Pricing section for current options and prices.' },
+      { q: 'Where can I find current prices?', a: 'All current prices and plans are listed in the Pricing section. Prices include VAT.' },
+      { q: 'How do I cancel my subscription?', a: 'You can cancel at any time. Log in and click "Manage Subscription" at the top of the page, or email sales@cx8motion.com. Your access stays active until the end of your billing period.' },
+      { q: 'Do you offer refunds?', a: 'If you are not satisfied within 7 days of subscribing, contact us and we will give you a full refund, no questions asked.' },
+      { q: 'Which payment methods do you accept?', a: 'We accept all major credit and debit cards through LemonSqueezy, our payment provider.' },
     ],
   },
   {
     category: 'Community',
     items: [
-      { q: 'Do I need an account to read community posts?', a: 'No — anyone can read discussions. You need a free account to post or reply.' },
-      { q: 'How do I report inappropriate content?', a: 'Email us at sales@cx8motion.com with a link to the post and we will review it promptly.' },
-    ],
-  },
-  {
-    category: 'Account',
-    items: [
-      { q: 'How do I change my password?', a: 'Currently, contact us at sales@cx8motion.com and we will help you reset it.' },
-      { q: 'How do I delete my account?', a: 'Email sales@cx8motion.com with your request and we will permanently delete your account and all associated data within 30 days, in line with GDPR.' },
+      { q: 'Do I need an account to read community posts?', a: 'No. Anyone can read the discussions. You need a free account to post or reply.' },
+      { q: 'How do I report inappropriate content?', a: 'Email sales@cx8motion.com with a link to the post, and we will review it promptly.' },
+      { q: 'How do I delete my account?', a: 'Email sales@cx8motion.com with your request. We will permanently delete your account and all associated data within 30 days, in line with GDPR.' },
     ],
   },
 ]
