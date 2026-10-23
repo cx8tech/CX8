@@ -136,9 +136,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 /* ── Basket drawer ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,.4);z-index:400;}
 .overlay.open{display:block;}
-.drawer{position:fixed;top:0;right:0;width:min(400px,100vw);max-width:100vw;height:100%;background:var(--surface);z-index:401;
-  box-shadow:-8px 0 30px rgba(0,0,0,.15);transform:translateX(100%);transition:transform .2s;display:flex;flex-direction:column;}
-.drawer.open{transform:translateX(0);}
+.drawer{position:fixed;top:0;right:-420px;width:400px;height:100%;background:var(--surface);z-index:401;
+  box-shadow:-8px 0 30px rgba(0,0,0,.15);transition:right .2s;display:flex;flex-direction:column;}
+.drawer.open{right:0;}
 .drawer-hdr{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
 .drawer-hdr h3{font-family:var(--display);font-size:16px;color:var(--navy);}
 .drawer-close{cursor:pointer;font-size:18px;color:var(--text3);background:none;border:none;}
@@ -167,22 +167,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 
 .sup-plate{position:relative;border-radius:8px;padding:14px 16px;margin-bottom:10px;
   background:linear-gradient(155deg,#EDEFEF 0%, #DCE1E3 55%, #CBD2D5 100%);border:1px solid #B7C0C3;}
-.sup-plate.brass{background:linear-gradient(155deg,#F3DFA9 0%, #E3B95E 55%, #C9982E 100%);border-color:#B9791F;}
 .sup-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
 .sup-name{font-family:var(--display);font-weight:700;font-size:14.5px;color:var(--navy);}
 .sup-country{font-size:11px;color:var(--text2);}
-.sup-badge{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;
-  padding:3px 7px;border-radius:2px;background:var(--teal);color:#fff;}
-.sup-plate.brass .sup-badge{background:var(--amber);}
 .sup-margin{font-family:var(--mono);font-size:11.5px;color:var(--teal-dark);margin-top:6px;}
 .sup-certs{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
 .sup-cert{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:2px;border:1px solid #A9B3B6;color:var(--text2);background:rgba(255,255,255,.5);}
 .sup-actions{display:flex;gap:8px;margin-top:10px;}
 .sup-actions a, .sup-actions button{font-family:var(--sans);font-weight:600;font-size:11.5px;padding:7px 12px;border-radius:5px;text-decoration:none;text-align:center;cursor:pointer;border:none;}
-.sup-actions .quote{background:var(--navy);color:#fff;flex:1;}
-.sup-actions .cat{background:transparent;border:1px solid var(--teal-dark);color:var(--teal-dark);flex:1;}
-.sup-actions .cat.disabled{opacity:.4;border-style:dashed;pointer-events:none;}
-.match-note{font-size:10.5px;color:var(--amber);margin-top:10px;font-family:var(--mono);}
+.sup-actions .web{background:var(--navy);color:#fff;flex:1;}
+.sup-actions .web:hover{background:var(--navy2);}
+.sup-actions .spec{background:transparent;border:1px solid var(--teal-dark);color:var(--teal-dark);flex:1;}
+.sup-actions .spec:hover{background:rgba(255,255,255,.5);}
+.match-note{font-size:11px;color:var(--text2);margin-top:10px;line-height:1.55;}
 
 /* ── Mounting compatibility check ── */
 .mount-line{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:6px;margin-bottom:8px;font-size:12.5px;line-height:1.5;}
@@ -235,32 +232,47 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .cx8-gate-btn:disabled{opacity:.6;cursor:default;}
 .cx8-gate-note{font-size:10.5px;color:var(--text3);margin-top:12px;line-height:1.5;}
 
-/* ── RESPONSIVE / MOBILE ── */
-html,body{max-width:100%;overflow-x:hidden;}
-@media(max-width:760px){
-  .wiz-wrap{padding:0 12px;margin-top:20px;}
-  .wiz-head{padding:18px 18px 4px;}
-  .wiz-body{padding:0 18px 6px;}
-  .wiz-foot{padding:16px 18px;}
-  .wiz-title{font-size:18px;}
-  .grid2{grid-template-columns:1fr;max-width:none;gap:10px;}
-  .torque-grid{grid-template-columns:1fr 1fr;}
-  .finput{max-width:none;}
-  .slider-row{max-width:none;}
-  .label-input{max-width:none;}
-}
-@media(max-width:640px){
-  .stepbar{padding:10px 12px;gap:10px;}
-  .steps{gap:0;max-width:none;min-width:0;}
-  .step-label{display:none;}
-  .step{gap:0;}
-  .step-line{margin:0 4px;min-width:10px;}
-  .basket-pill{padding:8px 10px;font-size:0;gap:6px;}
-  .basket-pill .basket-count{font-size:10px;}
-  .basket-pill::before{content:'🛒';font-size:14px;}
-  .torque-grid{grid-template-columns:1fr;}
-  .cert-row select,.cert-row input[type=text]{min-width:0;flex:1 1 140px;}
-}
+
+/* ── Torque table / editable profile / hints (v2) ── */
+.torque-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;}
+.torque-card-head .torque-card-title{margin-bottom:0;}
+.tq-reset{background:none;border:none;color:var(--teal-dark);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--sans);text-decoration:underline;}
+.torque-item input{width:100%;max-width:92px;text-align:center;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--navy);
+  border:1.5px solid var(--teal-bg2);border-radius:5px;padding:5px 4px;background:#fff;outline:none;}
+.torque-item input:focus{border-color:var(--teal);}
+.torque-item input.edited{border-color:var(--amber);background:var(--amber-bg);}
+.tq-legend{font-size:10.5px;color:var(--text2);margin-top:10px;}
+.tq-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.tq-table th{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);text-align:left;
+  padding:7px 8px;border-bottom:1.5px solid var(--border2);font-weight:500;}
+.tq-table td{padding:8px;border-bottom:1px solid var(--border);}
+.tq-table td.num,.tq-table th.num{text-align:right;font-family:var(--mono);}
+.tq-table tr.gov td{background:var(--teal-bg);font-weight:700;}
+.tq-ok{color:var(--teal-dark);font-weight:700;}
+.tq-bad{color:var(--red);font-weight:700;}
+.tq-na{color:var(--text3);}
+.tq-top{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 18px;margin:4px 0 10px;}
+.tq-top-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-dark);margin-bottom:10px;}
+.hint-box{background:var(--amber-bg);border:1px solid var(--amber-bg2);color:#7a4f12;border-radius:6px;padding:10px 14px;font-size:12px;line-height:1.55;margin-top:12px;}
+.sa-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;max-width:480px;}
+.flange-note{font-family:var(--mono);font-size:11px;color:var(--teal-dark);margin-top:8px;min-height:14px;}
+.tq-summary-line{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;}
+.tq-summary-line .rv{font-family:var(--mono);font-weight:600;}
+.tq-scroll{overflow-x:auto;}
+.info{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;
+  background:var(--teal-bg2);color:var(--teal-dark);font-family:var(--sans);font-size:9.5px;font-weight:700;font-style:normal;
+  cursor:help;margin-left:4px;vertical-align:middle;text-transform:none;letter-spacing:0;line-height:1;user-select:none;flex-shrink:0;}
+.info:hover,.info:focus{background:var(--teal);color:#fff;outline:none;}
+#tipBox{display:none;position:fixed;z-index:1000;max-width:260px;background:var(--navy);color:#fff;font-family:var(--sans);
+  font-size:11.5px;line-height:1.5;padding:10px 12px;border-radius:6px;box-shadow:0 6px 20px rgba(10,22,40,.25);pointer-events:none;}
+#tipBox b{display:block;font-size:12px;margin-bottom:3px;color:#C0E8E3;}
+.ref-note{font-size:11.5px;margin-top:8px;color:var(--text2);}
+.ref-note.warn{color:var(--amber);}
+.finput input.prefilled{background:var(--teal-bg);border-color:var(--teal-bg2);color:var(--teal-dark);font-weight:600;}
+.finput input.user-edited{background:#fff;border-color:var(--amber);}
+.minreq-note{background:var(--teal-bg);border:1px solid var(--teal-bg2);color:var(--teal-dark);border-radius:6px;padding:10px 14px;
+  font-size:12px;line-height:1.55;margin-bottom:12px;}
+.minreq-note .tq-reset{margin-left:6px;}
 </style>
 </head>
 <body>
@@ -286,7 +298,7 @@ html,body{max-width:100%;overflow-x:hidden;}
       <div class="wiz-head">
         <div class="wiz-eyebrow">Step 1 of 4</div>
         <div class="wiz-title">Valve Specification</div>
-        <div class="wiz-desc">Define the valve for this assembly. Enter the Break-to-Open torque and the full torque profile calculates automatically.</div>
+        <div class="wiz-desc">Define the valve for this assembly. Enter the Break-to-Open torque and the full torque profile calculates automatically — adjust any position to match the valve datasheet.</div>
       </div>
       <div class="wiz-body">
 
@@ -296,6 +308,37 @@ html,body{max-width:100%;overflow-x:hidden;}
             <div class="pill" data-v="ball" onclick="pick('valveType','ball')">Ball Valve</div>
             <div class="pill" data-v="butterfly" onclick="pick('valveType','butterfly')">Butterfly Valve</div>
             <div class="pill" data-v="plug" onclick="pick('valveType','plug')">Plug Valve</div>
+          </div>
+        </div>
+
+        <div class="fgroup">
+          <div class="flabel">Break-to-Open Torque (BTO)<span class="info" tabindex="0" data-k="BTO">i</span> <span class="req">*</span></div>
+          <div class="fhint">The torque required to initially break the valve seal from fully closed — the critical sizing point.</div>
+          <div class="finput"><span class="finput-unit">BTO (Nm)</span><input type="number" id="btoInput" placeholder="e.g. 240" oninput="updateTorqueProfile()"></div>
+
+          <div class="torque-card" id="torqueCard" style="display:none;">
+            <div class="torque-card-head">
+              <div class="torque-card-title">Valve Torque Profile (Nm)</div>
+              <button class="tq-reset" id="tqResetBtn" style="display:none;" onclick="resetTorqueEdits()">Reset to calculated</button>
+            </div>
+            <div class="torque-grid">
+              <div class="torque-item hl"><div class="tv" id="tv-bto">—</div><div class="tl">BTO (0°)<span class="info" tabindex="0" data-k="BTO">i</span></div></div>
+              <div class="torque-item"><input type="number" id="tq-rto" oninput="onTorqueEdit('rto')"><div class="tl">RTO (45°)<span class="info" tabindex="0" data-k="RTO">i</span></div></div>
+              <div class="torque-item"><input type="number" id="tq-eto" oninput="onTorqueEdit('eto')"><div class="tl">ETO (90°)<span class="info" tabindex="0" data-k="ETO">i</span></div></div>
+              <div class="torque-item"><input type="number" id="tq-btc" oninput="onTorqueEdit('btc')"><div class="tl">BTC (90°)<span class="info" tabindex="0" data-k="BTC">i</span></div></div>
+              <div class="torque-item"><input type="number" id="tq-rtc" oninput="onTorqueEdit('rtc')"><div class="tl">RTC (45°)<span class="info" tabindex="0" data-k="RTC">i</span></div></div>
+              <div class="torque-item hl"><input type="number" id="tq-etc" oninput="onTorqueEdit('etc')"><div class="tl">ETC (0°)<span class="info" tabindex="0" data-k="ETC">i</span></div></div>
+            </div>
+            <div class="tq-legend">Values are calculated from BTO for the selected valve type. Overwrite any value with the valve datasheet figure — edited values are highlighted.</div>
+            <div style="margin-top:16px;padding-top:14px;border-top:1px dashed var(--teal-bg2);">
+              <div class="flabel" style="font-size:12.5px;">Valve Sizing Reference<span class="info" tabindex="0" data-k="REF">i</span></div>
+              <div class="fhint">The valve torque the actuator will be benchmarked against in Step 2.</div>
+              <div class="pillrow" id="sizingRef">
+                <div class="pill" data-v="BTO" onclick="pickSizingRef('BTO')">BTO — Break to Open</div>
+                <div class="pill" data-v="ETC" onclick="pickSizingRef('ETC')">ETC — End to Close</div>
+              </div>
+              <div class="ref-note" id="sizingRefNote"></div>
+            </div>
           </div>
         </div>
 
@@ -328,8 +371,9 @@ html,body{max-width:100%;overflow-x:hidden;}
 
         <div class="fgroup">
           <div class="flabel">Valve Flange Pattern (ISO 5211)</div>
-          <div class="fhint">Since this tool isn't linked to a manufacturer backend, select the flange pattern directly from the valve's datasheet.</div>
+          <div class="fhint">Select the flange pattern from the valve's datasheet. Dual-drilled top flanges (e.g. F05/F07): select both — up to two.</div>
           <div class="chipgrid" id="valveFlangeGrid"></div>
+          <div class="flange-note" id="valveFlangeNote"></div>
         </div>
 
         <div class="fgroup">
@@ -381,7 +425,8 @@ html,body{max-width:100%;overflow-x:hidden;}
         </div>
 
         <div class="fgroup">
-          <div class="flabel">Normal (Fail-Safe) Position</div>
+          <div class="flabel">Safety Function <span class="req">*</span></div>
+          <div class="fhint">Position the valve must go to on loss of air/signal. For single-acting actuators this sets the spring direction.</div>
           <div class="pillrow" id="normalPos">
             <div class="pill" data-v="Fail Close" onclick="pick('normalPos','Fail Close')">Fail Close</div>
             <div class="pill" data-v="Fail Open" onclick="pick('normalPos','Fail Open')">Fail Open</div>
@@ -389,23 +434,6 @@ html,body{max-width:100%;overflow-x:hidden;}
           </div>
         </div>
 
-        <div class="fgroup">
-          <div class="flabel">Break-to-Open Torque (BTO) <span class="req">*</span></div>
-          <div class="fhint">The torque required to initially break the valve seal from fully closed — the critical sizing point.</div>
-          <div class="finput"><span class="finput-unit">BTO (Nm)</span><input type="number" id="btoInput" placeholder="e.g. 240" oninput="updateTorqueProfile()"></div>
-
-          <div class="torque-card" id="torqueCard" style="display:none;">
-            <div class="torque-card-title">Auto-Calculated Torque Profile</div>
-            <div class="torque-grid">
-              <div class="torque-item hl"><div class="tv" id="tv-bto">—</div><div class="tl">BTO (0°)</div></div>
-              <div class="torque-item"><div class="tv" id="tv-rto">—</div><div class="tl">RTO (45°)</div></div>
-              <div class="torque-item"><div class="tv" id="tv-eto">—</div><div class="tl">ETO (90°)</div></div>
-              <div class="torque-item"><div class="tv" id="tv-btc">—</div><div class="tl">BTC (90°)</div></div>
-              <div class="torque-item"><div class="tv" id="tv-rtc">—</div><div class="tl">RTC (45°)</div></div>
-              <div class="torque-item hl"><div class="tv" id="tv-etc">—</div><div class="tl">ETC (0°)</div></div>
-            </div>
-          </div>
-        </div>
 
       </div>
       <div class="wiz-foot">
@@ -422,6 +450,24 @@ html,body{max-width:100%;overflow-x:hidden;}
         <div class="wiz-desc">Choose how this valve will be actuated. The fields below adapt to Manual, Pneumatic, or Electric actuation.</div>
       </div>
       <div class="wiz-body">
+
+        <div class="tq-top" id="tqTop">
+          <div class="tq-top-title">Valve Torque Requirement</div>
+          <div id="tqTopTable"></div>
+          <div class="fgroup" style="padding:14px 0 4px;border-top:none;">
+            <div class="flabel">Factor of Safety (FOS)<span class="info" tabindex="0" data-k="FOS">i</span></div>
+            <div class="fhint">Min. 1.25× (ISO 5211). Increase for harsh or infrequent service.</div>
+            <div class="slider-row">
+              <input type="range" id="fosSlider" min="1.25" max="2.5" step="0.05" value="1.25" oninput="updateTorqueProfile()">
+              <div class="slider-val" id="fosVal">1.25×</div>
+            </div>
+          </div>
+          <div class="design-torque-banner" style="margin-top:8px;">
+            <div><div class="dtl">Required Design Torque (Valve Torque + FOS)</div><div class="dtv" id="designTorqueVal">— Nm</div></div>
+            <div style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.6);text-align:right;" id="designTorqueBasis">max(BTO, ETC) × FOS</div>
+          </div>
+          <div class="hint-box" id="actHint"></div>
+        </div>
 
         <div class="fgroup">
           <div class="flabel">Actuation <span class="req">*</span></div>
@@ -446,14 +492,14 @@ html,body{max-width:100%;overflow-x:hidden;}
           <div class="fgroup">
             <div class="flabel">Mode of Operation <span class="req">*</span></div>
             <div class="pillrow" id="modeOp">
-              <div class="pill" data-v="Double-Acting" onclick="pick('modeOp','Double-Acting')">Double-Acting (DA)</div>
-              <div class="pill" data-v="Single-Acting" onclick="pick('modeOp','Single-Acting')">Single-Acting / Spring-Return (SA)</div>
+              <div class="pill" data-v="Double-Acting" onclick="pick('modeOp','Double-Acting')">Double-Acting (DA)<span class="info" tabindex="0" data-k="DA">i</span></div>
+              <div class="pill" data-v="Single-Acting" onclick="pick('modeOp','Single-Acting')">Single-Acting / Spring-Return (SA)<span class="info" tabindex="0" data-k="SA">i</span></div>
             </div>
           </div>
 
           <div class="fgroup">
             <div class="flabel">Actuator Mechanism <span class="req">*</span></div>
-            <div class="fhint">Rack &amp; Pinion gives near-linear torque across the stroke; Scotch Yoke gives higher breakaway torque at 0°/90° — worth choosing deliberately rather than defaulting to one brand's design.</div>
+            <div class="fhint">Rack &amp; Pinion: near-linear torque. Scotch Yoke: higher torque at 0°/90°.</div>
             <div class="pillrow" id="actMechanism">
               <div class="pill" data-v="Rack & Pinion" onclick="pick('actMechanism','Rack & Pinion')">Rack &amp; Pinion</div>
               <div class="pill" data-v="Scotch Yoke" onclick="pick('actMechanism','Scotch Yoke')">Scotch Yoke</div>
@@ -485,7 +531,7 @@ html,body{max-width:100%;overflow-x:hidden;}
 
           <div class="fgroup">
             <div class="flabel">Corrosion Protection Class</div>
-            <div class="fhint">Atmospheric-corrosivity categories per <strong>ISO 12944-2</strong> (Corrosion protection of steel structures by protective paint systems — Classification of environments). C5 is split into C5-I (industrial) / C5-M (marine) per the 2012 edition of the standard; the 2018 revision replaced this split with a single C5 (onshore) plus a new CX (offshore) category — specify which edition your project references if it matters for approvals.</div>
+            <div class="fhint">Per ISO 12944-2.</div>
             <div class="pillrow" id="corrosionClass">
               <div class="pill" data-v="C1" onclick="pick('corrosionClass','C1')">C1 — Very Low</div>
               <div class="pill" data-v="C2" onclick="pick('corrosionClass','C2')">C2 — Low</div>
@@ -512,18 +558,23 @@ html,body{max-width:100%;overflow-x:hidden;}
             <div class="finput"><span class="finput-unit">Pressure (bar)</span><input type="number" id="opPressure" placeholder="e.g. 6"></div>
           </div>
 
-          <div class="fgroup">
-            <div class="flabel">Factor of Safety (FOS)</div>
-            <div class="fhint">ISO 5211 recommends a minimum of 1.25×. Increase for harsh service, infrequent cycling, or margin against seat wear.</div>
-            <div class="slider-row">
-              <input type="range" id="fosSlider" min="1.25" max="2.5" step="0.05" value="1.25" oninput="updateTorqueProfile()">
-              <div class="slider-val" id="fosVal">1.25×</div>
+          <div class="fgroup" id="actTorqueGroup">
+            <div class="flabel">Minimum Actuator Torque Requirement</div>
+            <div class="fhint" id="actTorqueHint">Select a Mode of Operation above to enter the actuator's torque values.</div>
+            <div class="minreq-note" id="minReqNote" style="display:none;"></div>
+            <div id="saInputs" style="display:none;">
+              <div class="sa-grid">
+                <div class="finput"><span class="finput-unit" style="display:flex;align-items:center;"><span id="lbl-saSpringEnd">Spring End (Nm)</span><span class="info" tabindex="0" data-k="SE">i</span></span><input type="number" id="saSpringEnd" oninput="onActTorqueInput('saSpringEnd')"></div>
+                <div class="finput"><span class="finput-unit" style="display:flex;align-items:center;"><span id="lbl-saSpringStart">Spring Start (Nm)</span><span class="info" tabindex="0" data-k="SS">i</span></span><input type="number" id="saSpringStart" oninput="onActTorqueInput('saSpringStart')"></div>
+                <div class="finput"><span class="finput-unit" style="display:flex;align-items:center;"><span id="lbl-saAirStart">Air Start (Nm)</span><span class="info" tabindex="0" data-k="AS">i</span></span><input type="number" id="saAirStart" oninput="onActTorqueInput('saAirStart')"></div>
+                <div class="finput"><span class="finput-unit" style="display:flex;align-items:center;"><span id="lbl-saAirEnd">Air End (Nm)</span><span class="info" tabindex="0" data-k="AE">i</span></span><input type="number" id="saAirEnd" oninput="onActTorqueInput('saAirEnd')"></div>
+              </div>
             </div>
-          </div>
-
-          <div class="design-torque-banner">
-            <div><div class="dtl">Required Design Torque</div><div class="dtv" id="designTorqueVal">— Nm</div></div>
-            <div style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.6);">BTO × FOS</div>
+            <div id="daInputs" style="display:none;">
+              <div class="finput"><span class="finput-unit">Min. Output Torque @ Supply Pressure (Nm)</span><input type="number" id="daTorque" oninput="onActTorqueInput('daTorque')"></div>
+            </div>
+            <div id="saLastPosWarn"></div>
+            <div id="torqueCheck" class="tq-scroll" style="margin-top:12px;"></div>
           </div>
 
           <div class="match-panel">
@@ -566,7 +617,7 @@ html,body{max-width:100%;overflow-x:hidden;}
           <div class="fgroup">
             <div class="flabel">Torque &amp; Thrust Requirement</div>
             <div class="grid2">
-              <div class="finput"><span class="finput-unit">Required Torque (Nm)</span><input type="number" id="elReqTorque" placeholder="e.g. 300"></div>
+              <div class="finput"><span class="finput-unit">Required Torque (Nm)</span><input type="number" id="elReqTorque" placeholder="e.g. 300" oninput="onActTorqueInput('elReqTorque')"></div>
               <div class="finput"><span class="finput-unit">Required Thrust (kN)</span><input type="number" id="elReqThrust" placeholder="optional"></div>
               <div class="finput"><span class="finput-unit">Modulating Torque (Nm)</span><input type="number" id="elModTorque" placeholder="optional"></div>
               <div class="finput"><span class="finput-unit">Modulating Thrust (kN)</span><input type="number" id="elModThrust" placeholder="optional"></div>
@@ -620,7 +671,9 @@ html,body{max-width:100%;overflow-x:hidden;}
         <!-- ── SHARED: MOUNTING INTERFACE (all actuation types) ── -->
         <div class="fgroup">
           <div class="flabel">Actuator Flange Pattern (ISO 5211)</div>
+          <div class="fhint">Dual-drilled actuator flanges (e.g. F05/F07): select both — up to two.</div>
           <div class="chipgrid" id="actFlangeGrid"></div>
+          <div class="flange-note" id="actFlangeNote"></div>
         </div>
 
         <div class="fgroup">
@@ -808,6 +861,10 @@ html,body{max-width:100%;overflow-x:hidden;}
         </div>
 
         <div class="review-block">
+          <div class="review-hdr">Torque Summary</div>
+          <div id="review-torque" class="tq-scroll"></div>
+        </div>
+        <div class="review-block">
           <div class="review-hdr">Valve</div>
           <div id="review-valve"></div>
         </div>
@@ -831,6 +888,7 @@ html,body{max-width:100%;overflow-x:hidden;}
 </div>
 
 <!-- BASKET DRAWER -->
+<div id="tipBox"></div>
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-hdr">
@@ -849,10 +907,11 @@ html,body{max-width:100%;overflow-x:hidden;}
 // ── State ──
 var state = {
   valveType:null, connType:null, connStd:null, connRating:null, connPressure:null,
-  dn:null, valveFlange:null, valveStemShape:null,
+  dn:null, valveFlange:[], valveStemShape:null,
   tempMin:'', tempMax:'', normalPos:null,
   bto:'', fos:1.25,
-  modeOp:null, actMechanism:null, actFlange:null, actShaftShape:null,
+  modeOp:null, actMechanism:null, actFlange:[], actShaftShape:null,
+  torqueEdit:{}, sizingRef:null, actEdit:{},
   opPressure:'', ambMin:'', ambMax:'',
   // Valve section additions
   wayType:null, threeWayPattern:null,
@@ -905,18 +964,28 @@ var FLANGE_LIST = ['F03','F04','F05','F07','F10','F12','F14','F16','F25','F30','
 // Standard ISO 5211 square drive sizes (mm) for the dimension dropdown.
 var STD_SQUARE_SIZES = [9,11,14,17,22,27,32,36,41,46,50,55,60,65,70,75,80,90,100,110,125,140];
 
+function flangeArr(v){ return Array.isArray(v) ? v : (v ? [v] : []); }
+function flangeStr(v){ var a = flangeArr(v); return a.length ? a.join(' / ') : null; }
 function renderFlangeGrid(which){
-  var g = document.getElementById(which+'FlangeGrid');
-  if(!g) return;
+  var grid = document.getElementById(which+'FlangeGrid');
+  if(!grid) return;
   var key = which==='valve' ? 'valveFlange' : 'actFlange';
-  g.innerHTML = FLANGE_LIST.map(function(f){
-    var sel = state[key]===f ? 'sel' : '';
+  var arr = flangeArr(state[key]);
+  grid.innerHTML = FLANGE_LIST.map(function(f){
+    var sel = arr.indexOf(f)>-1 ? 'sel' : '';
     return '<div class="chip '+sel+'" onclick="pickFlange(\''+which+'\',\''+f+'\')">'+f+'</div>';
   }).join('');
+  var note = document.getElementById(which+'FlangeNote');
+  if(note) note.textContent = arr.length ? 'Selected: '+arr.join(' / ')+(arr.length===2?' (dual flange)':'') : '';
 }
 function pickFlange(which, value){
   var key = which==='valve' ? 'valveFlange' : 'actFlange';
-  state[key] = value;
+  var arr = flangeArr(state[key]).slice();
+  var i = arr.indexOf(value);
+  if(i>-1){ arr.splice(i,1); }
+  else { if(arr.length>=2) arr.shift(); arr.push(value); }
+  arr.sort(function(a,b){ return FLANGE_LIST.indexOf(a)-FLANGE_LIST.indexOf(b); });
+  state[key] = arr;
   renderFlangeGrid(which);
   checkMounting();
 }
@@ -924,21 +993,22 @@ function pickFlange(which, value){
 function checkMounting(){
   var panel = document.getElementById('mountingCheck');
   if(!panel) return;
-  var vFlange = state.valveFlange, aFlange = state.actFlange;
+  var vFl = flangeArr(state.valveFlange), aFl = flangeArr(state.actFlange);
   var vShape = state.valveStemShape, aShape = state.actShaftShape;
   var vSize = getInterfaceSize('valve');
   var aSize = getInterfaceSize('act');
 
-  if(!vFlange || !aFlange || isNaN(vSize) || isNaN(aSize)){
+  if(!vFl.length || !aFl.length || isNaN(vSize) || isNaN(aSize)){
     panel.innerHTML = '<div class="match-empty">Select the valve\'s flange pattern &amp; stem size (Step 1) and the actuator\'s flange pattern &amp; bore size (above) to check mounting fit.</div>';
     return;
   }
 
   var lines = [];
-  if(vFlange === aFlange){
-    lines.push({t:'ok', m:'Flange pattern matches ('+vFlange+') — direct mount, no bracket needed.'});
+  var common = vFl.filter(function(f){ return aFl.indexOf(f)>-1; });
+  if(common.length){
+    lines.push({t:'ok', m:'Flange pattern matches on '+common.join(' / ')+' — direct mount, no bracket needed.'});
   } else {
-    lines.push({t:'bad', m:'Flange mismatch: valve is '+vFlange+', actuator is '+aFlange+'. A mounting bracket is required to adapt between the two flange sizes.'});
+    lines.push({t:'bad', m:'Flange mismatch: valve is '+vFl.join(' / ')+', actuator is '+aFl.join(' / ')+'. A mounting bracket is required to adapt between the two flange sizes.'});
   }
 
   var sizeDiff = aSize - vSize;
@@ -1079,29 +1149,42 @@ function pickDyn(field, value){
 
 var STEP_LABELS = ['Valve','Actuator','Accessories','Review'];
 
-// Illustrative supplier dataset — torque ranges are placeholders for demo purposes.
-// Replace with verified figures from your actuator database / supplier submissions before going live.
+// ══ SUPPLIER DIRECTORY ═══════════════════════════════════════════════════════
+// Neutral listing: no featured/paid placement yet. Each card links to the
+// manufacturer's own actuator page. Torque ranges are indicative; check each
+// one against the manufacturer's catalogue before relying on it.
 var SUPPLIERS = [
-  {name:'Air Torque SpA', country:'Italy', modes:['Double-Acting','Single-Acting'], minT:20, maxT:16000,
-    certs:['ISO 9001','ATEX'], featured:true, catalogue:'#'},
-  {name:'GEMÜ Gebrüder Müller', country:'Germany', modes:['Double-Acting'], minT:5, maxT:400,
-    certs:['ISO 9001','CE'], featured:true, catalogue:'#'},
-  {name:'Rotork Controls Italia', country:'Italy', modes:['Double-Acting','Single-Acting'], minT:15, maxT:20000,
-    certs:['ISO 9001'], featured:false, catalogue:null},
-  {name:'OMAL S.p.A.', country:'Italy', modes:['Double-Acting','Single-Acting'], minT:10, maxT:8000,
-    certs:[], featured:false, catalogue:null},
-  {name:'Ebro Armaturen', country:'Germany', modes:['Double-Acting'], minT:8, maxT:2000,
-    certs:[], featured:false, catalogue:null},
-  {name:'Proval Doruk Endustri', country:'Turkey', modes:['Double-Acting','Single-Acting'], minT:10, maxT:5000,
-    certs:[], featured:false, catalogue:null}
+  {id:'air-torque', name:'Air Torque', country:'Italy', modes:['Double-Acting','Single-Acting'], minT:20, maxT:16000,
+    certs:['ISO 9001','ATEX'], url:'https://airtorque.com/product-category/p-antriebe-en/?lang=en'},
+  {id:'rotork', name:'Rotork', country:'United Kingdom', modes:['Double-Acting','Single-Acting'], minT:15, maxT:20000,
+    certs:['ISO 9001'], url:'https://www.rotork.com/en/products/light-duty-fluid-actuators'},
+  {id:'omal', name:'OMAL S.p.A.', country:'Italy', modes:['Double-Acting','Single-Acting'], minT:10, maxT:8000,
+    certs:[], url:'https://www.omal.com/en/products/pneumatic-actuators/'},
+  {id:'proval', name:'Proval (Doruk Endüstri)', country:'Turkey', modes:['Double-Acting','Single-Acting'], minT:10, maxT:5000,
+    certs:[], url:'https://dorukendustri.com/en/actuators', noUtm:true}
 ];
+
+// Adds referral tags so each manufacturer can see visits coming from CX8.
+// noUtm: the site returns 404 when query parameters are added, so link plainly.
+function supplierUrl(s){
+  if(s.noUtm) return s.url;
+  var sep = s.url.indexOf('?')>-1 ? '&' : '?';
+  return s.url + sep + 'utm_source=cx8motion&utm_medium=referral&utm_campaign=actuator_valve_matching';
+}
+
+// TODO(dev): log supplier clicks (e.g. Supabase table supplier_clicks:
+// supplier_id, tool, design_torque, created_at). These counts are the usage
+// evidence for future supplier conversations.
+function cx8TrackSupplierClick(id){
+  var an = currentAnalysis();
+  console.log('[CX8 stub] supplier click', {supplier:id, tool:'actuator-valve-matching', designTorque: an ? Math.round(an.design) : null});
+}
 
 function renderMatches(){
   var box = document.getElementById('matchResults');
   if(!box) return;
-  var bto = parseFloat(document.getElementById('btoInput').value);
-  var fos = parseFloat(document.getElementById('fosSlider').value);
-  var designT = (!isNaN(bto) && !isNaN(fos)) ? bto*fos : null;
+  var an = currentAnalysis();
+  var designT = an ? an.design : null;
   var mode = state.modeOp;
 
   if(designT===null || !mode){
@@ -1111,26 +1194,24 @@ function renderMatches(){
   var matches = SUPPLIERS.filter(function(s){
     return s.modes.indexOf(mode)>-1 && designT>=s.minT && designT<=s.maxT;
   });
-  matches.sort(function(a,b){ return (b.featured?1:0)-(a.featured?1:0); });
+  matches.sort(function(a,b){ return a.name.localeCompare(b.name); });
 
   if(matches.length===0){
-    box.innerHTML = '<div class="match-empty">No suppliers in our directory currently match this torque range. Try adjusting FOS, or check back as we onboard more suppliers.</div>';
+    box.innerHTML = '<div class="match-empty">No manufacturer in the directory covers this torque range yet. Try adjusting the FOS, or download your specification and send it to a manufacturer of your choice.</div>';
     return;
   }
   var html='';
   matches.forEach(function(s){
-    var margin = (((s.maxT-designT)/s.maxT)*100);
-    html += '<div class="sup-plate '+(s.featured?'brass':'')+'">'
-      + '<div class="sup-top"><div><div class="sup-name">'+s.name+'</div><div class="sup-country">'+s.country+'</div></div>'
-      + (s.featured?'<span class="sup-badge">Featured</span>':'')+'</div>'
-      + '<div class="sup-margin">Handles '+s.minT+'–'+s.maxT+' Nm · your design torque '+designT.toFixed(0)+' Nm fits within range</div>'
+    html += '<div class="sup-plate">'
+      + '<div class="sup-top"><div><div class="sup-name">'+s.name+'</div><div class="sup-country">'+s.country+'</div></div></div>'
+      + '<div class="sup-margin">Range '+s.minT+'–'+s.maxT+' Nm · your design torque '+designT.toFixed(0)+' Nm is within range</div>'
       + (s.certs.length ? '<div class="sup-certs">'+s.certs.map(function(c){return '<span class="sup-cert">✓ '+c+'</span>';}).join('')+'</div>' : '')
       + '<div class="sup-actions">'
-      + '<button class="quote" onclick="alert(\'Request sent to '+s.name+' (demo — wire to backend).\')">Request Quote</button>'
-      + (s.catalogue ? '<a href="'+s.catalogue+'" class="cat">View Catalogue</a>' : '<a class="cat disabled">Catalogue not linked</a>')
+      + '<a class="web" href="'+supplierUrl(s)+'" target="_blank" rel="noopener" onclick="cx8TrackSupplierClick(\''+s.id+'\')">Visit website</a>'
+      + '<button class="spec" type="button" onclick="downloadSpecSheet()">Download spec (PDF)</button>'
       + '</div></div>';
   });
-  html += '<div class="match-note">⚠ Torque ranges shown are placeholder demo data — verify against real supplier submissions before publishing live.</div>';
+  html += '<div class="match-note">Torque ranges are indicative, based on each manufacturer\'s published product range. Confirm the exact model and rating with the manufacturer before ordering. Attach the spec PDF to your enquiry so they can quote against your minimum requirements.</div>';
   box.innerHTML = html;
 }
 
@@ -1212,7 +1293,8 @@ function pick(field, value){
   document.querySelectorAll('#'+field+' .pill').forEach(function(p){
     p.classList.toggle('sel', p.dataset.v===value);
   });
-  if(field==='modeOp') renderMatches();
+  if(field==='modeOp'){ renderMatches(); renderTorqueCheck(); renderTorqueTop(); }
+  if(field==='normalPos') renderTorqueCheck();
   if(field==='valveType'){ renderConnFields(true); updateTorqueProfile(); renderWayType(); renderDiscMaterial(); }
   if(field==='valveStemShape'){ renderDimField('valve'); checkMounting(); }
   if(field==='actShaftShape'){ renderDimField('act'); checkMounting(); }
@@ -1408,29 +1490,351 @@ function pickFeedbackKind(kind){
   document.getElementById('feedback-positioner').style.display = (kind==='positioner') ? 'block' : 'none';
 }
 
-function updateTorqueProfile(){
-  var bto = parseFloat(document.getElementById('btoInput').value);
-  state.bto = document.getElementById('btoInput').value;
-  var card = document.getElementById('torqueCard');
-  if(!isNaN(bto) && bto>0 && state.valveType){
-    card.style.display='block';
-    var r = RATIOS[state.valveType];
-    document.getElementById('tv-bto').textContent = (bto*r.bto).toFixed(0);
-    document.getElementById('tv-rto').textContent = (bto*r.rto).toFixed(0);
-    document.getElementById('tv-eto').textContent = (bto*r.eto).toFixed(0);
-    document.getElementById('tv-btc').textContent = (bto*r.btc).toFixed(0);
-    document.getElementById('tv-rtc').textContent = (bto*r.rtc).toFixed(0);
-    document.getElementById('tv-etc').textContent = (bto*r.etc).toFixed(0);
+var TQ_KEYS = ['rto','eto','btc','rtc','etc'];
+
+// Valve torque profile: calculated from BTO by valve-type ratios, unless the
+// user has overwritten a position with the datasheet value (state.torqueEdit).
+function valveTorques(src){
+  src = src || {bto: g('btoInput').value, valveType: state.valveType, torqueEdit: state.torqueEdit};
+  var bto = parseFloat(src.bto);
+  if(isNaN(bto) || bto<=0 || !src.valveType) return null;
+  var r = RATIOS[src.valveType];
+  var t = {bto: bto};
+  var ed = src.torqueEdit || {};
+  TQ_KEYS.forEach(function(k){
+    var e = parseFloat(ed[k]);
+    t[k] = !isNaN(e) ? e : Math.round(bto*r[k]);
+  });
+  return t;
+}
+function onTorqueEdit(k){
+  var v = g('tq-'+k).value;
+  if(v==='') delete state.torqueEdit[k]; else state.torqueEdit[k] = v;
+  updateTorqueProfile();
+}
+function resetTorqueEdits(){ state.torqueEdit = {}; updateTorqueProfile(); }
+
+function actTorqueInputs(){
+  function v(id){ var el = g(id); return el ? el.value : ''; }
+  var ed = state.actEdit || {};
+  return { airStart:v('saAirStart'), airEnd:v('saAirEnd'), springStart:v('saSpringStart'), springEnd:v('saSpringEnd'), da:v('daTorque'),
+           allEdited: !!(ed.saAirStart && ed.saAirEnd && ed.saSpringStart && ed.saSpringEnd) };
+}
+
+// Builds the 4-position sizing check. Governing valve torque = max(BTO, ETC).
+// Single-acting: the spring torque at 0° is checked against that BTO/ETC reference.
+// Sizing reference chosen on the valve page (BTO or ETC). If the user hasn't
+// chosen, default to whichever is higher.
+function resolveRef(t, ref){
+  var key = (ref==='BTO' || ref==='ETC') ? ref : (t.etc > t.bto ? 'ETC' : 'BTO');
+  return {key:key, val: key==='ETC' ? t.etc : t.bto, auto: !(ref==='BTO' || ref==='ETC')};
+}
+function torqueAnalysis(t, fos, modeOp, normalPos, act, ref){
+  if(!t) return null;
+  fos = parseFloat(fos) || 1.25;
+  act = act || {};
+  function n(x){ var y = parseFloat(x); return isNaN(y) ? null : y; }
+  var rr = resolveRef(t, ref);
+  var gov = rr.val;
+  var govKey = rr.key;
+  var refLbl = govKey+' (sizing ref.)';
+  var rows;
+  var sa = modeOp==='Single-Acting';
+  if(sa && normalPos==='Fail Open'){
+    rows = [
+      {pos:'Spring start (0°)', ref:refLbl, tip:govKey, valve:gov,   act:n(act.springStart), gov:true, k:'SS'},
+      {k:'SE', pos:'Spring end (90°)',  ref:'ETO',          valve:t.eto, act:n(act.springEnd)},
+      {k:'AS', pos:'Air start (90°)',   ref:'BTC',          valve:t.btc, act:n(act.airStart)},
+      {k:'AE', pos:'Air end (0°)',      ref:'ETC',          valve:t.etc, act:n(act.airEnd)}
+    ];
+  } else if(sa){
+    rows = [
+      {pos:'Spring end (0°)',   ref:refLbl, tip:govKey, valve:gov,   act:n(act.springEnd), gov:true, k:'SE'},
+      {k:'SS', pos:'Spring start (90°)',ref:'BTC',          valve:t.btc, act:n(act.springStart)},
+      {k:'AS', pos:'Air start (0°)',    ref:'BTO',          valve:t.bto, act:n(act.airStart)},
+      {k:'AE', pos:'Air end (90°)',     ref:'ETO',          valve:t.eto, act:n(act.airEnd)}
+    ];
   } else {
-    card.style.display='none';
+    var da = n(act.da);
+    rows = [
+      {pos:'Open start (0°)',   ref:'BTO', valve:t.bto, act:da, gov:govKey==='BTO'},
+      {pos:'Open end (90°)',    ref:'ETO', valve:t.eto, act:da},
+      {pos:'Close start (90°)', ref:'BTC', valve:t.btc, act:da},
+      {pos:'Close end (0°)',    ref:'ETC', valve:t.etc, act:da, gov:govKey==='ETC'}
+    ];
   }
-  var fos = parseFloat(document.getElementById('fosSlider') ? document.getElementById('fosSlider').value : 1.25);
+  rows.forEach(function(r){ r.req = r.valve*fos; r.ok = r.act===null ? null : (r.act >= r.req - 0.0001); });
+  return {t:t, fos:fos, gov:gov, govKey:govKey, refAuto:rr.auto, design:gov*fos, rows:rows, sa:sa, normalPos:normalPos,
+          plausibility: (sa && act.allEdited) ? saPlausibility(act, normalPos) : []};
+}
+
+// Plausibility check on single-acting datasheet values. On a spring-return
+// rack & pinion actuator (e.g. Festo DFPD tables) the order is always:
+//   spring end < spring start, air end < air start,
+//   spring end = lowest value, air start = highest value.
+// At the minimum pressure for a spring set this reads, lowest to highest:
+//   spring end (0°) < air end (90°) < spring start (90°) < air start (0°)  [fail close]
+// A value entered out of this order usually means columns were swapped.
+function saPlausibility(act, normalPos){
+  function n(x){ var y = parseFloat(x); return isNaN(y) ? null : y; }
+  var se = n(act.springEnd), ss = n(act.springStart), as = n(act.airStart), ae = n(act.airEnd);
+  var fo = normalPos==='Fail Open';
+  var L = fo ? {se:'Spring end (90°)', ss:'Spring start (0°)', as:'Air start (90°)', ae:'Air end (0°)'}
+             : {se:'Spring end (0°)',  ss:'Spring start (90°)', as:'Air start (0°)', ae:'Air end (90°)'};
+  var m = [];
+  function f(v){ return v.toFixed(1).replace(/\.0$/,'')+' Nm'; }
+  if(se!==null && as!==null && se >= as)
+    m.push(L.se+' '+f(se)+' &gt; '+L.as+' '+f(as));
+  if(se!==null && ss!==null && se >= ss)
+    m.push(L.se+' '+f(se)+' ≥ '+L.ss+' '+f(ss));
+  if(ae!==null && as!==null && ae >= as)
+    m.push(L.ae+' '+f(ae)+' ≥ '+L.as+' '+f(as));
+  if(ss!==null && as!==null && ss > as)
+    m.push(L.ss+' '+f(ss)+' &gt; '+L.as+' '+f(as));
+  if(se!==null && ae!==null && se > ae && !(se >= as))
+    m.push(L.se+' '+f(se)+' &gt; '+L.ae+' '+f(ae));
+  return m;
+}
+function plausibilityHtml(an){
+  if(!an || !an.plausibility || !an.plausibility.length) return '';
+  var order = 'spring end &lt; air end &lt; spring start &lt; air start';
+  return '<div class="mount-line warn" style="display:block;margin-bottom:10px;"><strong>⚠ Recheck datasheet values</strong>'
+    + '<ul style="margin:6px 0 6px 18px;">' + an.plausibility.map(function(x){ return '<li>'+x+'</li>'; }).join('') + '</ul>'
+    + 'Usual order: '+order+'.</div>';
+}
+function currentAnalysis(){
+  return torqueAnalysis(valveTorques(), g('fosSlider').value, state.modeOp, state.normalPos, actTorqueInputs(), state.sizingRef);
+}
+
+function torqueTableHtml(an, showAct){
+  var h = '<table class="tq-table"><thead><tr><th>Position</th><th>Valve ref.</th><th class="num">Valve (Nm)</th><th class="num">Min. required<br>(valve + FOS)</th>'
+    + (showAct ? '<th class="num">Actuator spec (Nm)</th><th>Status</th>' : '') + '</tr></thead><tbody>';
+  an.rows.forEach(function(r){
+    var st = r.ok===null ? '<span class="tq-na">—</span>' : (r.ok ? '<span class="tq-ok">✓ OK</span>' : '<span class="tq-bad">✕ Too low</span>');
+    h += '<tr'+(r.gov?' class="gov"':'')+'><td>'+r.pos+(r.k?ib(r.k):'')+'</td><td>'+r.ref+ib(r.tip||r.ref)+'</td><td class="num">'+r.valve.toFixed(0)+'</td><td class="num">'+r.req.toFixed(0)+'</td>'
+      + (showAct ? '<td class="num">'+(r.act===null?'—':r.act.toFixed(0))+'</td><td>'+st+'</td>' : '') + '</tr>';
+  });
+  return h + '</tbody></table>';
+}
+
+function renderTorqueTop(){
+  var box = g('tqTopTable'); if(!box) return;
+  var t = valveTorques();
+  var fos = parseFloat(g('fosSlider').value);
+  var dtv = g('designTorqueVal'), basis = g('designTorqueBasis');
+  if(!t){
+    box.innerHTML = '<div class="match-empty">Select a valve type and enter BTO in Step 1 to see the torque requirement.</div>';
+    if(g('actHint')) g('actHint').innerHTML = 'Actuator must exceed the valve sizing reference + FOS.';
+    if(dtv) dtv.textContent = '— Nm';
+    if(basis) basis.textContent = 'max(BTO, ETC) × FOS';
+    return;
+  }
+  var rr = resolveRef(t, state.sizingRef), gov = rr.val, govKey = rr.key;
+  var rows = [['BTO','Break to open (0°)',t.bto],['ETO','End to open (90°)',t.eto],['BTC','Break to close (90°)',t.btc],['ETC','End to close (0°)',t.etc]];
+  var h = '<table class="tq-table"><thead><tr><th>Valve torque</th><th></th><th class="num">Valve (Nm)</th><th class="num">Valve + FOS (Nm)</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    h += '<tr'+(r[0]===govKey?' class="gov"':'')+'><td>'+r[0]+ib(r[0])+'</td><td>'+r[1]+'</td><td class="num">'+r[2].toFixed(0)+'</td><td class="num">'+(r[2]*fos).toFixed(0)+'</td></tr>';
+  });
+  box.innerHTML = h + '</tbody></table>';
+  if(dtv) dtv.textContent = (gov*fos).toFixed(0)+' Nm';
+  if(basis) basis.innerHTML = govKey+' '+gov.toFixed(0)+' Nm × '+fos.toFixed(2);
+  var hint = g('actHint');
+  if(hint) hint.innerHTML = 'Actuator must deliver <strong>≥ '+(gov*fos).toFixed(0)+' Nm</strong> ('+govKey+' + FOS)'+(state.modeOp==='Single-Acting'?' — spring torque at 0°.':'.');
+}
+
+// Actuator torque fields are prefilled with the minimum requirement per position
+// (valve torque x FOS, rounded up). They stay in sync with the valve/FOS until the
+// user types their own value; clearing a field returns it to the minimum.
+var SA_FIELD = {SE:'saSpringEnd', SS:'saSpringStart', AS:'saAirStart', AE:'saAirEnd'};
+function onActTorqueInput(id){
+  var el = g(id);
+  if(el.value==='') delete state.actEdit[id]; else state.actEdit[id] = true;
+  renderTorqueCheck();
+}
+function resetActTorque(){
+  state.actEdit = {};
+  ['saSpringEnd','saSpringStart','saAirStart','saAirEnd','daTorque','elReqTorque'].forEach(function(id){ if(g(id)) g(id).value=''; });
+  renderTorqueCheck();
+}
+function minRequirements(an){
+  // Returns {fieldId: minimum Nm} for the current mode.
+  var out = {};
+  if(!an) return out;
+  if(an.sa){
+    an.rows.forEach(function(r){ if(r.k && SA_FIELD[r.k]) out[SA_FIELD[r.k]] = Math.ceil(r.req); });
+  } else {
+    var mx = 0; an.rows.forEach(function(r){ mx = Math.max(mx, r.req); });
+    out.daTorque = Math.ceil(mx);
+  }
+  out.elReqTorque = Math.ceil(an.design);
+  return out;
+}
+function prefillActTorque(){
+  var t = valveTorques();
+  var base = torqueAnalysis(t, g('fosSlider').value, state.modeOp, state.normalPos, {}, state.sizingRef);
+  var req = minRequirements(base);
+  ['saSpringEnd','saSpringStart','saAirStart','saAirEnd','daTorque','elReqTorque'].forEach(function(id){
+    var el = g(id); if(!el) return;
+    var edited = !!state.actEdit[id];
+    if(!edited && document.activeElement!==el) el.value = (req[id]!==undefined) ? req[id] : '';
+    el.classList.toggle('prefilled', !edited && el.value!=='');
+    el.classList.toggle('user-edited', edited);
+  });
+  var note = g('minReqNote');
+  if(note){
+    if(t && state.modeOp){
+      var anyEdit = Object.keys(state.actEdit).length;
+      note.style.display = 'block';
+      note.innerHTML = 'Prefilled minimums — <strong>FOS '+parseFloat(g('fosSlider').value).toFixed(2)+'× included</strong>. Edit if needed; these values go into your spec PDF.'
+        + (anyEdit ? '<button class="tq-reset" onclick="resetActTorque()">Reset</button>' : '');
+    } else note.style.display = 'none';
+  }
+}
+
+// Minimum requirements in a form a manufacturer can quote against.
+function quoteRequirements(an, item){
+  if(!an) return [];
+  var lines = [];
+  if(an.sa){
+    an.rows.forEach(function(r){
+      var v = r.act!==null ? r.act : Math.ceil(r.req);
+      lines.push({pos:r.pos, min:v, ref:r.ref, calc:Math.ceil(r.req), below: r.act!==null && r.act < r.req - 0.0001});
+    });
+  } else {
+    var mx = 0; an.rows.forEach(function(r){ mx = Math.max(mx, r.req); });
+    var da = an.rows[0].act;
+    var label = (item && item.actuationType==='Electric') ? 'Output torque' : 'Output torque @ supply pressure';
+    lines.push({pos:label, min: da!==null ? da : Math.ceil(mx), ref:'max of 4 positions', calc:Math.ceil(mx), below: da!==null && da < mx - 0.0001});
+  }
+  return lines;
+}
+function quoteTableHtml(lines){
+  return '<table class="tq-table"><thead><tr><th>Position</th><th class="num">Min. torque (Nm)</th><th class="num">Calculated min.</th></tr></thead><tbody>'
+    + lines.map(function(l){
+        return '<tr><td>'+l.pos+'</td><td class="num"><strong>≥ '+Number(l.min).toFixed(0)+'</strong>'+(l.below?' <span class="tq-bad">⚠</span>':'')+'</td><td class="num">'+l.calc+'</td></tr>';
+      }).join('') + '</tbody></table>';
+}
+
+// Spec PDF for the assembly currently on screen, to attach to a manufacturer enquiry.
+function downloadSpecSheet(){
+  if(!valveTorques()){ alert('Enter the valve type and BTO in Step 1 first.'); return; }
+  cx8RequireLogin(function(){ generatePDF([snapshotAssembly()], 'spec'); });
+}
+
+function renderTorqueCheck(){
+  var sa = state.modeOp==='Single-Acting', da = state.modeOp==='Double-Acting';
+  var saBox = g('saInputs'), daBox = g('daInputs'), hint = g('actTorqueHint'), out = g('torqueCheck'), warn = g('saLastPosWarn');
+  if(!out) return;
+  if(saBox) saBox.style.display = sa ? 'block' : 'none';
+  if(daBox) daBox.style.display = da ? 'block' : 'none';
+  var fo = state.normalPos==='Fail Open';
+  var lbl = fo
+    ? {SpringStart:'Spring Start @ 0° (Nm)', SpringEnd:'Spring End @ 90° (Nm)', AirStart:'Air Start @ 90° (Nm)', AirEnd:'Air End @ 0° (Nm)'}
+    : {SpringStart:'Spring Start @ 90° (Nm)', SpringEnd:'Spring End @ 0° (Nm)', AirStart:'Air Start @ 0° (Nm)', AirEnd:'Air End @ 90° (Nm)'};
+  Object.keys(lbl).forEach(function(k){ var el = g('lbl-sa'+k); if(el) el.textContent = lbl[k]; });
+  if(hint){
+    hint.textContent = sa ? 'Minimum torque per position at your supply pressure.'
+      : da ? 'Minimum output torque at your supply pressure.'
+      : 'Select a mode of operation first.';
+  }
+  if(warn){
+    warn.innerHTML = (sa && state.normalPos==='Fail in Last Position')
+      ? '<div class="mount-line warn" style="margin-top:10px;">⚠ Spring-return cannot fail in last position. Choose Fail Close/Open or use DA.</div>' : '';
+  }
+  prefillActTorque();
+  var an = currentAnalysis();
+  if(!state.modeOp){ out.innerHTML = ''; return; }
+  out.innerHTML = an ? plausibilityHtml(an) + torqueTableHtml(an, true) : '<div class="match-empty">Enter BTO in Step 1 to check the actuator torque.</div>';
+}
+
+var GLOSSARY = {
+  BTO:['BTO — Break to Open','Torque needed to unseat the valve from fully closed and start opening (0°). Usually the highest value for ball and plug valves.'],
+  RTO:['RTO — Run to Open','Running torque mid-stroke while the valve is opening (around 45°).'],
+  ETO:['ETO — End to Open','Torque needed at the end of the opening stroke to reach fully open (90°).'],
+  BTC:['BTC — Break to Close','Torque needed to start moving the valve from fully open towards closed (90°).'],
+  RTC:['RTC — Run to Close','Running torque mid-stroke while the valve is closing (around 45°).'],
+  ETC:['ETC — End to Close','Torque needed to drive the closure member fully into the seat at the end of closing (0°). Often the highest value for butterfly valves.'],
+  REF:['Valve Sizing Reference','The valve torque the actuator is benchmarked against. Usually BTO; choose ETC when tight seating at the end of closing is the critical point. Defaults to the higher of the two.'],
+  FOS:['FOS — Factor of Safety','Multiplier applied to the valve torque to cover seat wear, deposits, infrequent cycling and pressure variation. ISO 5211 guidance: at least 1.25.'],
+  DA:['DA — Double-Acting','Air drives the actuator in both directions. No spring; holds its last position on air loss.'],
+  SA:['SA — Single-Acting / Spring-Return','Air drives one direction and a spring drives the other, giving a defined fail-safe position (fail close or fail open).'],
+  SS:['Spring Start','Spring torque at the start of the spring stroke, when the spring is fully compressed. Highest spring torque.'],
+  SE:['Spring End','Spring torque at the end of the spring stroke, when the spring is most relaxed. Lowest spring torque.'],
+  AS:['Air Start','Net air torque at the start of the air stroke (air torque minus spring resistance) at your supply pressure.'],
+  AE:['Air End','Net air torque at the end of the air stroke, where the spring is most compressed. Usually the lowest air torque.']
+};
+function ib(k){
+  k = String(k).split(' ')[0];
+  return GLOSSARY[k] ? '<span class="info" tabindex="0" data-k="'+k+'">i</span>' : '';
+}
+(function(){
+  var box = null;
+  function show(el){
+    var d = GLOSSARY[el.dataset.k]; if(!d) return;
+    box = box || document.getElementById('tipBox');
+    box.innerHTML = '<b>'+d[0]+'</b>'+d[1];
+    box.style.display = 'block';
+    var r = el.getBoundingClientRect(), bw = box.offsetWidth, bh = box.offsetHeight;
+    var left = Math.min(Math.max(8, r.left + r.width/2 - bw/2), window.innerWidth - bw - 8);
+    var top = r.top - bh - 8; if(top < 8) top = r.bottom + 8;
+    box.style.left = left+'px'; box.style.top = top+'px';
+  }
+  function hide(){ if(box) box.style.display = 'none'; }
+  document.addEventListener('mouseover', function(e){ var el = e.target.closest && e.target.closest('.info'); if(el) show(el); });
+  document.addEventListener('mouseout', function(e){ if(e.target.closest && e.target.closest('.info')) hide(); });
+  document.addEventListener('focusin', function(e){ if(e.target.classList && e.target.classList.contains('info')) show(e.target); });
+  document.addEventListener('focusout', hide);
+  document.addEventListener('click', function(e){
+    var el = e.target.closest && e.target.closest('.info');
+    if(el){ e.stopPropagation(); e.preventDefault(); show(el); } else hide();
+  }, true);
+  window.addEventListener('scroll', hide, true);
+})();
+
+function pickSizingRef(v){
+  state.sizingRef = v;
+  updateTorqueProfile();
+}
+function renderSizingRef(t){
+  var note = g('sizingRefNote'); if(!note || !t) return;
+  var rr = resolveRef(t, state.sizingRef);
+  document.querySelectorAll('#sizingRef .pill').forEach(function(p){ p.classList.toggle('sel', p.dataset.v===rr.key); });
+  var other = rr.key==='BTO' ? 'ETC' : 'BTO', otherVal = rr.key==='BTO' ? t.etc : t.bto;
+  if(rr.auto){
+    note.className = 'ref-note';
+    note.textContent = 'Auto-selected: '+rr.key+' ('+rr.val.toFixed(0)+' Nm) is the higher value. Click to choose the other.';
+  } else if(otherVal > rr.val){
+    note.className = 'ref-note warn';
+    note.textContent = '⚠ '+other+' ('+otherVal.toFixed(0)+' Nm) is higher than the selected '+rr.key+' ('+rr.val.toFixed(0)+' Nm). Make sure the actuator also covers '+other+'.';
+  } else {
+    note.className = 'ref-note';
+    note.textContent = 'Actuator will be sized on '+rr.key+' = '+rr.val.toFixed(0)+' Nm.';
+  }
+}
+
+function updateTorqueProfile(){
+  state.bto = g('btoInput').value;
+  var card = g('torqueCard');
+  var t = valveTorques();
+  if(t){
+    card.style.display = 'block';
+    g('tv-bto').textContent = t.bto.toFixed(0);
+    TQ_KEYS.forEach(function(k){
+      var inp = g('tq-'+k);
+      var edited = state.torqueEdit[k]!==undefined;
+      if(document.activeElement!==inp) inp.value = edited ? state.torqueEdit[k] : t[k];
+      inp.classList.toggle('edited', edited);
+    });
+    g('tqResetBtn').style.display = Object.keys(state.torqueEdit).length ? 'inline' : 'none';
+    renderSizingRef(t);
+  } else {
+    card.style.display = 'none';
+  }
+  var fos = parseFloat(g('fosSlider').value);
   state.fos = fos;
-  document.getElementById('fosVal').textContent = fos.toFixed(2)+'×';
-  var dtv = document.getElementById('designTorqueVal');
-  if(dtv){
-    dtv.textContent = (!isNaN(bto) && bto>0) ? (bto*fos).toFixed(0)+' Nm' : '— Nm';
-  }
+  g('fosVal').textContent = fos.toFixed(2)+'×';
+  renderTorqueTop();
+  renderTorqueCheck();
   renderMatches();
 }
 
@@ -1451,6 +1855,24 @@ function goStep(n){
 }
 
 function renderReview(){
+  var anR = currentAnalysis();
+  var tq = '';
+  if(anR){
+    tq += '<div class="tq-summary-line"><span>Valve sizing reference'+ib(anR.govKey)+'</span><span class="rv">'+anR.govKey+' = '+anR.gov.toFixed(0)+' Nm'+(anR.refAuto?' (auto)':'')+'</span></div>';
+    tq += '<div class="tq-summary-line"><span>Factor of safety (FOS)'+ib('FOS')+'</span><span class="rv">'+anR.fos.toFixed(2)+'×</span></div>';
+    tq += '<div class="tq-summary-line"><span>Valve torque + FOS (design torque)</span><span class="rv">'+anR.design.toFixed(0)+' Nm</span></div>';
+    if(anR.sa) tq += '<div class="fhint" style="margin:6px 0 8px;">Single-acting: spring torque at 0° is checked against the valve sizing reference.</div>';
+    tq += plausibilityHtml(anR);
+    if(state.actuationType==='Pneumatic' || state.actuationType==='Electric'){
+      tq += '<div class="review-hdr" style="margin-top:14px;">Minimum Actuator Requirement (for quotation)</div>';
+      tq += '<div class="fhint" style="margin:0 0 4px;">FOS '+anR.fos.toFixed(2)+'× already included. The manufacturer should quote an actuator that meets at least these values.</div>';
+      tq += quoteTableHtml(quoteRequirements(anR, {actuationType:state.actuationType}));
+    }
+    tq += torqueTableHtml(anR, state.actuationType==='Pneumatic' && !!state.modeOp);
+  } else {
+    tq = '<div style="font-size:12px;color:var(--text3);">Valve type and BTO not entered.</div>';
+  }
+  g('review-torque').innerHTML = tq;
   var v = '';
   v += rline('Valve Type', state.valveType||'—');
   v += rline('Port Configuration', state.wayType||'—');
@@ -1461,13 +1883,13 @@ function renderReview(){
   v += rline('Connection Standard', state.connStd||'—');
   if(state.connRating) v += rline('Pressure Rating', state.connRating);
   v += rline('DN', state.dn||'—');
-  v += rline('Flange Pattern', state.valveFlange||'—');
+  v += rline('Flange Pattern', flangeStr(state.valveFlange)||'—');
   v += rline('Stem Interface', (state.valveStemShape||'—')+' · '+(isNaN(getInterfaceSize('valve'))?'—':getInterfaceSize('valve'))+'mm');
   v += rline('Seat & Seal Material', state.sealMaterial==='Other' ? (state.sealOther||'Other') : (state.sealMaterial||'—'));
   if(state.valveType==='butterfly') v += rline('Disc Material', state.discMaterial==='Other' ? (state.discOther||'Other') : (state.discMaterial||'—'));
   v += rline('Valve Certifications', state.valveCerts.length ? state.valveCerts.join(', ') : '—');
   v += rline('Medium Pressure', (state.connPressure?state.connPressure+' bar':'—'));
-  v += rline('Normal Position', state.normalPos||'—');
+  v += rline('Safety Function', state.normalPos||'—');
   v += rline('BTO', (document.getElementById('btoInput').value||'—')+' Nm');
   document.getElementById('review-valve').innerHTML = v;
 
@@ -1483,10 +1905,6 @@ function renderReview(){
     a += rline('Corrosion Protection', state.corrosionClass||'—');
     a += rline('Actuator Certifications', state.actCerts.length ? state.actCerts.join(', ') : '—');
     a += rline('Supply Pressure', (document.getElementById('opPressure').value||'—')+' bar');
-    a += rline('Factor of Safety', document.getElementById('fosSlider').value+'×');
-    var bto = parseFloat(document.getElementById('btoInput').value);
-    var fos = parseFloat(document.getElementById('fosSlider').value);
-    a += rline('Required Design Torque', (!isNaN(bto)&&!isNaN(fos)) ? (bto*fos).toFixed(0)+' Nm' : '—');
   } else if(state.actuationType==='Electric'){
     a += rline('Motion Type', state.elMotionType||'—');
     a += rline('Duty Classification', state.elDutyClass||'—');
@@ -1494,7 +1912,7 @@ function renderReview(){
     a += rline('Required Torque / Thrust', (g('elReqTorque').value||'—')+' Nm / '+(g('elReqThrust').value||'—')+' kN');
     a += rline('Actuator Range / Model Family', g('elRangeName').value||'—');
   }
-  a += rline('Actuator Flange', state.actFlange||'—');
+  a += rline('Actuator Flange', flangeStr(state.actFlange)||'—');
   a += rline('Actuator Bore', (state.actShaftShape||'—')+' · '+(isNaN(getInterfaceSize('act'))?'—':getInterfaceSize('act'))+'mm');
   document.getElementById('review-actuator').innerHTML = a;
 
@@ -1510,13 +1928,11 @@ function renderReview(){
 function rline(l,v){ return '<div class="review-row"><span class="rl">'+l+'</span><span class="rv">'+v+'</span></div>'; }
 
 function snapshotAssembly(){
-  var bto = parseFloat(document.getElementById('btoInput').value);
-  var fos = parseFloat(document.getElementById('fosSlider').value);
   return {
     label: document.getElementById('assemblyLabel').value || ('Assembly '+(basket.length+1)),
     valveType: state.valveType, connType: state.connType, connStd: state.connStd,
     connRating: state.connRating, dn: state.dn, connPressure: state.connPressure,
-    valveFlange: state.valveFlange, valveStemShape: state.valveStemShape,
+    valveFlange: flangeArr(state.valveFlange).slice(), valveStemShape: state.valveStemShape,
     valveStemSize: getInterfaceSize('valve'),
     wayType: state.wayType, threeWayPattern: state.threeWayPattern,
     valveMaterial: state.valveMaterial, valvePolymerType: state.valvePolymerType,
@@ -1527,7 +1943,12 @@ function snapshotAssembly(){
     normalPos: state.normalPos,
     bto: document.getElementById('btoInput').value,
     fos: document.getElementById('fosSlider').value,
-    designTorque: (!isNaN(bto)&&!isNaN(fos)) ? (bto*fos).toFixed(0) : null,
+    designTorque: (function(){ var an = currentAnalysis(); return an ? an.design.toFixed(0) : null; })(),
+    torqueEdit: JSON.parse(JSON.stringify(state.torqueEdit)),
+    sizingRef: state.sizingRef,
+    actTorque: actTorqueInputs(),
+    actEdit: JSON.parse(JSON.stringify(state.actEdit)),
+    minRequirements: quoteRequirements(currentAnalysis(), {actuationType:state.actuationType}),
     actuationType: state.actuationType,
     modeOp: state.modeOp, actMechanism: state.actMechanism,
     actHousingMaterial: state.actHousingMaterial, rotationAngle: state.rotationAngle, corrosionClass: state.corrosionClass,
@@ -1536,7 +1957,7 @@ function snapshotAssembly(){
     elPhase: g('elPhase')?g('elPhase').value:'', elFrequency: g('elFrequency')?g('elFrequency').value:'', elVoltage: g('elVoltage')?g('elVoltage').value:'',
     elReqTorque: g('elReqTorque')?g('elReqTorque').value:'', elReqThrust: g('elReqThrust')?g('elReqThrust').value:'',
     elRangeName: g('elRangeName')?g('elRangeName').value:'',
-    actFlange: state.actFlange, actShaftShape: state.actShaftShape,
+    actFlange: flangeArr(state.actFlange).slice(), actShaftShape: state.actShaftShape,
     actShaftSize: getInterfaceSize('act'),
     opPressure: document.getElementById('opPressure').value,
     ambMin: document.getElementById('ambMin').value, ambMax: document.getElementById('ambMax').value,
@@ -1584,7 +2005,7 @@ function restoreAssembly(item){
   renderConnFields(false);
 
   state.dn = item.dn; renderDN();
-  state.valveFlange = item.valveFlange; renderFlangeGrid('valve');
+  state.valveFlange = flangeArr(item.valveFlange).slice(); renderFlangeGrid('valve');
   state.valveStemShape = item.valveStemShape;
   setPillSelected('valveStemShape', item.valveStemShape);
   renderDimField('valve');
@@ -1613,6 +2034,13 @@ function restoreAssembly(item){
   document.getElementById('tempMax').value = item.tempMax||'';
   state.normalPos = item.normalPos; setPillSelected('normalPos', item.normalPos);
   document.getElementById('btoInput').value = item.bto||'';
+  state.torqueEdit = JSON.parse(JSON.stringify(item.torqueEdit||{}));
+  state.sizingRef = item.sizingRef||null;
+  var at = item.actTorque||{};
+  g('saAirStart').value = at.airStart||''; g('saAirEnd').value = at.airEnd||'';
+  g('saSpringStart').value = at.springStart||''; g('saSpringEnd').value = at.springEnd||'';
+  g('daTorque').value = at.da||'';
+  state.actEdit = JSON.parse(JSON.stringify(item.actEdit||{}));
   if(item.fos) document.getElementById('fosSlider').value = item.fos;
 
   // Actuation
@@ -1634,7 +2062,7 @@ function restoreAssembly(item){
   if(g('elReqThrust')) g('elReqThrust').value = item.elReqThrust||'';
   if(g('elRangeName')) g('elRangeName').value = item.elRangeName||'';
 
-  state.actFlange = item.actFlange; renderFlangeGrid('act');
+  state.actFlange = flangeArr(item.actFlange).slice(); renderFlangeGrid('act');
   state.actShaftShape = item.actShaftShape;
   setPillSelected('actShaftShape', item.actShaftShape);
   renderDimField('act');
@@ -1720,6 +2148,7 @@ function renderBasket(){
       + '<div class="bi-spec">'
       + (item.valveType||'—')+' · '+(item.dn||'—')+' · BTO '+(item.bto||'—')+' Nm<br>'
       + '<span class="mono">Design Torque: '+(item.designTorque||'—')+' Nm</span> · '+(item.modeOp||'—')
+      + ((item.minRequirements&&item.minRequirements.length) ? '<br>Min. actuator: '+item.minRequirements.map(function(l){ return l.pos+' ≥ '+Number(l.min).toFixed(0)+' Nm'; }).join(', ') : '')
       + '</div></div>';
   });
   body.innerHTML = html;
@@ -1735,14 +2164,6 @@ function openDrawer(){ document.getElementById('drawer').classList.add('open'); 
 function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
 
 
-function finishProject(){
-  if(basket.length===0){
-    alert('Add at least one valve assembly before downloading your project PDF.');
-    return;
-  }
-  cx8RequireLogin(generateProjectPDF);
-}
-
 // ══ PDF LOGIN GATE — the CX8 site checks the session before any download ═════
 var cx8PendingPdf = null;
 function cx8RequireLogin(fn){
@@ -1755,16 +2176,25 @@ window.addEventListener('message', function(e){
   var fn = cx8PendingPdf; cx8PendingPdf = null; fn();
 });
 
+function finishProject(){
+  if(basket.length===0){
+    alert('Add at least one valve assembly before downloading your project PDF.');
+    return;
+  }
+  cx8RequireLogin(function(){ generatePDF(basket, 'project'); });
+}
+
 // ══ PDF EXPORT — via jsPDF (matches the other CX8 tools) ══════════════════════
-function generateProjectPDF(){
+// kind = 'project' (whole basket) or 'spec' (current assembly, for a manufacturer enquiry)
+function generatePDF(items, kind){
   if(typeof window.jspdf === 'undefined'){
-    loadJsPdf();
+    loadJsPdf(function(){ buildPDF(items, kind); });
   } else {
-    doGenerateProjectPDF();
+    buildPDF(items, kind);
   }
 }
 
-function loadJsPdf(){
+function loadJsPdf(onReady){
   var sources = [
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
     'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js'
@@ -1779,7 +2209,7 @@ function loadJsPdf(){
     script.src = sources[index++];
     script.onload = function(){
       if(typeof window.jspdf === 'undefined') tryNext();
-      else doGenerateProjectPDF();
+      else onReady();
     };
     script.onerror = tryNext;
     document.head.appendChild(script);
@@ -1787,14 +2217,23 @@ function loadJsPdf(){
   tryNext();
 }
 
-function doGenerateProjectPDF(){
-  if(!window.jspdf || !window.jspdf.jsPDF){
-    alert('The PDF generator is unavailable. Please try again.');
-    return;
-  }
+// jsPDF's built-in Helvetica only covers WinAnsi characters. Symbols such as
+// ″ (inch) were being drawn as garbage — e.g. DN40 / 1-1/2″ printed as "1-1/23".
+function pdfSafe(v){
+  return String(v)
+    .replace(/[″“”]/g,'"').replace(/[′‘’]/g,"'")
+    .replace(/×/g,'x').replace(/[–—]/g,'-').replace(/≥/g,'>=').replace(/≤/g,'<=')
+    .replace(/✓/g,'OK').replace(/✕/g,'X').replace(/⚠/g,'!')
+    .replace(/[^\x20-\x7E\xA0-\xFF]/g,'');
+}
+
+function buildPDF(items, kind){
+  var isSpec = kind==='spec';
+  var title = isSpec ? 'Actuator Requirement Specification' : 'Actuator & Valve Matching Summary';
+  var filename = isSpec ? 'Actuator_Requirement_Specification.pdf' : 'Actuator_Valve_Matching_Summary.pdf';
   var jsPDF = window.jspdf.jsPDF;
   var doc = new jsPDF({unit:'pt', format:'a4'});
-  doc.setProperties({title:'Actuator & Valve Matching Summary', subject:'Actuator and valve assembly project summary'});
+  doc.setProperties({title:title, subject:'Actuator and valve assembly specification'});
   var dateStr = new Date().toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'});
   var pageW = doc.internal.pageSize.getWidth();
   var pageH = doc.internal.pageSize.getHeight();
@@ -1807,50 +2246,101 @@ function doGenerateProjectPDF(){
     if(value===undefined || value===null || value==='') value='—';
     ensureRoom(14);
     doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(40,40,40);
-    doc.text(label+':', x, y);
+    doc.text(pdfSafe(label)+':', x, y);
     doc.setFont('helvetica','bold');
-    doc.text(String(value), x+170, y);
+    doc.text(pdfSafe(value), x+170, y);
     doc.setFont('helvetica','normal');
     y += 13.5;
   }
 
   // Header — neutral, no company branding up top
   doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(30,45,74);
-  doc.text('Actuator & Valve Matching Summary', x, y);
+  doc.text(title, x, y);
   doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(120,120,120);
-  doc.text(basket.length+' assembl'+(basket.length===1?'y':'ies')+' — Generated '+dateStr, x, y+16);
+  var sub = isSpec
+    ? 'Minimum requirements for quotation — Generated '+dateStr
+    : items.length+' assembl'+(items.length===1?'y':'ies')+' — Generated '+dateStr;
+  doc.text(sub, x, y+16);
   doc.setDrawColor(220,220,220); doc.line(x, y+26, pageW-48, y+26);
   y += 46;
 
-  basket.forEach(function(item, idx){
+  items.forEach(function(item, idx){
     ensureRoom(40);
     doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(30,45,74);
-    doc.text((idx+1)+'. '+(item.label||'Assembly '+(idx+1)), x, y); y += 18;
+    doc.text(pdfSafe((isSpec ? '' : (idx+1)+'. ')+(item.label||'Assembly '+(idx+1))), x, y); y += 18;
+
+    // Torque summary first (valve torque, valve torque + FOS, 4-position check)
+    var an = torqueAnalysis(valveTorques({bto:item.bto, valveType:item.valveType, torqueEdit:item.torqueEdit}),
+                            item.fos, item.modeOp, item.normalPos, item.actTorque, item.sizingRef);
+    doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(13,122,110);
+    doc.text('Torque Summary', x, y); y += 14;
+    if(!an){
+      row('Valve torque', 'Not entered');
+    } else {
+      row('Valve sizing reference', an.govKey+' = '+an.gov.toFixed(0)+' Nm'+(an.refAuto?' (auto: higher value)':' (selected)'));
+      row('Factor of safety (FOS)', an.fos.toFixed(2)+'x');
+      row('Valve torque + FOS', an.design.toFixed(0)+' Nm (required design torque)');
+      if(an.sa) row('Single-acting', 'Spring torque at 0° checked against the sizing reference');
+      if(an.plausibility && an.plausibility.length) row('Datasheet value check', 'Recheck: entered values are out of the usual order');
+      var showAct = item.actuationType==='Pneumatic' && !!item.modeOp;
+      var cols = [x, x+120, x+200, x+275, x+365, x+445];
+      var hdr = ['Position','Valve ref.','Valve (Nm)','Min. req. (Nm)'].concat(showAct?['Actuator spec','Status']:[]);
+      ensureRoom(22 + an.rows.length*14);
+      y += 4;
+      doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(110,110,110);
+      hdr.forEach(function(h,i){ doc.text(h, cols[i], y); });
+      y += 5; doc.setDrawColor(200,200,200); doc.line(x, y, pageW-48, y); y += 11;
+      an.rows.forEach(function(r){
+        doc.setFont('helvetica', r.gov ? 'bold' : 'normal'); doc.setFontSize(9); doc.setTextColor(40,40,40);
+        var cells = [pdfSafe(r.pos), r.ref, r.valve.toFixed(0), r.req.toFixed(0)];
+        if(showAct) cells = cells.concat([r.act===null?'-':r.act.toFixed(0), r.ok===null?'-':(r.ok?'OK':'TOO LOW')]);
+        cells.forEach(function(c,i){
+          if(showAct && i===5 && r.ok===false) doc.setTextColor(185,28,28);
+          doc.text(String(c), cols[i], y);
+        });
+        y += 14;
+      });
+      // Minimum actuator requirement for quotation
+      var ql = quoteRequirements(an, item);
+      if(item.actuationType==='Pneumatic' || item.actuationType==='Electric'){
+        ensureRoom(40 + ql.length*14);
+        y += 6;
+        doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(13,122,110);
+        doc.text('Minimum Actuator Requirement (for quotation)', x, y); y += 12;
+        doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(110,110,110);
+        doc.text(pdfSafe('Factor of safety '+an.fos.toFixed(2)+'x already included. The actuator offered must meet at least these values.'), x, y); y += 13;
+        ql.forEach(function(l){ row(l.pos, '>= '+Number(l.min).toFixed(0)+' Nm'+(l.below?'  (below calculated min. '+l.calc+' Nm)':'')); });
+      }
+    }
+    y += 6;
 
     doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(13,122,110);
     doc.text('Valve', x, y); y += 14;
     row('Type', item.valveType);
-    row('DN / Connection', (item.dn||'—')+(item.connType?' · '+item.connType:''));
-    row('Flange (ISO 5211)', item.valveFlange);
+    row('Nominal size (DN / NPS)', item.dn);
+    row('End connection', item.connType);
+    row('Connection standard', item.connStd);
+    if(item.connRating) row('Pressure rating', item.connRating);
+    row('Medium pressure', item.connPressure ? item.connPressure+' bar' : '—');
+    row('Flange (ISO 5211)', flangeStr(item.valveFlange));
     row('Stem', (item.valveStemShape||'—')+(item.valveStemSize?' · '+item.valveStemSize+' mm':''));
     row('Body material', item.valveMaterial);
     row('Seal material', item.sealMaterial);
     row('Operating temp.', (item.tempMin||'—')+' to '+(item.tempMax||'—')+' °C');
-    row('Normal position', item.normalPos);
+    row('Safety function', item.normalPos);
     y += 4;
 
     ensureRoom(90);
     doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(184,92,0);
     doc.text('Actuator', x, y); y += 14;
+    row('Actuation', item.actuationType);
     row('Mode of operation', item.modeOp);
     row('Mechanism', item.actMechanism);
-    row('BTO (datasheet)', item.bto ? item.bto+' Nm' : '—');
-    row('Factor of safety', item.fos);
-    row('Design torque', item.designTorque ? item.designTorque+' Nm' : '—');
-    row('Flange (ISO 5211)', item.actFlange);
+    row('Flange (ISO 5211)', flangeStr(item.actFlange));
     row('Shaft', (item.actShaftShape||'—')+(item.actShaftSize?' · '+item.actShaftSize+' mm':''));
     row('Operating pressure', item.opPressure ? item.opPressure+' bar' : '—');
     row('Ambient range', (item.ambMin||'—')+' to '+(item.ambMax||'—')+' °C');
+    if(item.actCerts && item.actCerts.length) row('Certifications', item.actCerts.join(', '));
     y += 4;
 
     var acc = item.acc || {};
@@ -1866,10 +2356,26 @@ function doGenerateProjectPDF(){
       accList.forEach(function(a){ row('•', a); });
     }
     y += 12;
-    if(idx < basket.length-1){
+    if(idx < items.length-1){
       ensureRoom(4);
       doc.setDrawColor(230,226,218); doc.line(x, y, pageW-48, y); y += 14;
     }
+  });
+
+  // Abbreviations used in the torque tables
+  var gl = ['BTO','RTO','ETO','BTC','RTC','ETC','FOS'];
+  ensureRoom(20 + gl.length*12);
+  y += 6;
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(90,90,90);
+  doc.text('Abbreviations', x, y); y += 13;
+  gl.forEach(function(k){
+    var d = GLOSSARY[k];
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,90,90);
+    doc.text(pdfSafe(d[0]), x, y);
+    doc.setFont('helvetica','normal');
+    var lines = doc.splitTextToSize(pdfSafe(d[1]), pageW-48-(x+130));
+    doc.text(lines, x+130, y);
+    y += 10*lines.length + 2;
   });
 
   // Footer — the only place company branding appears, per project convention
@@ -1884,9 +2390,7 @@ function doGenerateProjectPDF(){
   doc.setFontSize(8); doc.setTextColor(160,160,160);
   doc.text('Report generated with a free engineering tool by CX8 Technologies · www.cx8motion.com', x, y);
 
-  var filename = 'Actuator_Valve_Matching_Summary.pdf';
   doc.save(filename);
-
 }
 
 // ── Init ──
@@ -1899,6 +2403,7 @@ renderWayType();
 renderDiscMaterial();
 renderActuationSections();
 initAllCertPickers();
+updateTorqueProfile();
 </script>
 </body>
 </html>
