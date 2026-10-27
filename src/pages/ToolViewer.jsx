@@ -25,7 +25,8 @@ const euros = cents => `€${(cents / 100).toFixed(cents % 100 ? 2 : 0)}`
 // Login prompts: for PDF downloads (Tools 3, 4, 6) and Tool 5 results
 function GateModal({ onClose, toolPath, reason }) {
   const navigate = useNavigate()
-  const redirect = encodeURIComponent(toolPath)
+  // ?resume=1 lets Tool 5 restore the selection after login (only then)
+  const redirect = encodeURIComponent(reason === 'pdf' ? toolPath : `${toolPath}?resume=1`)
 
   return (
     <div className="gate-overlay" onClick={onClose}>
@@ -332,6 +333,12 @@ export default function ToolViewer() {
       // comparison restored after login/checkout
       if (e.data?.type === 'cx8-compare') handleCompare(e.data.request)
       if (e.data?.type === 'cx8-no-pending' && checkoutReturnRef.current) endCheckoutReturn()
+      // The selection has been restored (or there was none): drop ?resume=1 so
+      // a later refresh starts empty
+      if ((e.data?.type === 'cx8-compare' || e.data?.type === 'cx8-no-pending') &&
+          new URLSearchParams(window.location.search).has('resume')) {
+        navigate(window.location.pathname, { replace: true })
+      }
     }
     window.addEventListener('message', handler)
     return () => window.removeEventListener('message', handler)

@@ -229,7 +229,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
         <div class="fgrp-stack">
           <div class="fgrp">
             <label><span class="fgrp-step">①</span>Manufacturer</label>
-            <select id="flt-brand">
+            <select id="flt-brand" autocomplete="off">
               <option value="">— select manufacturer —</option>
             </select>
           </div>
@@ -242,7 +242,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
           </div>
           <div class="fgrp">
             <label><span class="fgrp-step">③</span>Model</label>
-            <select id="flt-model" disabled>
+            <select id="flt-model" disabled autocomplete="off">
               <option value="">— select manufacturer first —</option>
             </select>
           </div>
@@ -281,7 +281,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
       <div class="cinner">
         <label class="clabel">Compare against manufacturers (select any — leave empty for all)</label>
         <div class="compare-controls">
-          <select id="pick-brand">
+          <select id="pick-brand" autocomplete="off">
             <option value="">Add a manufacturer…</option>
           </select>
           <button class="btn-add" id="btn-add" onclick="addBrand()">+ Add</button>
@@ -294,7 +294,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
     <!-- Pressure slider -->
     <div class="pressure-row">
       <label>Operating Pressure</label>
-      <input type="range" id="pressure" min="2" max="10" step="0.5" value="6" oninput="onPressure(this)">
+      <input type="range" id="pressure" min="2" max="10" step="0.5" value="6" autocomplete="off" oninput="onPressure(this)">
       <div class="pval"><span id="pdisp">6.0</span> bar</div>
     </div>
 
@@ -1286,7 +1286,13 @@ function restorePendingCompare(){
   // Ask again — the site shows results if the user now has access
   requestCompare();
 }
+// Only coming back from login (?resume=1) or checkout (?paid=1) restores the
+// selection; a refresh or a new visit starts empty.
+function isResumeVisit(){
+  try{ return /[?&](resume|paid)=1(&|$)/.test(window.parent.location.search); }catch(e){ return false; }
+}
 function restoreSavedEntries(){
+  if(!isResumeVisit()){ clearPendingCompare(); return false; }
   let saved=null;
   try{ saved=JSON.parse(localStorage.getItem(PENDING_KEY)||'null'); }catch(e){}
   if(!saved||Date.now()-saved.at>PENDING_MAX_AGE){ clearPendingCompare(); return false; }
