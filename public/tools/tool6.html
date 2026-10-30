@@ -92,12 +92,6 @@ input:focus,select:focus{border-color:var(--teal);background:var(--surface);box-
 .con-hdr-lbl{font-family:var(--mono);font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;}
 .con-row{display:grid;grid-template-columns:1fr 58px 80px 76px 70px 26px;gap:6px;align-items:center;margin-bottom:5px;}
 .con-row input,.con-row select{font-size:12px;padding:6px 8px;}
-@media(max-width:480px){
-  .con-hdr,.con-row{grid-template-columns:1fr 34px 50px 44px 40px 22px;gap:4px;padding-left:0;padding-right:0;}
-  .con-hdr-lbl{font-size:7px;letter-spacing:.03em;}
-  .con-row input,.con-row select{font-size:10.5px;padding:6px 3px;}
-  .rm-btn{width:20px;height:20px;font-size:12px;}
-}
 .rm-btn{width:24px;height:24px;border-radius:50%;background:var(--red-bg2);color:var(--red);border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;}
 /* Capped + internally scrollable so adding many items never pushes the
    Add/Total/Nav controls below the fold — the card's height stays bounded. */
@@ -185,6 +179,19 @@ input:focus,select:focus{border-color:var(--teal);background:var(--surface);box-
 
 .hidden{display:none!important;}
 
+/* ── UNIT TAGS & TANK RATIO ── */
+.unit-tag{width:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--navy-bg);border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:var(--mono);font-size:12px;font-weight:600;color:var(--navy2);}
+.ratio-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.ratio-lbl{font-size:12px;font-weight:500;color:var(--text2);}
+.ratio-chip{font-family:var(--mono);font-size:11px;font-weight:600;padding:6px 12px;border-radius:20px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all .12s;}
+.ratio-chip:hover{border-color:var(--navy-bg2);background:var(--navy-bg);}
+.ratio-chip.sel{border-color:var(--teal);background:var(--teal-bg);color:var(--teal-dark);}
+.ratio-row input{width:84px;padding:6px 8px;font-size:13px;}
+.tank-rec{background:var(--teal-bg);border:1px solid var(--teal-bg2);border-radius:var(--radius-sm);padding:12px 14px;margin:12px 0 10px;}
+.tank-rec-val{font-family:var(--display);font-size:24px;font-weight:700;color:var(--teal-dark);line-height:1.1;}
+.tank-rec-alt{font-family:var(--mono);font-size:12px;color:var(--teal-dark);margin-left:6px;font-weight:500;}
+.tank-rec-sub{font-size:11.5px;color:var(--text2);margin-top:4px;line-height:1.5;}
+
 /* ═══ CX8 REPORT EMAIL GATE (shared across tools) ═══ */
 .cx8-gate-overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,.55);z-index:9999;align-items:center;justify-content:center;padding:20px;}
 .cx8-gate-overlay.open{display:flex;}
@@ -202,21 +209,6 @@ input:focus,select:focus{border-color:var(--teal);background:var(--surface);box-
 .cx8-gate-btn:disabled{opacity:.6;cursor:default;}
 .cx8-gate-note{font-size:10.5px;color:var(--text3);margin-top:12px;line-height:1.5;}
 
-/* ── RESPONSIVE / MOBILE ── */
-html,body{max-width:100%;overflow-x:hidden;}
-@media(max-width:640px){
-  .wiz-progress-bar{padding:0 10px;}
-  .wiz-step{padding:8px 4px;}
-  .wiz-step-sub{display:none;}
-  .wiz-wrap{padding:12px 12px 32px;}
-  .step-card-hdr{padding:12px 16px;}
-  .step-body{padding:14px 16px;}
-  .row2,.row3{grid-template-columns:1fr;}
-  .opt-grid.cols-3{grid-template-columns:1fr 1fr;}
-  .opt-grid.cols-4{grid-template-columns:1fr 1fr;}
-  .rh-grid{grid-template-columns:1fr;gap:10px;}
-  .mfr-grid{grid-template-columns:1fr;}
-}
 </style>
 </head>
 <body>
@@ -231,6 +223,7 @@ html,body{max-width:100%;overflow-x:hidden;}
     <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="The%20flow%20rate%20for%20each%20item%20comes%20from%20its%20datasheet%20or%20nameplate%20%E2%80%94%20look%20for%20%22air%20consumption%22%20in%20l%2Fmin%20or%20CFM.">i</span>
     <button class="unit-btn active" id="btn-m3hr" onclick="setFlowUnit('m3hr')">m³/hr</button>
     <button class="unit-btn" id="btn-lmin" onclick="setFlowUnit('lmin')">l/min</button>
+    <button class="unit-btn" id="btn-m3min" onclick="setFlowUnit('m3min')">m³/min</button>
     <button class="unit-btn" id="btn-cfm" onclick="setFlowUnit('cfm')">CFM</button>
   </div>
 </div>
@@ -312,16 +305,16 @@ html,body{max-width:100%;overflow-x:hidden;}
       <div class="step-desc">Site conditions directly affect how much air your compressor can deliver. A compressor at altitude or high temperature delivers significantly less air than its nameplate suggests.</div>
     </div>
     <div class="step-body">
-      <div class="row4">
+      <div class="row3">
         <div class="f">
-          <label>Altitude (m)
+          <label><span>Altitude (<span id="u-alt">m</span>)</span>
             <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Higher%20altitude%20%3D%20lower%20air%20pressure%20%3D%20less%20air%20mass%20per%20cubic%20metre.%20Stuttgart%20is%20~245m%2C%20Bangalore%20is%20~920m%2C%20Johannesburg%20is%20~1750m.">i</span>
           </label>
           <input type="number" id="alt-m" value="100" min="0" max="4000" step="50">
-          <div class="hint">Stuttgart ~245m</div>
+          <div class="hint" id="hint-alt">Stuttgart ~245 m</div>
         </div>
         <div class="f">
-          <label>Max ambient (°C)
+          <label><span>Max ambient (<span id="u-temp">°C</span>)</span>
             <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Use%20the%20hottest%20day%20of%20the%20year%20in%20the%20compressor%20room%20%E2%80%94%20not%20the%20average.%20This%20is%20your%20worst-case%20sizing%20condition.">i</span>
           </label>
           <input type="number" id="amb-temp" value="35" min="5" max="55" step="1">
@@ -333,13 +326,6 @@ html,body{max-width:100%;overflow-x:hidden;}
           </label>
           <input type="number" id="rh" value="60" min="0" max="100" step="5">
           <div class="hint">40–70% temperate</div>
-        </div>
-        <div class="f">
-          <label>Duty cycle (%)
-            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="The%20percentage%20of%20time%20the%20compressor%20runs%20under%20load.%2060%25%20is%20typical%20for%20general%20industrial.%20100%25%20for%20continuous%20processes.">i</span>
-          </label>
-          <input type="number" id="duty-cycle" value="60" min="10" max="100" step="5">
-          <div class="hint">60% typical industrial</div>
         </div>
       </div>
       <div class="step-nav">
@@ -374,12 +360,9 @@ html,body{max-width:100%;overflow-x:hidden;}
           </label>
           <div style="display:flex;gap:6px">
             <input type="number" id="req-pressure" value="7" min="1" max="200" step="0.5" style="flex:1">
-            <select id="unit-req-pressure" style="width:80px;flex-shrink:0" onchange="onPressUnitChange()">
-              <option value="bar">bar g</option>
-              <option value="psi">psi g</option>
-            </select>
+            <span class="unit-tag" id="u-req-press">bar g</span>
           </div>
-          <div class="hint">Typical: 6–7 bar g for most pneumatic equipment</div>
+          <div class="hint" id="hint-req-press">Typical: 6–7 bar g for most pneumatic equipment</div>
         </div>
         <div class="f">
           <label>Pipeline pressure loss
@@ -387,10 +370,7 @@ html,body{max-width:100%;overflow-x:hidden;}
           </label>
           <div style="display:flex;gap:6px">
             <input type="number" id="pipe-loss" value="0.5" min="0" max="50" step="0.1" style="flex:1">
-            <select id="unit-pipe-loss" style="width:80px;flex-shrink:0" onchange="onPressUnitChange()">
-              <option value="bar">bar</option>
-              <option value="psi">psi</option>
-            </select>
+            <span class="unit-tag" id="u-pipe-loss">bar</span>
           </div>
           <div class="hint" id="hint-pipe-loss">Typical: 0.3–1.0 bar</div>
         </div>
@@ -421,6 +401,19 @@ html,body{max-width:100%;overflow-x:hidden;}
         </div>
       </div>
       <div class="opt-grid cols-2" id="iso-grid"></div>
+      <div id="aq-live" class="callout c-navy" style="margin-top:14px;margin-bottom:0"></div>
+      <div class="row2" style="margin-top:16px">
+        <div class="f" id="f-pipe-temp">
+          <label><span>Lowest temperature the pipework sees (<span id="u-pipe-temp">°C</span>)</span>
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Water%20condenses%20in%20compressed%20air%20lines%20wherever%20the%20pipe%20is%20colder%20than%20the%20air%27s%20pressure%20dew%20point%20%28PDP%29.%20Rule%20of%20thumb%3A%20the%20PDP%20must%20be%20at%20least%205%C2%B0C%20%28about%2010%C2%B0F%29%20below%20the%20coldest%20temperature%20any%20pipework%20sees.%20Dew%20point%20classes%20come%20in%20steps%20%28%2B3%2C%20%E2%88%9220%2C%20%E2%88%9240%2C%20%E2%88%9270%20%C2%B0C%29%2C%20so%20the%20required%20PDP%20changes%20in%20steps%2C%20not%20continuously.%20Indoor%20heated%20plant%3A%20about%2010%E2%80%9315%C2%B0C.%20Lines%20through%20unheated%20buildings%20or%20outdoors%3A%20use%20the%20coldest%20winter%20temperature.">i</span>
+          </label>
+          <input type="number" id="pipe-temp" value="10" min="-50" max="40" step="1" oninput="onPipeTempChange()">
+          <div class="hint" id="hint-pipe-temp">Indoor heated plant ~10–15 °C · outdoor/unheated lines: coldest winter day</div>
+        </div>
+        <div class="f" style="display:flex;align-items:flex-end">
+          <div class="hint" id="hint-pipe-rule" style="font-style:normal;line-height:1.6">The tool checks that the dew point is at least 5 °C below this. If not, it moves you to a drier class automatically and tells you why.</div>
+        </div>
+      </div>
       <div class="step-nav">
         <button class="btn-back" onclick="goStep(3)">&#8592; Back</button>
         <span class="step-of">Step 4 of 5</span>
@@ -463,22 +456,41 @@ html,body{max-width:100%;overflow-x:hidden;}
         </div>
         <div class="f">
           <label>Dryer purge (%)
-            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Heatless%20desiccant%20dryers%20use%20~15%25%20of%20rated%20flow%20for%20regeneration.%20Refrigerated%20dryers%3A%200%25.">i</span>
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Leave%20blank%20for%20automatic%3A%200%25%20for%20a%20refrigerated%20dryer%2C%2015%25%20when%20your%20air%20quality%20needs%20a%20desiccant%20dryer%20%28PDP%20of%20%E2%88%9220%C2%B0C%20or%20drier%29.%20Heatless%20desiccant%20dryers%20use%20about%2015%25%20of%20flow%20for%20regeneration%3B%20heated%20or%20blower-purge%20types%20about%202%E2%80%935%25.%20Type%20a%20value%20to%20override.">i</span>
           </label>
-          <input type="number" id="dryer-purge" value="0" min="0" max="20" step="5">
-          <div class="hint">Refrigerated: 0% · Desiccant: 15%</div>
+          <input type="number" id="dryer-purge" value="" placeholder="Auto" min="0" max="25" step="1">
+          <div class="hint">Blank = auto · Refrigerated 0% · Heatless desiccant 15%</div>
         </div>
       </div>
 
-      <div style="margin-top:16px;margin-bottom:8px;font-family:var(--display);font-size:13px;font-weight:600;color:var(--navy)">Receiver tank volume</div>
+      <div style="margin-top:16px;margin-bottom:8px;font-family:var(--display);font-size:13px;font-weight:600;color:var(--navy)">Receiver tank</div>
       <div class="row2">
-        <div class="f" id="f-tank-vol">
-          <label>Tank volume (litres)
-            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Receiver%20tank%20stores%20compressed%20air%20to%20handle%20demand%20peaks.%20Minimum%203%3A1%20ratio%20(litres%20per%20l%2Fmin%20FAD).%20Recommended%3A%205%3A1.">i</span>
+        <div class="f" id="f-tank-ratio">
+          <label>Storage ratio
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Rule%20of%20thumb%3A%203%20to%205%20gallons%20of%20receiver%20storage%20for%20every%201%20CFM%20of%20Free%20Air%20Delivery%20%28FAD%29.%203%20gal%2FCFM%20is%20the%20minimum%3B%205%20gal%2FCFM%20gives%20better%20pressure%20stability%20and%20fewer%20load%2Funload%20cycles.%20You%20can%20also%20enter%20your%20own%20value%2C%20and%20change%20it%20again%20on%20the%20Results%20page.">i</span>
           </label>
-          <input type="number" id="tank-vol" value="500" min="50" max="10000" step="50">
-          <div class="hint">Rule of thumb: 5× FAD in l/min = recommended tank size</div>
+          <div style="display:flex;gap:6px">
+            <input type="number" id="tank-ratio" value="5" min="0.5" max="20" step="0.5" style="flex:1" oninput="setTankRatio(this.value,'step5')">
+            <span class="unit-tag" style="width:96px">gal / CFM</span>
+          </div>
+          <div class="ratio-row">
+            <button type="button" class="ratio-chip" data-r="3" onclick="setTankRatio(3)">3 · minimum</button>
+            <button type="button" class="ratio-chip sel" data-r="5" onclick="setTankRatio(5)">5 · recommended</button>
+          </div>
+          <div class="hint ratio-hint">Rule of thumb: 3–5 gallons of storage per 1 CFM of FAD</div>
         </div>
+        <div class="f" id="f-tank-vol">
+          <label>Existing tank volume (optional)
+            <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Optional.%20If%20you%20already%20have%20%28or%20plan%29%20a%20receiver%2C%20enter%20its%20volume%20and%20the%20results%20will%20check%20it%20against%20the%20storage%20ratio.%20Leave%20blank%20if%20you%20only%20want%20the%20recommended%20size.">i</span>
+          </label>
+          <div style="display:flex;gap:6px">
+            <input type="number" id="tank-vol" value="" placeholder="Leave blank if none" min="0" step="10" style="flex:1">
+            <span class="unit-tag" id="u-tank">litres</span>
+          </div>
+          <div class="hint">The results will check it against the storage ratio</div>
+        </div>
+      </div>
+      <div class="row2">
         <div class="f">
           <label>Compressor type
             <span class="tip" onmouseenter="showTip(this,event)" onmouseleave="hideTip()" onmousemove="moveTip(event)" data-tip="Affects%20manufacturer%20recommendations%20at%20the%20end.%20Rotary%20screw%20is%20the%20most%20common%20for%20industrial%20applications.">i</span>
@@ -525,37 +537,163 @@ function moveTip(evt){var t=document.getElementById('tip-float');if(t.style.disp
 function hideTip(){document.getElementById('tip-float').style.display='none';}
 
 // ══ UNIT SYSTEM ══════════════════════════════════════════════════════════════
-// Flow unit (m³/hr, l/min, CFM) is independent of the pressure unit toggle —
-// engineers often want CFM flow with bar pressure, or vice versa.
-var unitMode='metric', flowUnit='m3hr', pressUnit='bar';
+// All values are stored internally in base units (l/min, bar, m, °C, litres)
+// and only converted for display and input. Changing a unit at any step —
+// including on the Results page — converts what the user has already entered
+// instead of resetting it, and re-renders everything in the new units.
+//   Metric / Imperial  → pressure (bar/psi), altitude (m/ft), temperature (°C/°F)
+//   Flow unit          → flow (m³/hr, l/min, CFM) and tank volume (litres / US gal)
+//   Imperial selects CFM automatically; Metric switches CFM back to m³/hr.
+var unitMode='metric', flowUnit='m3hr';
+var L_PER_GAL=3.78541, LPM_PER_CFM=28.3168, PSI_PER_BAR=14.5038, FT_PER_M=3.28084;
+var GALCFM_TO_LLPM=L_PER_GAL/LPM_PER_CFM; // 1 gal/CFM ≈ 0.134 litres per l/min
+
+function isImp(){return unitMode==='imperial';}
+function flowLabel(){return {cfm:'CFM',lmin:'l/min',m3hr:'m³/hr',m3min:'m³/min'}[flowUnit];}
+function pressLabel(){return isImp()?'psi g':'bar g';}
+function pressLabelPlain(){return isImp()?'psi':'bar';}
+function altLabel(){return isImp()?'ft':'m';}
+function tempLabel(){return isImp()?'°F':'°C';}
+function volUnit(){return flowUnit==='cfm'?'gal':'L';}
+function volLabel(){return flowUnit==='cfm'?'US gal':'litres';}
+
+// Flow display: m³/min values are small, so they get 3 decimals; everything else 2.
+function flowDecimals(){return flowUnit==='m3min'?3:2;}
+function flowFactor(){return {cfm:1/LPM_PER_CFM,lmin:1,m3hr:0.06,m3min:0.001}[flowUnit];}
+function dispFlow(lpm){return parseFloat((lpm*flowFactor()).toFixed(flowDecimals()));}
+function fmtFlow(lpm){return (lpm*flowFactor()).toFixed(flowDecimals());}
+function dispPress(bar){return isImp()?(bar*PSI_PER_BAR).toFixed(1):bar.toFixed(1);}
+function dispAlt(m){return isImp()?Math.round(m*FT_PER_M):Math.round(m);}
+function dispTemp(c){return isImp()?Math.round(c*9/5+32):Math.round(c*10)/10;}
+function dispVol(L){return flowUnit==='cfm'?L/L_PER_GAL:L;}
+function fmtNum(v){return Math.round(v).toLocaleString('en-GB');}
+function fmtVol(L){return fmtNum(dispVol(L))+' '+volUnit();}
+function fmtVolOther(L){return flowUnit==='cfm'?fmtNum(L)+' L':fmtNum(L/L_PER_GAL)+' gal';}
+var PDP_MARGIN_C=5;
+function fmtDelta10(){return isImp()?'9 °F':'5 °C';}
+function fmtTempSigned(c,plus){var v=isImp()?Math.round(c*9/5+32):c;return (v<0?'−'+Math.abs(v):(plus?'+'+v:''+v))+tempLabel();}
+function fadSecondary(lpm){return flowUnit==='cfm'?(lpm/1000).toFixed(3)+' m³/min':(lpm/LPM_PER_CFM).toFixed(1)+' CFM';}
+function inputToFlow(v){return v/flowFactor();}
+
+// ── Entered values, kept in base units ──
+var S={altM:100, ambC:35, pipeC:10, reqBar:7, lossBar:0.5, tankL:null};
+var written={}; // last value the tool wrote into each field (to avoid rounding drift)
+function fieldRead(id,toBase,key,allowBlank){
+  var el=document.getElementById(id); if(!el)return;
+  var raw=String(el.value).trim();
+  if(written[id]!==undefined && raw===written[id])return; // unchanged since last read/write
+  if(raw===''){if(allowBlank){S[key]=null;written[id]='';}return;}
+  var v=parseFloat(raw); if(isNaN(v))return;
+  S[key]=toBase(v);
+  written[id]=raw; // remember what we read, so returning to an earlier value is also picked up
+}
+function fieldWrite(id,val){
+  var el=document.getElementById(id); if(!el)return;
+  var str=(val===null||val===undefined)?'':String(val);
+  el.value=str; written[id]=str;
+}
+function captureInputs(){
+  fieldRead('alt-m',       function(v){return isImp()?v/FT_PER_M:v;},          'altM');
+  fieldRead('amb-temp',    function(v){return isImp()?(v-32)*5/9:v;},          'ambC');
+  fieldRead('pipe-temp',   function(v){return isImp()?(v-32)*5/9:v;},          'pipeC');
+  fieldRead('req-pressure',function(v){return isImp()?v/PSI_PER_BAR:v;},       'reqBar');
+  fieldRead('pipe-loss',   function(v){return isImp()?v/PSI_PER_BAR:v;},       'lossBar');
+  fieldRead('tank-vol',    function(v){return flowUnit==='cfm'?v*L_PER_GAL:v;},'tankL',true);
+}
+function writeInputs(){
+  fieldWrite('alt-m',       dispAlt(S.altM));
+  fieldWrite('amb-temp',    dispTemp(S.ambC));
+  fieldWrite('pipe-temp',   dispTemp(S.pipeC));
+  fieldWrite('req-pressure',isImp()?+(S.reqBar*PSI_PER_BAR).toFixed(1):+S.reqBar.toFixed(2));
+  fieldWrite('pipe-loss',   isImp()?+(S.lossBar*PSI_PER_BAR).toFixed(1):+S.lossBar.toFixed(2));
+  fieldWrite('tank-vol',    S.tankL===null?'':Math.round(dispVol(S.tankL)));
+}
+function setText(id,t){var el=document.getElementById(id);if(el)el.textContent=t;}
+function setAttrs(id,a){var el=document.getElementById(id);if(!el)return;for(var k in a)el.setAttribute(k,a[k]);}
+function updateUnitLabels(){
+  document.getElementById('btn-metric').classList.toggle('active',!isImp());
+  document.getElementById('btn-imperial').classList.toggle('active',isImp());
+  document.getElementById('btn-m3hr').classList.toggle('active',flowUnit==='m3hr');
+  document.getElementById('btn-lmin').classList.toggle('active',flowUnit==='lmin');
+  document.getElementById('btn-m3min').classList.toggle('active',flowUnit==='m3min');
+  document.getElementById('btn-cfm').classList.toggle('active',flowUnit==='cfm');
+  setText('u-alt',altLabel()); setText('u-temp',tempLabel()); setText('u-pipe-temp',tempLabel());
+  setText('hint-pipe-temp',isImp()?'Indoor heated plant ~50–60 °F · outdoor/unheated lines: coldest winter day':'Indoor heated plant ~10–15 °C · outdoor/unheated lines: coldest winter day');
+  setAttrs('pipe-temp',isImp()?{min:-58,max:104}:{min:-50,max:40});
+  setText('hint-pipe-rule','The tool checks that the dew point is at least '+fmtDelta10()+' below this. If not, it moves you to a drier class automatically and tells you why.');
+  setText('hint-alt',isImp()?'Stuttgart ~800 ft':'Stuttgart ~245 m');
+  setText('u-req-press',pressLabel()); setText('u-pipe-loss',pressLabelPlain());
+  setText('hint-req-press',isImp()?'Typical: 87–102 psi g for most pneumatic equipment':'Typical: 6–7 bar g for most pneumatic equipment');
+  setText('hint-pipe-loss',isImp()?'Typical: 4–15 psi':'Typical: 0.3–1.0 bar');
+  setText('u-tank',volLabel());
+  setAttrs('alt-m',isImp()?{step:100,max:13000}:{step:50,max:4000});
+  setAttrs('amb-temp',isImp()?{min:41,max:131}:{min:5,max:55});
+  setAttrs('req-pressure',{step:isImp()?1:0.5});
+  setAttrs('pipe-loss',{step:isImp()?1:0.1});
+  setAttrs('tank-vol',{step:flowUnit==='cfm'?5:10});
+  syncRatioControls();
+}
+function applyUnits(){updateUnitLabels();writeInputs();renderConsumers();renderIsoGrid();refreshResults();}
 
 function setUnits(m){
-  unitMode=m; pressUnit=m==='imperial'?'psi':'bar';
-  ['btn-metric'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.toggle('active',m==='metric');});
-  ['btn-imperial'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.toggle('active',m==='imperial');});
-  var pu1=document.getElementById('unit-req-pressure'),pu2=document.getElementById('unit-pipe-loss');
-  if(pu1)pu1.value=pressUnit; if(pu2)pu2.value=pressUnit;
-  var rp=document.getElementById('req-pressure'),pl=document.getElementById('pipe-loss');
-  if(rp)rp.value=m==='imperial'?'102':'7'; if(pl)pl.value=m==='imperial'?'7':'0.5';
-  var hint=document.getElementById('hint-pipe-loss');
-  if(hint)hint.textContent=m==='imperial'?'Typical: 4–15 psi':'Typical: 0.3–1.0 bar';
-  renderConsumers();
+  captureInputs();               // read what's on screen in the OLD units
+  unitMode=m;
+  if(m==='imperial')flowUnit='cfm'; else if(flowUnit==='cfm')flowUnit='m3hr';
+  applyUnits();
 }
-function setFlowUnit(u){
-  flowUnit=u;
-  document.getElementById('btn-m3hr').classList.toggle('active',u==='m3hr');
-  document.getElementById('btn-lmin').classList.toggle('active',u==='lmin');
-  document.getElementById('btn-cfm').classList.toggle('active',u==='cfm');
-  renderConsumers();
+function setFlowUnit(u){captureInputs();flowUnit=u;applyUnits();}
+
+// Results are stored in base units, so a unit switch only needs a re-render.
+function refreshResults(){if(lastResults && currentStep===6)renderResults(lastResults);}
+
+// ══ RECEIVER TANK RATIO ══════════════════════════════════════════════════════
+// Sized as gallons of storage per 1 CFM of FAD (rule of thumb 3–5 gal/CFM).
+// One ratio drives everything; it can be changed in Step 5 or on the Results page.
+var tankRatio=5;
+function fmtRatio(gc){
+  return flowUnit==='cfm'?gc.toFixed(1)+' gal/CFM'
+    :gc.toFixed(1)+' gal/CFM (≈ '+(gc*GALCFM_TO_LLPM).toFixed(2)+' L per l/min)';
 }
-function flowLabel(){return flowUnit==='cfm'?'CFM':(flowUnit==='lmin'?'l/min':'m³/hr');}
-function pressLabel(){return unitMode==='imperial'?'psi g':'bar g';}
-function pressLabelPlain(){return unitMode==='imperial'?'psi':'bar';}
-function dispFlow(lpm){if(flowUnit==='cfm')return parseFloat((lpm*0.0353147).toFixed(2));if(flowUnit==='lmin')return parseFloat(lpm.toFixed(2));return parseFloat((lpm*0.06).toFixed(2));}
-function dispPress(bar){if(unitMode==='imperial')return(bar*14.5038).toFixed(1);return bar.toFixed(1);}
-function inputToFlow(v){if(flowUnit==='cfm')return v/0.0353147;if(flowUnit==='lmin')return v;return v/0.06;}
-function inputToPress(v){return unitMode==='imperial'?v/14.5038:v;}
-function onPressUnitChange(){}
+function setTankRatio(v,src){
+  var n=parseFloat(v); if(isNaN(n)||n<=0)return;
+  tankRatio=n;
+  syncRatioControls(src);
+  updateTankVerdict();
+}
+function syncRatioControls(src){
+  if(src!=='step5'){var a=document.getElementById('tank-ratio');if(a)a.value=tankRatio;}
+  if(src!=='results'){var b=document.getElementById('res-tank-ratio');if(b)b.value=tankRatio;}
+  document.querySelectorAll('.ratio-chip').forEach(function(c){c.classList.toggle('sel',parseFloat(c.getAttribute('data-r'))===tankRatio);});
+  var hint=flowUnit==='cfm'?'Rule of thumb: 3–5 gallons of storage per 1 CFM of FAD'
+    :'Rule of thumb: 3–5 gal per CFM of FAD · '+tankRatio+' gal/CFM ≈ '+(tankRatio*GALCFM_TO_LLPM).toFixed(2)+' L per l/min';
+  document.querySelectorAll('.ratio-hint').forEach(function(h){h.textContent=hint;});
+}
+function tankCalc(R){
+  var fadCfm=R.icfm/LPM_PER_CFM;
+  var recL=fadCfm*tankRatio*L_PER_GAL;
+  var have=(R.tankL!==null&&R.tankL>0)?(R.tankL/L_PER_GAL)/fadCfm:null;
+  return {fadCfm:fadCfm, recL:recL, haveRatio:have};
+}
+function tankVerdictHTML(R){
+  var t=tankCalc(R), h='';
+  h+='<div class="tank-rec"><div><span class="tank-rec-val">'+fmtVol(t.recL)+'</span><span class="tank-rec-alt">('+fmtVolOther(t.recL)+')</span></div>';
+  h+='<div class="tank-rec-sub">Recommended receiver volume: '+tankRatio+' gal for every 1 CFM of FAD &times; '+t.fadCfm.toFixed(2)+' CFM FAD'
+    +(flowUnit==='cfm'?'':' ('+fmtFlow(R.icfm)+' '+flowLabel()+')')+'</div></div>';
+  if(t.haveRatio!==null){
+    if(R.tankL>=t.recL*0.995){
+      h+='<div class="callout c-green"><div class="callout-icon">&#10003;</div><div><strong>Your existing tank meets the target</strong> — '+fmtVol(R.tankL)+' gives '+fmtRatio(t.haveRatio)+'.</div></div>';
+    } else {
+      h+='<div class="callout c-amber"><div class="callout-icon">&#9888;</div><div><strong>Your existing tank is below the target</strong> — '+fmtVol(R.tankL)+' gives '+fmtRatio(t.haveRatio)+'. Add about '+fmtVol(t.recL-R.tankL)+' more storage (a larger tank or a second receiver) to reach '+tankRatio+' gal/CFM.</div></div>';
+    }
+  }
+  return h;
+}
+function updateTankVerdict(){
+  var el=document.getElementById('tank-verdict');
+  if(el&&lastResults)el.innerHTML=tankVerdictHTML(lastResults);
+  var hc=document.getElementById('hero-tank');
+  if(hc&&lastResults)hc.innerHTML=heroTankCell(lastResults);
+}
 
 // ══ EQUIPMENT TYPES ══════════════════════════════════════════════════════════
 var EQUIPMENT_TYPES=[
@@ -580,9 +718,7 @@ function removeConsumer(id){consumers=consumers.filter(function(c){return c.id!=
 function updateConsumer(id,field,val){for(var i=0;i<consumers.length;i++){if(consumers[i].id===id){consumers[i][field]=parseFloat(val)||0;break;}}updateEffective(id);}
 function updateConsumerFlow(id,val){
   var v=parseFloat(val)||0,lpm;
-  if(flowUnit==='cfm')lpm=v/0.0353147;
-  else if(flowUnit==='lmin')lpm=v;
-  else lpm=v/0.06;
+  lpm=inputToFlow(v);
   for(var i=0;i<consumers.length;i++){if(consumers[i].id===id){consumers[i].flow=lpm;break;}}
   updateEffective(id);
 }
@@ -600,11 +736,11 @@ function renderConsumers(){
   for(var i=0;i<consumers.length;i++){
     var c=consumers[i];
     var eff=dispFlow(c.qty*c.flow*(c.duty/100));
-    var fd=parseFloat(dispFlow(c.flow).toFixed(3));
+    var fd=+(c.flow*flowFactor()).toFixed(4);
     html+='<div class="con-row">';
     html+='<select onchange="updateConsumerType(\''+c.id+'\',this.value)">'+buildTypeOptions(c.type)+'</select>';
     html+='<input type="number" value="'+c.qty+'" min="1" max="999" oninput="updateConsumer(\''+c.id+'\',\'qty\',this.value)">';
-    html+='<input type="number" value="'+fd+'" min="0.001" max="50000" step="0.01" oninput="updateConsumerFlow(\''+c.id+'\',this.value)">';
+    html+='<input type="number" value="'+fd+'" min="0" max="50000" step="'+(flowUnit==='m3min'?'0.001':'0.01')+'" oninput="updateConsumerFlow(\''+c.id+'\',this.value)">';
     html+='<input type="number" value="'+c.duty+'" min="1" max="100" oninput="updateConsumer(\''+c.id+'\',\'duty\',this.value)">';
     html+='<div id="eff-'+c.id+'" style="font-family:var(--mono);font-size:11px;font-weight:600;color:var(--navy);text-align:center;padding:6px 4px;background:var(--navy-bg);border-radius:5px;border:1px solid var(--navy-bg2)">'+eff+'</div>';
     html+='<button class="rm-btn" onclick="removeConsumer(\''+c.id+'\')">&#215;</button>';
@@ -614,24 +750,39 @@ function renderConsumers(){
   var total=0;for(var j=0;j<consumers.length;j++)total+=consumers[j].qty*consumers[j].flow*(consumers[j].duty/100);
   var te=document.getElementById('consumer-total'),tv=document.getElementById('consumer-total-val');
   if(te)te.style.display=consumers.length>0?'flex':'none';
-  if(tv)tv.textContent=dispFlow(total).toFixed(2)+' '+flowLabel();
+  if(tv)tv.textContent=fmtFlow(total)+' '+flowLabel();
 }
 function updateEffective(id){
   var el=document.getElementById('eff-'+id);if(!el)return;
-  for(var i=0;i<consumers.length;i++){if(consumers[i].id===id){el.textContent=parseFloat(dispFlow(consumers[i].qty*consumers[i].flow*(consumers[i].duty/100)).toFixed(2));break;}}
+  for(var i=0;i<consumers.length;i++){if(consumers[i].id===id){el.textContent=String(+fmtFlow(consumers[i].qty*consumers[i].flow*(consumers[i].duty/100)));break;}}
   var total=0;for(var j=0;j<consumers.length;j++)total+=consumers[j].qty*consumers[j].flow*(consumers[j].duty/100);
-  var tv=document.getElementById('consumer-total-val');if(tv)tv.textContent=dispFlow(total).toFixed(2)+' '+flowLabel();
+  var tv=document.getElementById('consumer-total-val');if(tv)tv.textContent=fmtFlow(total)+' '+flowLabel();
 }
 
 // ══ ISO CLASSES ═══════════════════════════════════════════════════════════════
+// ISO 8573-1 notation is particles : water : oil. The water digit fixes the
+// pressure dew point, so the PDP is DERIVED from it and can never disagree.
+var WATER_PDP_C={1:-70, 2:-40, 3:-20, 4:3, 5:7, 6:10};
 var ISO_CLASSES=[
-  {cls:'industrial',    label:'Industrial Tools & Plant Air',  notation:'3:4:4 or 4:4:3', pdp:'+3°C to +10°C', oilFree:false, icon:'&#9881;',  color:'#2a6496', bg:'#dbeeff'},
-  {cls:'manufacturing', label:'General Manufacturing Air',     notation:'2:4:2',           pdp:'−20°C',         oilFree:false, icon:'&#127981;',color:'#5a4e00', bg:'#fff8d6'},
-  {cls:'instrument',    label:'Instrument & Control Air',      notation:'1:4:1',           pdp:'−40°C',         oilFree:false, icon:'&#128202;',color:'#1a5c38', bg:'#dff2e8'},
-  {cls:'electronics',   label:'Electronics & Clean Room',      notation:'1:2:1',           pdp:'−40°C',         oilFree:true,  icon:'&#128300;',color:'#5c1a5c', bg:'#f2dff2'},
-  {cls:'pharma',        label:'Food, Pharma & Beverage',       notation:'1:2:1',           pdp:'−40°C',         oilFree:true,  icon:'&#127810;',color:'#7a0000', bg:'#ffe8e8'},
-  {cls:'automotive',    label:'Automotive & Paint Spray',      notation:'1:4:1',           pdp:'−40°C',         oilFree:false, icon:'&#128663;',color:'#3d3d00', bg:'#ffffcc'}
+  {cls:'industrial',    label:'Industrial Tools & Plant Air',  notation:'3:4:4 or 4:4:3', oilFree:false, icon:'&#9881;'},
+  {cls:'manufacturing', label:'General Manufacturing Air',     notation:'2:4:2',          oilFree:false, icon:'&#127981;'},
+  {cls:'instrument',    label:'Instrument & Control Air',      notation:'1:2:1',          oilFree:false, icon:'&#128202;'},
+  {cls:'electronics',   label:'Electronics & Clean Room',      notation:'1:2:1',          oilFree:true,  icon:'&#128300;'},
+  {cls:'pharma',        label:'Food, Pharma & Beverage',       notation:'1:2:1',          oilFree:true,  icon:'&#127810;'},
+  {cls:'automotive',    label:'Automotive & Paint Spray',      notation:'1:4:1',          oilFree:false, icon:'&#128663;'}
 ];
+function waterClass(iso){return parseInt(iso.notation.split(':')[1],10);}
+function pdpForWater(w){return fmtTempSigned(WATER_PDP_C[w], WATER_PDP_C[w]>0);}
+function pdpText(iso){return pdpForWater(waterClass(iso));}
+function withWater(notation,w){return notation.split(' or ').map(function(n){var a=n.split(':');a[1]=String(w);return a.join(':');}).join(' or ');}
+function dryerFor(w){return w<=3?'desiccant':'refrigerated';}
+// Drier class needed so that PDP ≤ (coldest pipe temperature − margin)
+function airQuality(iso,pipeC){
+  var w0=waterClass(iso), w=w0, target=pipeC-PDP_MARGIN_C;
+  while(w>1 && WATER_PDP_C[w]>target) w--;
+  return {w0:w0, w:w, upgraded:w!==w0, notation:withWater(iso.notation,w),
+          dryer:dryerFor(w), stillWet:WATER_PDP_C[w]>target, targetC:target};
+}
 var selectedIso='industrial';
 
 function renderIsoGrid(){
@@ -642,24 +793,51 @@ function renderIsoGrid(){
     html+='<div class="opt-icon">'+iso.icon+'</div>';
     html+='<div class="opt-label">'+iso.label+'</div>';
     html+='<div class="opt-sub" style="font-size:10px;margin-top:4px;font-weight:600;font-family:var(--mono)">ISO '+iso.notation+'</div>';
-    html+='<div class="opt-sub">PDP: '+iso.pdp+'</div>';
-    if(iso.oilFree)html+='<div style="margin-top:5px;font-size:9px;color:var(--teal-dark);font-weight:600;font-family:var(--mono)">&#10003; Oil-free required</div>';
+    var aq=airQuality(iso,S.pipeC);
+    if(aq.upgraded){
+      html+='<div class="opt-sub" style="text-decoration:line-through">ISO PDP: '+pdpForWater(aq.w0)+'</div>';
+      html+='<div class="opt-sub" style="color:var(--amber);font-weight:700">PDP for your pipework: '+pdpForWater(aq.w)+'</div>';
+    } else {
+      html+='<div class="opt-sub">PDP: '+pdpForWater(aq.w)+'</div>';
+    }
+    html+='<div class="opt-sub">'+(aq.dryer==='desiccant'?'Desiccant dryer':'Refrigerated dryer')+'</div>';
+    if(iso.oilFree)html+='<div style="margin-top:5px;font-size:9px;color:var(--teal-dark);font-weight:600;font-family:var(--mono)">&#10003; Oil-free recommended</div>';
     html+='</div>';
   }
   g.innerHTML=html;
+  renderAqLive();
 }
+// One-line live summary for the selected class at the entered pipework temperature
+function renderAqLive(){
+  var el=document.getElementById('aq-live'); if(!el)return;
+  var iso=ISO_CLASSES.find(function(x){return x.cls===selectedIso;})||ISO_CLASSES[0];
+  var aq=airQuality(iso,S.pipeC), msg;
+  if(aq.upgraded){
+    el.className='callout c-amber';
+    msg='<strong>Required PDP: '+pdpForWater(aq.w)+'</strong> ('+aq.dryer+' dryer) — your pipework at '+fmtTempSigned(Math.round(S.pipeC),false)+' needs a dew point of '+fmtTempSigned(Math.round(aq.targetC),false)+' or drier, so the class moves from '+pdpForWater(aq.w0)+' to the next ISO step. ISO 8573-1: '+aq.notation;
+  } else {
+    el.className='callout c-navy';
+    msg='<strong>Required PDP: '+pdpForWater(aq.w)+'</strong> ('+aq.dryer+' dryer) — your pipework at '+fmtTempSigned(Math.round(S.pipeC),false)+' needs '+fmtTempSigned(Math.round(aq.targetC),false)+' or drier, so this class is fine. ISO 8573-1: '+aq.notation;
+  }
+  if(aq.stillWet)msg+='<br>Even the driest class is not cold enough — insulate or trace-heat the exposed pipework.';
+  el.style.marginTop='14px'; el.style.marginBottom='0';
+  el.innerHTML='<div class="callout-icon">&#128167;</div><div>'+msg+'</div>';
+}
+function onPipeTempChange(){captureInputs();renderIsoGrid();}
 function selectIso(val,el){
   selectedIso=val;
   document.querySelectorAll('#iso-grid .opt-card').forEach(function(c){c.classList.remove('sel');});
   el.classList.add('sel');
+  renderAqLive();
 }
 
 // ══ WIZARD NAVIGATION ════════════════════════════════════════════════════════
 var currentStep=1;
 var completedSteps={};
 
-function goStep(n){
+function goStep(n,fromCalc){
   if(n<1||n>6)return;
+  if(n===6 && !fromCalc && lastResults){runCalculation();return;}
   document.querySelectorAll('.step-card').forEach(function(c){c.classList.remove('active');});
   document.getElementById('step-'+n).classList.add('active');
   // Update progress bar
@@ -710,73 +888,81 @@ function goToField(step, wrapperId, inputId, setValue){
 var ATM=1.01325;
 
 // ══ CALCULATION ══════════════════════════════════════════════════════════════
+// Reads a number field; returns the default only when the field is empty/invalid
+// (so a deliberate 0, e.g. 0% future reserve, is respected).
+function num(id,def){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?def:v;}
+
+// Standard compressor pressure ratings (bar g) used to suggest a machine rating.
+var STD_RATINGS_BAR=[7.5, 8.5, 10, 13, 15];
+var CONTROL_BAND_BAR=1.0; // typical load/unload band between cut-in and cut-out
+// Practical FAD ranges per compressor type (m³/min) — outside these the type is unusual.
+var TYPE_RANGE={piston:[0,3], scroll:[0,3], screw:[0.2,100], centrifugal:[15,1e9]};
+var TYPE_NAME={screw:'rotary screw', piston:'piston', centrifugal:'centrifugal', scroll:'scroll'};
+function clamp(v,a,b){return Math.min(Math.max(v,a),b);}
+
 function runCalculation(){
   if(consumers.length===0){
     alert('Please add at least one piece of equipment in Step 1 before calculating.');
     goStep(1);return;
   }
+  captureInputs();
+  var tr=num('tank-ratio',tankRatio); if(tr>0)tankRatio=tr;
 
-  // Read inputs
-  var altM      = parseFloat(document.getElementById('alt-m').value)||0;
-  var ambT      = parseFloat(document.getElementById('amb-temp').value)||25;
-  var rh        = parseFloat(document.getElementById('rh').value)||50;
-  var dutyCycle = parseFloat(document.getElementById('duty-cycle').value)||60;
-  var leakPct   = parseFloat(document.getElementById('leak-pct').value)||15;
-  var resPct    = parseFloat(document.getElementById('reserve-pct').value)||20;
-  var dryerPurge= parseFloat(document.getElementById('dryer-purge').value)||0;
-  var tankVol   = parseFloat(document.getElementById('tank-vol').value)||500;
+  var altM      = clamp(S.altM,-400,5000);
+  var ambT      = clamp(S.ambC,-30,60);
+  var rh        = clamp(num('rh',50),0,100);
+  var leakPct   = Math.max(num('leak-pct',15),0);
+  var resPct    = Math.max(num('reserve-pct',20),0);
   var compType  = document.getElementById('comp-type').value;
-  var reqPressDisplay = parseFloat(document.getElementById('req-pressure').value)||7;
-  var pipeLossDisplay = parseFloat(document.getElementById('pipe-loss').value)||0.5;
+  var iso=ISO_CLASSES.find(function(x){return x.cls===selectedIso;})||ISO_CLASSES[0];
+  var AQ=airQuality(iso,S.pipeC);
 
-  var reqPressBar = inputToPress(reqPressDisplay);
-  var pipeLossBar = inputToPress(pipeLossDisplay);
-  var compPressBar = reqPressBar + pipeLossBar;
+  // Dryer purge: blank = automatic from the dryer the air quality needs
+  var purgeRaw=String(document.getElementById('dryer-purge').value).trim();
+  var purgeAuto=(purgeRaw===''||isNaN(parseFloat(purgeRaw)));
+  var dryerPurge=purgeAuto?(AQ.dryer==='desiccant'?15:0):Math.max(parseFloat(purgeRaw),0);
 
-  // Base flow from consumers (l/min internal)
+  var reqPressBar = S.reqBar;
+  var pipeLossBar = Math.max(S.lossBar,0);
+  var compPressBar = reqPressBar + pipeLossBar;            // minimum (cut-in) discharge pressure
+  var cutOutBar = compPressBar + CONTROL_BAND_BAR;
+  var ratingBar = null;
+  for(var r=0;r<STD_RATINGS_BAR.length;r++){if(STD_RATINGS_BAR[r]>=cutOutBar-1e-9){ratingBar=STD_RATINGS_BAR[r];break;}}
+
+  // Base flow from consumers (l/min, duty-weighted average)
   var baseFlow=0;
-  for(var i=0;i<consumers.length;i++)baseFlow+=consumers[i].qty*consumers[i].flow*(consumers[i].duty/100);
+  for(var i=0;i<consumers.length;i++)baseFlow+=Math.max(consumers[i].qty,0)*Math.max(consumers[i].flow,0)*(clamp(consumers[i].duty,0,100)/100);
 
   // Allowances
   var withLeaks  = baseFlow*(1+leakPct/100);
   var withDryer  = withLeaks*(1+dryerPurge/100);
   var withReserve= withDryer*(1+resPct/100);
-  var scfm       = withReserve; // adjusted demand l/min
+  var scfm       = withReserve; // adjusted demand, l/min at reference conditions
 
-  // Site correction (ISO method)
+  // Site correction: reference (1.01325 bar a, 20 °C, dry) → actual inlet volume
   var P_atm     = ATM * Math.pow(1 - 2.2558e-5 * altM, 5.2559);
   var T_site    = ambT + 273.15, T_std = 293.15, P_std = ATM;
-  // Saturation vapour pressure in bar (converted from kPa formula)
   var Pv_sat_kPa = 0.6105 * Math.exp(17.27 * ambT / (ambT + 237.3));
   var Pv_bar     = (rh / 100) * Pv_sat_kPa / 100; // kPa → bar
-  var P_atm_dry  = Math.max(P_atm - Pv_bar, 0.5); // guard against near-zero
-  var altF       = P_std / P_atm_dry;
-  var tempF      = T_site / T_std;
-  var correction = altF * tempF;
-  // Clamp correction to sensible range (1.0 to 2.5)
-  correction = Math.min(Math.max(correction, 1.0), 2.5);
+  var P_atm_dry  = Math.max(P_atm - Pv_bar, 0.5);
+  var correction = Math.min(Math.max((P_std / P_atm_dry) * (T_site / T_std), 1.0), 2.5);
   var icfm      = scfm * correction;
   var icfmPct   = Math.round((correction - 1) * 100);
 
-  // Power (rule of thumb: 1HP per 4.5 CFM)
-  var icfmCFM   = icfm*0.0353147;
-  var powerHP   = icfmCFM/4.5;
+  // Power — rule of thumb ~4.5 CFM per HP at 7 bar g, about +7 % per extra bar
+  var powerHP   = (icfm/LPM_PER_CFM)/4.5 * Math.max(1 + 0.07*(cutOutBar - 7), 0.6);
   var powerKW   = powerHP*0.7457;
 
-  // Receiver tank
-  var tankRatio = tankVol/icfm; // litres per l/min FAD
+  // Expected average load on the compressor today (the reserve is unused capacity)
+  var loadPct   = withReserve>0 ? withDryer/withReserve*100 : 0;
 
-  // ISO class
-  var iso=ISO_CLASSES.find(function(x){return x.cls===selectedIso;})||ISO_CLASSES[0];
-
-  // Render results
-  goStep(6);
+  goStep(6,true);
   renderResults({
     baseFlow,withLeaks,withDryer,withReserve,scfm,icfm,icfmPct,
-    leakPct,resPct,dryerPurge,dutyCycle,
-    compPressBar,reqPressBar,pipeLossBar,
-    altM,ambT,rh,tankVol,tankRatio,
-    powerKW,powerHP,compType,iso,
+    leakPct,resPct,dryerPurge,purgeAuto,loadPct,
+    compPressBar,reqPressBar,pipeLossBar,cutOutBar,ratingBar,
+    altM,ambT,rh,tankL:S.tankL,pipeC:S.pipeC,
+    powerKW,powerHP,compType,iso,AQ,
     correction
   });
 }
@@ -784,68 +970,121 @@ function runCalculation(){
 // ══ RENDER RESULTS ════════════════════════════════════════════════════════════
 var lastResults=null;
 
+function fmtRating(bar){return isImp()?String(Math.round(bar*PSI_PER_BAR/5)*5)+' psi g':bar+' bar g';}
+function fmtPower(hp){return hp<10?hp.toFixed(1):String(Math.round(hp));}
+function compressorChecks(R){
+  var out=[], fadM3=R.icfm/1000, rg=TYPE_RANGE[R.compType];
+  if(fadM3<rg[0]){
+    out.push(R.compType==='centrifugal'
+      ?'Centrifugal compressors usually start around 15–30 m³/min (≈ 500–1,000 CFM). At '+fmtFlow(R.icfm)+' '+flowLabel()+' a rotary screw is the normal choice.'
+      :'A '+TYPE_NAME[R.compType]+' compressor is large for '+fmtFlow(R.icfm)+' '+flowLabel()+'. A piston or scroll unit is usually more economical at this size.');
+  } else if(fadM3>rg[1]){
+    out.push('A '+TYPE_NAME[R.compType]+' compressor is unusual above about '+rg[1]+' m³/min (≈ '+Math.round(rg[1]*1000/LPM_PER_CFM)+' CFM). A rotary screw'+(fadM3>=15?' or centrifugal':'')+' is the normal choice at '+fmtFlow(R.icfm)+' '+flowLabel()+'.');
+  }
+  if(R.compType==='piston' && R.loadPct>70){
+    out.push('Piston compressors are generally rated for intermittent duty (about 50–70% load). Expected load here is '+Math.round(R.loadPct)+'%. Choose a larger piston unit, a rotary screw, or increase the future reserve.');
+  }
+  if(R.ratingBar===null){
+    out.push('The cut-out pressure ('+dispPress(R.cutOutBar)+' '+pressLabelPlain()+') is above standard industrial ratings. A high-pressure compressor or a booster is needed.');
+  }
+  return out;
+}
+
 function renderResults(R){
   lastResults=R;
-  var html='';
+  var html='', T=tankCalc(R);
 
   // Hero
   html+='<div class="result-hero">';
   html+='<div class="rh-title">Your compressed air specification — site-corrected</div>';
   html+='<div class="rh-grid">';
-  html+=rhcell('FAD required',dispFlow(R.icfm).toFixed(2),flowLabel(),'+'+R.icfmPct+'% site correction · '+(R.icfm/1000).toFixed(3)+' m³/min');
-  html+=rhcell('Discharge pressure',dispPress(R.compPressBar),pressLabelPlain(),dispPress(R.reqPressBar)+' '+pressLabelPlain()+' at use + '+dispPress(R.pipeLossBar)+' '+pressLabelPlain()+' loss');
-  html+=rhcell('Est. motor power',Math.round(R.powerHP),'HP',Math.round(R.powerKW)+' kW · rule of thumb');
-  html+=rhcell('System duty cycle',R.dutyCycle,'%','compressor load factor');
+  html+=rhcell('FAD required',fmtFlow(R.icfm),flowLabel(),'+'+R.icfmPct+'% site correction · '+fadSecondary(R.icfm));
+  html+=rhcell('Minimum discharge pressure',dispPress(R.compPressBar),pressLabelPlain(),dispPress(R.reqPressBar)+' '+pressLabelPlain()+' at use + '+dispPress(R.pipeLossBar)+' '+pressLabelPlain()+' loss');
+  html+=rhcell('Est. motor power',fmtPower(R.powerHP),'HP',fmtPower(R.powerKW)+' kW · rule of thumb');
+  html+='<div id="hero-tank">'+heroTankCell(R)+'</div>';
   html+='</div></div>';
 
   // Flow breakdown
   html+='<div class="result-section">';
   html+='<div class="result-section-title">How we arrived at your FAD</div>';
-  var fadRows=frow('Base demand (all equipment at peak duty)',dispFlow(R.baseFlow).toFixed(2)+' '+flowLabel(),'')
-    +frow('+ Leak allowance ('+R.leakPct+'%)','+'+dispFlow(R.withLeaks-R.baseFlow).toFixed(2),'amber')
-    +(R.dryerPurge>0?frow('+ Desiccant dryer purge ('+R.dryerPurge+'%)','+'+dispFlow(R.withDryer-R.withLeaks).toFixed(2),'amber'):'')
-    +frow('+ Future reserve ('+R.resPct+'%)','+'+dispFlow(R.withReserve-R.withDryer).toFixed(2),'amber')
-    +frow('Adjusted demand (Σ all allowances)',dispFlow(R.scfm).toFixed(2)+' '+flowLabel(),'total')
+  var fadRows=frow('Base demand (equipment × duty cycle)',fmtFlow(R.baseFlow)+' '+flowLabel(),'')
+    +frow('+ Leak allowance ('+R.leakPct+'%)','+'+fmtFlow(R.withLeaks-R.baseFlow),'amber')
+    +(R.dryerPurge>0?frow('+ Dryer purge ('+R.dryerPurge+'%'+(R.purgeAuto?', auto · desiccant dryer':'')+')','+'+fmtFlow(R.withDryer-R.withLeaks),'amber'):'')
+    +frow('+ Future reserve ('+R.resPct+'%)','+'+fmtFlow(R.withReserve-R.withDryer),'amber')
+    +frow('Adjusted demand (Σ all allowances)',fmtFlow(R.scfm)+' '+flowLabel(),'total')
     +frow('Site correction factor (alt/temp/humidity)','×'+R.correction.toFixed(3),'teal')
-    +frow('FAD required — specify this to your supplier',dispFlow(R.icfm).toFixed(2)+' '+flowLabel(),'fad');
+    +frow('FAD required — specify this to your supplier',fmtFlow(R.icfm)+' '+flowLabel(),'fad');
   html+='<div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">';
   html+='<div style="flex:0 0 170px">'+fadChart(R)+'</div>';
   html+='<div style="flex:1 1 260px;min-width:240px">'+fadRows+'</div>';
   html+='</div>';
   html+='</div>';
 
+  // Pressure & compressor selection
+  html+='<div class="result-section">';
+  html+='<div class="result-section-title">Pressure &amp; compressor selection</div>';
+  html+=frow('Minimum discharge pressure (cut-in)',dispPress(R.compPressBar)+' '+pressLabel(),'');
+  html+=frow('Cut-out pressure (≈ +'+dispPress(CONTROL_BAND_BAR)+' '+pressLabelPlain()+' control band)',dispPress(R.cutOutBar)+' '+pressLabel(),'');
+  html+=frow('Suggested compressor pressure rating',R.ratingBar===null?'High-pressure unit / booster':fmtRating(R.ratingBar),'');
+  html+=frow('Expected average load today','≈ '+Math.round(R.loadPct)+'% (rest is future reserve)','');
+  var checks=compressorChecks(R);
+  checks.forEach(function(c){html+='<div class="callout c-amber" style="margin-top:10px;margin-bottom:0"><div class="callout-icon">&#9888;</div><div>'+c+'</div></div>';});
+  html+='</div>';
+
   // Site conditions
   html+='<div class="result-section">';
   html+='<div class="result-section-title">Site conditions applied</div>';
-  html+=frow('Altitude',R.altM+' m above sea level','');
-  html+=frow('Max ambient temperature',R.ambT+'°C','');
+  html+=frow('Altitude',dispAlt(R.altM)+' '+altLabel()+' above sea level','');
+  html+=frow('Max ambient temperature',dispTemp(R.ambT)+tempLabel(),'');
   html+=frow('Relative humidity',R.rh+'%','');
   html+=frow('Site correction multiplier','×'+R.correction.toFixed(3)+(R.icfmPct>0?' (+'+R.icfmPct+'% more air needed)':''),'');
   html+='</div>';
 
-  // Receiver tank
-  var tankOK=R.tankRatio>=3,tankIdeal=R.tankRatio>=5;
+  // Receiver tank — one ratio, editable right here
   html+='<div class="result-section">';
-  html+='<div class="result-section-title">Receiver tank adequacy</div>';
-  if(tankIdeal)html+='<div class="callout c-green"><div class="callout-icon">&#10003;</div><div><strong>Excellent</strong> — '+R.tankVol.toFixed(0)+' litres at '+R.tankRatio.toFixed(1)+':1 ratio. Good pressure stability and compressor unload time.</div></div>';
-  else if(tankOK)html+='<div class="callout c-amber"><div class="callout-icon">&#9888;</div><div><strong>Adequate</strong> — '+R.tankVol.toFixed(0)+' litres at '+R.tankRatio.toFixed(1)+':1. Consider upsizing to 5:1 ('+Math.ceil(R.icfm*5)+' litres) for better efficiency.<br><span class="fix-link" onclick="goToField(5,\'f-tank-vol\',\'tank-vol\','+Math.ceil(R.icfm*5)+')">&#8634; Go to Step 5 — set Tank volume to '+Math.ceil(R.icfm*5)+' L</span></div></div>';
-  else html+='<div class="callout" style="background:var(--red-bg);border:1px solid var(--red-bg2);color:var(--red)"><div class="callout-icon">&#10005;</div><div><strong>Undersized</strong> — minimum recommended: '+Math.ceil(R.icfm*3)+' litres (3:1). Current: '+R.tankVol.toFixed(0)+' litres causes excessive cycling.<br><span class="fix-link" onclick="goToField(5,\'f-tank-vol\',\'tank-vol\','+Math.ceil(R.icfm*3)+')">&#8634; Go to Step 5 — set Tank volume to at least '+Math.ceil(R.icfm*3)+' L</span></div></div>';
+  html+='<div class="result-section-title">Receiver tank sizing</div>';
+  html+='<div class="ratio-row" style="margin-top:0"><span class="ratio-lbl">Storage ratio</span>'
+    +'<button type="button" class="ratio-chip" data-r="3" onclick="setTankRatio(3)">3 · minimum</button>'
+    +'<button type="button" class="ratio-chip" data-r="5" onclick="setTankRatio(5)">5 · recommended</button>'
+    +'<span class="ratio-lbl">or custom</span>'
+    +'<input type="number" id="res-tank-ratio" value="'+tankRatio+'" min="0.5" max="20" step="0.5" oninput="setTankRatio(this.value,\'results\')">'
+    +'<span class="ratio-lbl">gal / CFM</span></div>';
+  html+='<div class="hint ratio-hint" style="font-size:10.5px;color:var(--text3);margin-top:6px;font-style:italic"></div>';
+  html+='<div id="tank-verdict">'+tankVerdictHTML(R)+'</div>';
   html+='</div>';
 
-  // ISO class
+  // Air quality
+  var AQ=R.AQ;
   html+='<div class="result-section">';
   html+='<div class="result-section-title">Air quality requirement</div>';
-  html+='<div class="callout c-navy"><div class="callout-icon">'+R.iso.icon+'</div><div><strong>'+R.iso.label+'</strong> — ISO 8573-1: '+R.iso.notation+'<br>Required PDP: '+R.iso.pdp+'<br>'+(R.iso.oilFree?'<strong>Oil-free compressor required</strong> — no oil permitted in compression stage':'Oil-lubricated acceptable — downstream filtration to achieve required oil content limit')+'</div></div>';
+  html+='<div class="callout c-navy"><div class="callout-icon">'+R.iso.icon+'</div><div><strong>'+R.iso.label+'</strong> — ISO 8573-1: '+AQ.notation
+    +'<br>Required PDP: '+pdpForWater(AQ.w)+' · '+(AQ.dryer==='desiccant'?'desiccant dryer':'refrigerated dryer')
+    +'<br>'+(R.iso.oilFree?'<strong>Oil-free compressor recommended</strong> — ISO 8573-1 class 0 is common practice for these applications':'Oil-lubricated acceptable — downstream filtration to achieve required oil content limit')+'</div></div>';
+  if(AQ.upgraded){
+    html+='<div class="callout c-amber"><div class="callout-icon">&#9888;</div><div><strong>Moved to a drier class.</strong> The standard class for this application is '+R.iso.notation+' (PDP '+pdpForWater(AQ.w0)+'), but your pipework can get as cold as '+fmtTempSigned(R.pipeC,false)
+      +'. The dew point must be at least '+fmtDelta10()+' below that ('+fmtTempSigned(AQ.targetC,false)+' or drier), otherwise water condenses or freezes in the lines. Water class '+AQ.w+' ('+pdpForWater(AQ.w)+') is used instead.</div></div>';
+  }
+  if(AQ.stillWet){
+    html+='<div class="callout c-amber"><div class="callout-icon">&#9888;</div><div>Even class 1 ('+pdpForWater(1)+') is not '+fmtDelta10()+' below your coldest pipe temperature. Insulate or trace-heat the exposed pipework.</div></div>';
+  }
+  if(AQ.dryer==='desiccant' && R.dryerPurge===0){
+    html+='<div class="callout c-amber"><div class="callout-icon">&#9888;</div><div>This air quality needs a desiccant dryer, which uses compressed air for regeneration, but dryer purge is set to 0%. Use about 15% for a heatless dryer or 2–5% for a heated/blower-purge dryer, or leave the field blank for automatic.</div></div>';
+  }
   html+='</div>';
 
   // Recommended compressors
   html+='<div class="result-section">';
   html+='<div class="result-section-title">Recommended compressor manufacturers</div>';
-  html+='<div class="callout c-teal"><div class="callout-icon">&#128161;</div><div>The following manufacturers supply '+R.compType+' compressors. Contact them with your specification above for a quotation. Always request independently certified performance data sheets.</div></div>';
+  html+='<div class="callout c-teal"><div class="callout-icon">&#128161;</div><div>The following manufacturers supply '+TYPE_NAME[R.compType]+' compressors. Contact them with your specification above for a quotation. Always request independently certified performance data sheets.</div></div>';
   html+=renderMfrCards(R.compType);
   html+='</div>';
 
   document.getElementById('results-content').innerHTML=html;
+  syncRatioControls();
+}
+function heroTankCell(R){
+  var T=tankCalc(R);
+  return rhcell('Receiver tank',fmtNum(dispVol(T.recL)),volUnit(),'at '+tankRatio+' gal per CFM · '+fmtVolOther(T.recL));
 }
 
 function rhcell(lbl,val,unit,sub){
@@ -883,7 +1122,7 @@ function fadChart(R){
 
   var svg='<svg viewBox="0 0 '+vbW+' '+vbH+'" style="width:100%;height:auto;display:block">';
   // total FAD label above the bar — identical value/format to the "FAD required" row
-  svg+='<text x="'+(barX+barW/2)+'" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy)">'+dispFlow(R.icfm).toFixed(2)+' '+flowLabel()+'</text>';
+  svg+='<text x="'+(barX+barW/2)+'" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy)">'+fmtFlow(R.icfm)+' '+flowLabel()+'</text>';
   svg+='<defs><clipPath id="fadClipV"><rect x="'+barX+'" y="'+barTopY+'" width="'+barW+'" height="'+barH+'" rx="7" ry="7"/></clipPath></defs>';
   svg+='<g clip-path="url(#fadClipV)">';
   var cum=0;
@@ -902,7 +1141,7 @@ function fadChart(R){
   // off into empty space beneath a short table.
   var legend='<div style="display:flex;flex-direction:column;gap:5px;margin-top:8px">';
   segs.forEach(function(s){
-    var valueTxt = s.label==='Site correction' ? s.suffix : (s.suffix?dispFlow(s.val).toFixed(2)+' '+flowLabel()+' ('+s.suffix+')':dispFlow(s.val).toFixed(2)+' '+flowLabel());
+    var valueTxt = s.label==='Site correction' ? s.suffix : (s.suffix?fmtFlow(s.val)+' '+flowLabel()+' ('+s.suffix+')':fmtFlow(s.val)+' '+flowLabel());
     legend+='<div style="display:flex;align-items:baseline;gap:5px;font-size:10.5px;color:var(--navy2);line-height:1.3">'
       +'<span style="width:8px;height:8px;border-radius:2px;background:'+s.color+';flex-shrink:0;display:inline-block"></span>'
       +'<span style="white-space:nowrap">'+s.label+': <strong style="color:var(--navy)">'+valueTxt+'</strong></span>'
@@ -1043,6 +1282,11 @@ function doExportPDF(){
     doc.text(title, x, y); y += 18;
     doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(40,40,40);
   }
+  // jsPDF's built-in Helvetica only supports WinAnsi characters; the Unicode
+  // minus (U+2212) used in the PDP values renders as a blank, so swap it here.
+  function pdfSafe(s){
+    return String(s).replace(/[\u2212\u2012]/g, '-').replace(/\u2248/g, '~').replace(/[\u2009\u202F]/g, ' ');
+  }
   function row(label, value, highlight){
     ensureRoom(16);
     if(highlight){
@@ -1052,9 +1296,9 @@ function doExportPDF(){
       doc.setTextColor(40,40,40);
     }
     doc.setFont('helvetica','normal');
-    doc.text(label+':', x, y);
+    doc.text(pdfSafe(label)+':', x, y);
     doc.setFont('helvetica','bold');
-    doc.text(String(value), x+220, y);
+    doc.text(pdfSafe(value), x+220, y);
     doc.setFont('helvetica','normal');
     y += 15;
   }
@@ -1068,30 +1312,51 @@ function doExportPDF(){
   y += 50;
 
   sectionHeader('Key specification');
-  row('FAD required (site-corrected)', dispFlow(R.icfm).toFixed(2)+' '+flowLabel()+' ('+((R.icfm/1000).toFixed(3))+' m³/min)', true);
-  row('Adjusted demand', dispFlow(R.scfm).toFixed(2)+' '+flowLabel());
-  row('Discharge pressure', dispPress(R.compPressBar)+' '+pressLabelPlain());
-  row('Min pressure at point of use', dispPress(R.reqPressBar)+' '+pressLabelPlain());
-  row('Est. motor power', Math.round(R.powerHP)+' HP / '+Math.round(R.powerKW)+' kW');
-  row('System duty cycle', R.dutyCycle+'%');
-  row('Compressor type', R.compType);
-  row('Air quality class', R.iso.label+' — ISO 8573-1: '+R.iso.notation);
-  row('Lubrication', R.iso.oilFree?'Oil-free mandatory':'Oil-lubricated acceptable');
-  row('Required PDP', R.iso.pdp);
+  row('FAD required (site-corrected)', fmtFlow(R.icfm)+' '+flowLabel()+' ('+fadSecondary(R.icfm)+')', true);
+  row('Adjusted demand', fmtFlow(R.scfm)+' '+flowLabel());
+  row('Min. discharge pressure (cut-in)', dispPress(R.compPressBar)+' '+pressLabel());
+  row('Min pressure at point of use', dispPress(R.reqPressBar)+' '+pressLabel());
+  row('Suggested pressure rating', R.ratingBar===null?'High-pressure unit / booster':fmtRating(R.ratingBar));
+  row('Est. motor power', fmtPower(R.powerHP)+' HP / '+fmtPower(R.powerKW)+' kW');
+  row('Expected average load', '~'+Math.round(R.loadPct)+'%');
+  row('Compressor type', TYPE_NAME[R.compType]);
+  row('Air quality class', R.iso.label+' — ISO 8573-1: '+R.AQ.notation);
+  row('Required PDP', pdpForWater(R.AQ.w)+(R.AQ.upgraded?' (drier class: pipework to '+fmtTempSigned(R.pipeC,false)+')':''));
+  row('Dryer', R.AQ.dryer==='desiccant'?'Desiccant':'Refrigerated');
+  row('Lubrication', R.iso.oilFree?'Oil-free recommended':'Oil-lubricated acceptable');
   y += 10;
 
   sectionHeader('Site conditions');
-  row('Altitude', R.altM+' m');
-  row('Max ambient temperature', R.ambT+'°C');
+  row('Altitude', dispAlt(R.altM)+' '+altLabel());
+  row('Max ambient temperature', dispTemp(R.ambT)+tempLabel());
   row('Relative humidity', R.rh+'%');
+  row('Coldest pipework temperature', fmtTempSigned(R.pipeC,false));
   row('Site correction factor', '×'+R.correction.toFixed(3)+' (+'+R.icfmPct+'% additional air required)');
   y += 10;
 
   sectionHeader('System allowances');
   row('Leak allowance', R.leakPct+'%');
   row('Future reserve', R.resPct+'%');
-  row('Dryer purge', R.dryerPurge+'%');
-  row('Receiver tank', R.tankVol.toFixed(0)+' litres ('+R.tankRatio.toFixed(1)+':1 ratio)');
+  row('Dryer purge', R.dryerPurge+'%'+(R.purgeAuto?' (automatic)':''));
+  y += 10;
+
+  var notes=compressorChecks(R);
+  if(notes.length){
+    sectionHeader('Notes');
+    doc.setFontSize(9); doc.setTextColor(150,90,20);
+    notes.forEach(function(n){var lines=doc.splitTextToSize(pdfSafe(n), pageW-2*x); ensureRoom(lines.length*12+4); doc.text(lines, x, y); y+=lines.length*12+4;});
+    doc.setFontSize(10); doc.setTextColor(40,40,40);
+    y += 6;
+  }
+
+  var T=tankCalc(R);
+  sectionHeader('Receiver tank');
+  row('Storage ratio', tankRatio+' gal per 1 CFM of FAD');
+  row('Recommended receiver volume', fmtVol(T.recL)+' ('+fmtVolOther(T.recL)+')', true);
+  if(T.haveRatio!==null){
+    row('Existing tank', fmtVol(R.tankL)+' — '+T.haveRatio.toFixed(1)+' gal/CFM');
+    row('Status', R.tankL>=T.recL*0.995?'Meets target':'Below target — add about '+fmtVol(T.recL-R.tankL));
+  }
 
   // Footer — the only place company branding appears, per project convention
   ensureRoom(50);
@@ -1107,10 +1372,11 @@ function doExportPDF(){
 
   var filename = 'Air_Compressor_Specification_Report.pdf';
   doc.save(filename);
-
 }
 
 // ══ INIT ════════════════════════════════════════════════════════════════════
+writeInputs();
+updateUnitLabels();
 addConsumer('rotary_actuator');
 addConsumer('linear_actuator');
 addConsumer('blow_off');
