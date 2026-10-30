@@ -1,6 +1,6 @@
 import {
-  supabase, getUser, getPlan, isRateLimited, parseModels, parseBrands, modelKey,
-  coverKey, getCoveredKeys, getUsage, PRICE_PER_MODEL_CENTS,
+  getUser, getPlan, isRateLimited, parseModels, parseBrands, modelKey,
+  coverKey, getCoveredKeys, getUsage, getActuatorDb, PRICE_PER_MODEL_CENTS,
 } from './_lib/common.js'
 import { findBestEquivalent, getRefTorque } from './_lib/matching.js'
 
@@ -22,12 +22,19 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid request' })
   }
 
-  if (await isRateLimited(user.id, 'tool5-compare', 120)) {
+  // Independent lookups run together rather than one after another
+  const [limited, plan, covered, db] = await Promise.all([
+    isRateLimited(user.id, 'tool5-compare', 120),
+    getPlan(user.id),
+    getCoveredKeys(user.id),
+    getActuatorDb(),
+  ])
+
+  if (limited) {
     return res.status(429).json({ error: 'Too many comparisons. Please try again later.' })
   }
 
-  if (await getPlan(user.id) !== 'pro') {
-    const covered = await getCoveredKeys(user.id)
+  if (plan !== 'pro') {
     const unpaid = models.filter(m => !covered.has(coverKey(m, brands)))
     if (unpaid.length) {
       return res.status(402).json({
@@ -41,9 +48,7 @@ export default async function handler(req, res) {
     }
   }
 
-  const { data, error } = await supabase.from('actuator_data').select('record')
-  if (error || !data?.length) return res.status(500).json({ error: 'Failed to load data' })
-  const db = data.map(row => row.record)
+  if (!db) return res.status(500).json({ error: 'Failed to load data' })
 
   const pairs = models.map(m => {
     const rec = db.find(r => modelKey(r) === modelKey(m))

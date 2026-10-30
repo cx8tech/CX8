@@ -29,6 +29,9 @@ export default async function handler(req, res) {
 
     if (error) return res.status(500).json({ error: 'Failed to fetch index' })
 
+    // The list rarely changes: let Vercel's edge serve it near the visitor for
+    // an hour, then refresh it in the background
+    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
     return res.status(200).json({
       data: data.map(row => ({ b: row.brand, m: row.m, mode: row.mode })),
     })
@@ -44,31 +47,35 @@ export default async function handler(req, res) {
 
     const visitor = visitorId(req)
     const windowStart = new Date(Date.now() - WINDOW_MS).toISOString()
-    const { count, error: countError } = await supabase
-      .from('preview_rate_limits')
-      .select('*', { count: 'exact', head: true })
-      .eq('visitor', visitor)
-      .gte('requested_at', windowStart)
+    // The limit check, its record of this lookup and the model itself are
+    // independent, so they run together instead of one after another
+    const [{ count, error: countError }, , { data, error }] = await Promise.all([
+      supabase
+        .from('preview_rate_limits')
+        .select('*', { count: 'exact', head: true })
+        .eq('visitor', visitor)
+        .gte('requested_at', windowStart),
+      supabase.from('preview_rate_limits').insert({ visitor }),
+      supabase
+        .from('actuator_data')
+        .select('record')
+        .eq('brand', brand)
+        .eq('mode', mode)
+        .eq('record->>m', model)
+        .limit(1)
+        .maybeSingle(),
+    ])
 
     // Head queries can report a missing table as a null count with no error
     if (countError || count === null) console.error('preview rate limit check failed:', countError?.message ?? 'no count')
-    if (count >= PREVIEW_LIMIT) {
+    // The count may already include this lookup's own row
+    if (count > PREVIEW_LIMIT) {
       return res.status(429).json({ error: 'Preview limit reached. Please try again later.' })
     }
-    await supabase.from('preview_rate_limits').insert({ visitor })
     // Rows are only needed for the current window; prune now and then
     if (Math.random() < 0.05) {
       await supabase.from('preview_rate_limits').delete().lt('requested_at', windowStart)
     }
-
-    const { data, error } = await supabase
-      .from('actuator_data')
-      .select('record')
-      .eq('brand', brand)
-      .eq('mode', mode)
-      .eq('record->>m', model)
-      .limit(1)
-      .maybeSingle()
 
     if (error) return res.status(500).json({ error: 'Failed to fetch model' })
     if (!data) return res.status(404).json({ error: 'Model not found' })

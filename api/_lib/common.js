@@ -21,6 +21,18 @@ export async function getUser(req) {
   return error ? null : user
 }
 
+// The full actuator dataset (~465 records), kept in this server instance's
+// memory for a few minutes so each comparison doesn't reload it.
+const DB_TTL_MS = 10 * 60 * 1000
+let dbCache = null
+export async function getActuatorDb() {
+  if (dbCache && Date.now() - dbCache.at < DB_TTL_MS) return dbCache.rows
+  const { data, error } = await supabase.from('actuator_data').select('record')
+  if (error || !data?.length) return null
+  dbCache = { at: Date.now(), rows: data.map(row => row.record) }
+  return dbCache.rows
+}
+
 export async function getPlan(userId) {
   const { data } = await supabase.from('profiles').select('plan').eq('id', userId).single()
   return data?.plan ?? 'free'

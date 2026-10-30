@@ -17,14 +17,19 @@ export default async function handler(req, res) {
   const brands = parseBrands(req.body?.brands)
   if (!models || !brands) return res.status(400).json({ error: 'Invalid request' })
 
-  if (await isRateLimited(user.id, 'tool5-checkout', 20)) {
+  // Independent lookups run together rather than one after another
+  const [limited, plan, covered] = await Promise.all([
+    isRateLimited(user.id, 'tool5-checkout', 20),
+    getPlan(user.id),
+    getCoveredKeys(user.id),
+  ])
+  if (limited) {
     return res.status(429).json({ error: 'Too many checkout attempts. Please try again later.' })
   }
-  if (await getPlan(user.id) === 'pro') {
+  if (plan === 'pro') {
     return res.status(400).json({ error: 'Pro includes unlimited comparisons' })
   }
 
-  const covered = await getCoveredKeys(user.id)
   const unpaid = models.filter(m => !covered.has(coverKey(m, brands)))
   if (!unpaid.length) return res.status(400).json({ error: 'These models are already paid for' })
 
