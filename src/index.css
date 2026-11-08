@@ -95,6 +95,10 @@ img { max-width: 100%; display: block; }
 .auth-resend { align-self: flex-start; background: none; border: none; padding: 0; margin-top: -6px; font-family: inherit; font-size: 12.5px; color: var(--teal2); font-weight: 500; cursor: pointer; text-decoration: underline; }
 .auth-resend:disabled { color: var(--text3); cursor: default; text-decoration: none; }
 .auth-resend-note { margin-top: -6px; font-size: 12.5px; color: var(--teal2); font-weight: 500; }
+.reg-notice { display: flex; align-items: flex-start; gap: 12px; background: var(--teal-bg); color: var(--teal); border-bottom: 1px solid var(--teal-bg2); padding: 12px 32px; font-size: 13.5px; line-height: 1.5; }
+.reg-notice-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.reg-notice-close { background: none; border: none; color: var(--teal); font-size: 20px; line-height: 1; padding: 0 4px; cursor: pointer; flex-shrink: 0; }
+@media (max-width: 640px) { .reg-notice { padding: 10px 16px; font-size: 13px; } }
 .auth-forgot { align-self: flex-end; font-size: 12.5px; color: var(--teal2); font-weight: 500; margin-top: -4px; }.auth-check { width: 52px; height: 52px; border-radius: 50%; background: var(--teal-bg); color: var(--teal2); font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
 .auth-back { display: block; text-align: center; margin-top: 20px; font-size: 13px; color: var(--teal2); font-weight: 500; }
 

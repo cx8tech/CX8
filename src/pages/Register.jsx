@@ -10,7 +10,6 @@ export default function Register() {
   const [form, setForm] = useState({ fullName: '', email: '', password: '', confirm: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [done, setDone] = useState(false)
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
@@ -30,20 +29,8 @@ export default function Register() {
     })
     setLoading(false)
     if (err) return setError(err.message)
-    setDone(true)
-  }
-
-  if (done) {
-    return (
-      <div className="auth-page">
-        <div className="auth-card">
-          <div className="auth-check">✓</div>
-          <h2 className="auth-title">Check your email</h2>
-          <p className="auth-sub">We sent a confirmation link to <strong>{form.email}</strong>. Click it to activate your account.</p>
-          <Link to="/" className="auth-back">Back to homepage</Link>
-        </div>
-      </div>
-    )
+    // The homepage shows a "confirm your email" notice for this address
+    navigate('/', { state: { registeredEmail: form.email } })
   }
 
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { allTools } from '../data/tools'
 import { threads as communityThreads } from '../data/communityThreads'
 import { suppliers as allSuppliers, regionColors, getInitials, ALL, REGIONS, CATEGORIES } from '../data/suppliers'
@@ -318,10 +318,33 @@ function BottomSection() {
   )
 }
 
+// Shown once after registering, until the user closes it or leaves the page
+function RegisteredNotice() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [email, setEmail] = useState(location.state?.registeredEmail ?? null)
+
+  // Clear it from the browser history so a refresh doesn't show it again
+  useEffect(() => {
+    if (location.state?.registeredEmail) navigate(location.pathname, { replace: true, state: null })
+  }, [])
+
+  if (!email) return null
+  return (
+    <div className="reg-notice" role="status">
+      <div className="reg-notice-text">
+        <strong>Almost there!</strong> We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account. If you don't see it, check your spam folder.
+      </div>
+      <button className="reg-notice-close" aria-label="Dismiss" onClick={() => setEmail(null)}>×</button>
+    </div>
+  )
+}
+
 // ── Main export ───────────────────────────────────────────
 export default function Home() {
   return (
     <>
+      <RegisteredNotice />
       <HeroSection />
       <ToolsSection />
       <BottomSection />
