@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import { allTools } from '../data/tools'
 import { supabase, confirmRedirectUrl } from '../lib/supabase'
+import { registerFormError } from '../lib/registerForm'
 
 const IconBack = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -65,11 +66,10 @@ function GateModal({ onClose, toolPath, reason }) {
 
   const register = async e => {
     e.preventDefault()
-    setError('')
+    const invalid = registerFormError(form)
+    setError(invalid)
+    if (invalid) return
     const fullName = form.fullName.trim()
-    if (fullName.length < 2) return setError('Please enter your full name.')
-    if (form.password !== form.confirm) return setError('Passwords do not match.')
-    if (form.password.length < 6) return setError('Password must be at least 6 characters.')
     setLoading(true)
     const { data, error: err } = await supabase.auth.signUp({
       email: form.email,
@@ -103,6 +103,7 @@ function GateModal({ onClose, toolPath, reason }) {
   )
 
   const action = reason === 'pdf' ? 'download your results as a PDF' : 'find equivalents'
+  const requiredMark = mode === 'register' && <span className="auth-required" aria-hidden="true"> *</span>
 
   return (
     <div className="gate-overlay pay-overlay" onMouseDown={e => { if (e.target === e.currentTarget) onClose() }}>
@@ -126,24 +127,24 @@ function GateModal({ onClose, toolPath, reason }) {
             <p className="gate-sub">
               {mode === 'login' ? `Log in to ${action}.` : `Create a free CX8 account to ${action}.`} Your details stay on this page.
             </p>
-            <form className="auth-form gate-auth" onSubmit={mode === 'login' ? logIn : register}>
+            <form className="auth-form gate-auth" onSubmit={mode === 'login' ? logIn : register} noValidate={mode === 'register'}>
               {mode === 'register' && (
                 <div className="auth-field">
-                  <label className="auth-label" htmlFor="gate-name">Full name</label>
+                  <label className="auth-label" htmlFor="gate-name">Full name{requiredMark}</label>
                   <input id="gate-name" className="auth-input" type="text" placeholder="Jane Smith" value={form.fullName} onChange={set('fullName')} autoComplete="name" maxLength={50} required />
                 </div>
               )}
               <div className="auth-field">
-                <label className="auth-label" htmlFor="gate-email">Email address</label>
+                <label className="auth-label" htmlFor="gate-email">Email address{requiredMark}</label>
                 <input id="gate-email" className="auth-input" type="email" placeholder="you@company.com" value={form.email} onChange={set('email')} autoComplete="email" required />
               </div>
               <div className="auth-field">
-                <label className="auth-label" htmlFor="gate-password">Password</label>
+                <label className="auth-label" htmlFor="gate-password">Password{requiredMark}</label>
                 <input id="gate-password" className="auth-input" type="password" placeholder={mode === 'login' ? 'Your password' : 'Min. 6 characters'} value={form.password} onChange={set('password')} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required />
               </div>
               {mode === 'register' && (
                 <div className="auth-field">
-                  <label className="auth-label" htmlFor="gate-confirm">Confirm password</label>
+                  <label className="auth-label" htmlFor="gate-confirm">Confirm password{requiredMark}</label>
                   <input id="gate-confirm" className="auth-input" type="password" placeholder="Repeat password" value={form.confirm} onChange={set('confirm')} autoComplete="new-password" required />
                 </div>
               )}

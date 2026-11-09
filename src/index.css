@@ -637,6 +637,7 @@ img { max-width: 100%; display: block; }
 .gate-modal .auth-form { margin-bottom: 14px; }
 .gate-modal .gate-sub { margin-bottom: 20px; }
 .gate-modal .auth-switch { margin-bottom: 12px; }
+.auth-required { color: #dc2626; font-weight: 600; }
 .auth-switch button { background: none; border: none; padding: 0; font: inherit; color: var(--teal2); font-weight: 500; cursor: pointer; }
 /* 16px stops phones zooming in when a field is tapped */
 @media (max-width: 768px) { .gate-auth .auth-input { font-size: 16px; } }

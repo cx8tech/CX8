@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { supabase, confirmRedirectUrl } from '../lib/supabase'
+import { registerFormError } from '../lib/registerForm'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -15,11 +16,10 @@ export default function Register() {
 
   const submit = async (e) => {
     e.preventDefault()
-    setError('')
+    const invalid = registerFormError(form)
+    setError(invalid)
+    if (invalid) return
     const fullName = form.fullName.trim()
-    if (fullName.length < 2) return setError('Please enter your full name.')
-    if (form.password !== form.confirm) return setError('Passwords do not match.')
-    if (form.password.length < 6) return setError('Password must be at least 6 characters.')
     setLoading(true)
     const { error: err } = await supabase.auth.signUp({
       email: form.email,
@@ -42,9 +42,9 @@ export default function Register() {
         <h2 className="auth-title">Create your account</h2>
         <p className="auth-sub">Create a free account to get more from CX8's engineering tools</p>
 
-        <form className="auth-form" onSubmit={submit}>
+        <form className="auth-form" onSubmit={submit} noValidate>
           <div className="auth-field">
-            <label className="auth-label">Full name</label>
+            <label className="auth-label">Full name<span className="auth-required" aria-hidden="true"> *</span></label>
             <input
               className="auth-input"
               type="text"
@@ -58,7 +58,7 @@ export default function Register() {
             />
           </div>
           <div className="auth-field">
-            <label className="auth-label">Email address</label>
+            <label className="auth-label">Email address<span className="auth-required" aria-hidden="true"> *</span></label>
             <input
               className="auth-input"
               type="email"
@@ -69,7 +69,7 @@ export default function Register() {
             />
           </div>
           <div className="auth-field">
-            <label className="auth-label">Password</label>
+            <label className="auth-label">Password<span className="auth-required" aria-hidden="true"> *</span></label>
             <input
               className="auth-input"
               type="password"
@@ -80,7 +80,7 @@ export default function Register() {
             />
           </div>
           <div className="auth-field">
-            <label className="auth-label">Confirm password</label>
+            <label className="auth-label">Confirm password<span className="auth-required" aria-hidden="true"> *</span></label>
             <input
               className="auth-input"
               type="password"
