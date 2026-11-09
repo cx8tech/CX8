@@ -1259,7 +1259,7 @@ function findEquivalents(){
    "Find Equivalents" is clicked, restored once the database loads, and
    cleared once results have been shown. ── */
 const PENDING_KEY='cx8-tool5-pending';
-const PENDING_MAX_AGE=60*60*1000; // 1 hour
+const PENDING_MAX_AGE=24*60*60*1000; // 24 hours
 let pendingChecked=false;
 
 function savePendingCompare(){

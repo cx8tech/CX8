@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import { allTools } from '../data/tools'
-import { supabase } from '../lib/supabase'
+import { supabase, confirmRedirectUrl } from '../lib/supabase'
 
 const IconBack = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -22,31 +22,151 @@ const PRO_MONTHLY_PRICE = '€75'
 
 const euros = cents => `€${(cents / 100).toFixed(cents % 100 ? 2 : 0)}`
 
-// Login prompts: for PDF downloads (Tools 3, 4, 6) and Tool 5 results
+// Login prompt for PDF downloads and Tool 5 results. The forms live in the
+// popup, so the tool underneath keeps everything the user has entered.
+// ToolViewer closes it and carries on as soon as the user is logged in,
+// including when they confirm their email in another tab.
 function GateModal({ onClose, toolPath, reason }) {
   const navigate = useNavigate()
-  // ?resume=1 lets Tool 5 restore the selection after login (only then)
-  const redirect = encodeURIComponent(reason === 'pdf' ? toolPath : `${toolPath}?resume=1`)
+  const [mode, setMode] = useState('login')   // 'login' | 'register' | 'sent'
+  const [form, setForm] = useState({ fullName: '', email: '', password: '', confirm: '' })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [unconfirmed, setUnconfirmed] = useState(false)
+  const [resendStatus, setResendStatus] = useState(null) // null | 'sending' | 'sent' | 'error'
+
+  // The email link opens a new tab; ?resume=1 restores Tool 5's selection there
+  const emailRedirectTo = confirmRedirectUrl(reason === 'pdf' ? toolPath : `${toolPath}?resume=1`)
+
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
+
+  const switchMode = m => {
+    setMode(m)
+    setError('')
+    setUnconfirmed(false)
+    setResendStatus(null)
+  }
+
+  const logIn = async e => {
+    e.preventDefault()
+    setError('')
+    setUnconfirmed(false)
+    setResendStatus(null)
+    setLoading(true)
+    const { error: err } = await supabase.auth.signInWithPassword({ email: form.email, password: form.password })
+    if (!err) return
+    setLoading(false)
+    if (err.code === 'email_not_confirmed' || /not confirmed/i.test(err.message ?? '')) {
+      setUnconfirmed(true)
+      return setError('Please confirm your email first. Check your inbox (and spam folder) for the link we sent you.')
+    }
+    setError('Incorrect email or password.')
+  }
+
+  const register = async e => {
+    e.preventDefault()
+    setError('')
+    const fullName = form.fullName.trim()
+    if (fullName.length < 2) return setError('Please enter your full name.')
+    if (form.password !== form.confirm) return setError('Passwords do not match.')
+    if (form.password.length < 6) return setError('Password must be at least 6 characters.')
+    setLoading(true)
+    const { data, error: err } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: { emailRedirectTo, data: { full_name: fullName } },
+    })
+    setLoading(false)
+    if (err) return setError(err.message)
+    // Supabase returns no identities, and sends no email, for an address that is already registered
+    if (data.user?.identities?.length === 0) {
+      setMode('login')
+      return setError('This email already has an account. Please log in.')
+    }
+    if (!data.session) setMode('sent')
+  }
+
+  const resendConfirmation = async () => {
+    setResendStatus('sending')
+    const { error: err } = await supabase.auth.resend({ type: 'signup', email: form.email, options: { emailRedirectTo } })
+    setResendStatus(err ? 'error' : 'sent')
+  }
+
+  const resendControl = resendStatus === 'sent' ? (
+    <div className="auth-resend-note">Sent! Check your inbox.</div>
+  ) : (
+    <button type="button" className="auth-resend" onClick={resendConfirmation} disabled={resendStatus === 'sending'}>
+      {resendStatus === 'sending' ? 'Sending…'
+        : resendStatus === 'error' ? 'Could not send. Try again in a few minutes.'
+        : 'Resend confirmation email'}
+    </button>
+  )
+
+  const action = reason === 'pdf' ? 'download your results as a PDF' : 'find equivalents'
 
   return (
-    <div className="gate-overlay" onClick={onClose}>
-      <div className="gate-modal" onClick={e => e.stopPropagation()}>
-        <div className="gate-icon"><IconLock /></div>
-        {reason === 'pdf' ? (
+    <div className="gate-overlay pay-overlay" onMouseDown={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="gate-modal pay-modal">
+        {mode === 'sent' ? (
           <>
-            <h2 className="gate-title">Log In to Download</h2>
-            <p className="gate-sub">Log in or create a free CX8 account to download your results as a PDF.</p>
+            <div className="auth-check">✓</div>
+            <h2 className="gate-title">Check Your Email</h2>
+            <p className="gate-sub">
+              We sent a confirmation link to <strong>{form.email}</strong>. Click it, then come back to this tab. Everything you entered is still here.
+            </p>
+            <div className="gate-auth gate-auth-sent">{resendControl}</div>
+            <p className="auth-switch">
+              Confirmed on another device? <button type="button" onClick={() => switchMode('login')}>Log in</button>
+            </p>
           </>
         ) : (
           <>
-            <h2 className="gate-title">Log In to See Results</h2>
-            <p className="gate-sub">Log in or create a free CX8 account to find equivalents. Then pay per model, or subscribe for unlimited comparisons.</p>
+            <div className="gate-icon"><IconLock /></div>
+            <h2 className="gate-title">{mode === 'login' ? 'Log In to Continue' : 'Create Your Free Account'}</h2>
+            <p className="gate-sub">
+              {mode === 'login' ? `Log in to ${action}.` : `Create a free CX8 account to ${action}.`} Your details stay on this page.
+            </p>
+            <form className="auth-form gate-auth" onSubmit={mode === 'login' ? logIn : register}>
+              {mode === 'register' && (
+                <div className="auth-field">
+                  <label className="auth-label" htmlFor="gate-name">Full name</label>
+                  <input id="gate-name" className="auth-input" type="text" placeholder="Jane Smith" value={form.fullName} onChange={set('fullName')} autoComplete="name" maxLength={50} required />
+                </div>
+              )}
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="gate-email">Email address</label>
+                <input id="gate-email" className="auth-input" type="email" placeholder="you@company.com" value={form.email} onChange={set('email')} autoComplete="email" required />
+              </div>
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="gate-password">Password</label>
+                <input id="gate-password" className="auth-input" type="password" placeholder={mode === 'login' ? 'Your password' : 'Min. 6 characters'} value={form.password} onChange={set('password')} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required />
+              </div>
+              {mode === 'register' && (
+                <div className="auth-field">
+                  <label className="auth-label" htmlFor="gate-confirm">Confirm password</label>
+                  <input id="gate-confirm" className="auth-input" type="password" placeholder="Repeat password" value={form.confirm} onChange={set('confirm')} autoComplete="new-password" required />
+                </div>
+              )}
+              {mode === 'login' && (
+                <a href="/reset-password" target="_blank" rel="noopener" className="auth-forgot">Forgot password?</a>
+              )}
+              {error && <div className="auth-error">{error}</div>}
+              {unconfirmed && resendControl}
+              <button className="auth-btn" type="submit" disabled={loading}>
+                {mode === 'login'
+                  ? (loading ? 'Logging in…' : 'Log In')
+                  : (loading ? 'Creating account…' : 'Create Account')}
+              </button>
+            </form>
+            <p className="auth-switch">
+              {mode === 'login' ? (
+                <>Don't have an account? <button type="button" onClick={() => switchMode('register')}>Register for free</button></>
+              ) : (
+                <>Already have an account? <button type="button" onClick={() => switchMode('login')}>Log in</button></>
+              )}
+            </p>
           </>
         )}
-        <div className="gate-actions">
-          <Link to={`/login?redirect=${redirect}`} className="gate-btn-primary">Log In</Link>
-          <Link to={`/register?redirect=${redirect}`} className="gate-btn-secondary">Register for Free</Link>
-        </div>
         <button className="gate-btn-home" onClick={() => navigate('/')}>← Back to Home</button>
       </div>
     </div>
@@ -222,6 +342,7 @@ export default function ToolViewer() {
   const iframeReadyRef = useRef(false)
   const indexCacheRef  = useRef(null)
   const pollRef        = useRef(null)
+  const loginRetryRef  = useRef(null)   // Tool 5 request to re-run after login
 
   // LemonSqueezy sends buyers back to ?paid=1. The webhook that records the
   // payment can arrive after the user does, so results are polled for.
@@ -288,6 +409,14 @@ export default function ToolViewer() {
     return 'error'
   }
 
+  // The login popup waits for a fresh login, so a session the server has
+  // just rejected must not count as logged in
+  function askToLogIn(request) {
+    loginRetryRef.current = request
+    setUser(null)
+    setGateReason('login')
+  }
+
   async function handleCompare(request) {
     const result = await runCompare(request)
     if (typeof result === 'object') {
@@ -296,7 +425,7 @@ export default function ToolViewer() {
       return
     }
     if (checkoutReturnRef.current) endCheckoutReturn()
-    if (result === 'login') setGateReason('login')
+    if (result === 'login') askToLogIn(request)
   }
 
   // Retry every 3s for up to ~2 minutes until the payment is recorded
@@ -311,9 +440,18 @@ export default function ToolViewer() {
       }
       setConfirming(null)
       endCheckoutReturn()
-      if (result === 'login') setGateReason('login')
+      if (result === 'login') askToLogIn(request)
     }, 3000)
   }
+
+  // ── Logged in while the popup is open: close it and finish what the user
+  // was doing. The tool never reloads, so its entries stay as they were. ──
+  useEffect(() => {
+    if (!user || !gateReason) return
+    setGateReason(null)
+    if (gateReason === 'pdf') postToTool({ type: 'cx8-pdf-allowed' })
+    else if (loginRetryRef.current) handleCompare(loginRetryRef.current)
+  }, [user, gateReason])
 
   // ── Messages from the tool iframe ──
   useEffect(() => {

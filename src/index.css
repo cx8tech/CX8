@@ -631,6 +631,16 @@ img { max-width: 100%; display: block; }
 .gate-btn-home:hover { color: var(--teal2); }
 .gate-btn-primary:disabled, .gate-btn-secondary:disabled { opacity: .5; cursor: not-allowed; }
 
+/* ── Login / register forms inside the tool popup ── */
+.gate-auth { text-align: left; }
+.gate-auth-sent { text-align: center; margin-bottom: 16px; }
+.gate-modal .auth-form { margin-bottom: 14px; }
+.gate-modal .gate-sub { margin-bottom: 20px; }
+.gate-modal .auth-switch { margin-bottom: 12px; }
+.auth-switch button { background: none; border: none; padding: 0; font: inherit; color: var(--teal2); font-weight: 500; cursor: pointer; }
+/* 16px stops phones zooming in when a field is tapped */
+@media (max-width: 768px) { .gate-auth .auth-input { font-size: 16px; } }
+
 /* ── Tool 5 pay-per-query / regular-user modal ── */
 .pay-overlay { overflow-y: auto; align-items: flex-start; }
 .pay-modal { margin: auto 0; }
